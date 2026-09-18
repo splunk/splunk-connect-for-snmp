@@ -121,17 +121,17 @@ spec:
               value: "0"
             - name: MAX_MEMORY_PER_CHILD
               value: "0"
+            - name: CELERY_TASK_TIMEOUT
+              value: "2400"
+            - name: IPv6_ENABLED
+              value: "true"
+              
             - name: SUBNET_DISCOVERY_CONCURRENCY
               value: "10"
             - name: USER
               value: "sc4snmp"
             - name: DISCOVERY_FOLDER_PATH
               value: /app/discovery
-            - name: CELERY_TASK_TIMEOUT
-              value: "2400"
-            - name: IPv6_ENABLED
-              value: "true"
-              
           volumeMounts:
             - name: config
               mountPath: "/app/config"

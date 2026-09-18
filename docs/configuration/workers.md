@@ -27,6 +27,7 @@ worker:
     prefetch: 1
     maxTasksPerChild: 0
     maxMemoryPerChild: 0
+    taskTimeout: 2400
     autoscaling:
       enabled: false
       minReplicas: 2
@@ -82,6 +83,7 @@ worker:
     prefetch: 30
     maxTasksPerChild: 0
     maxMemoryPerChild: 0
+    taskTimeout: 2400
     autoscaling:
       enabled: false
       minReplicas: 2
@@ -110,7 +112,6 @@ worker:
         - test -e /tmp/worker_ready
     initialDelaySeconds: 30
     periodSeconds: 5
-  taskTimeout: 2400
   walkRetryMaxInterval: 180
   walkMaxRetries: 5
   ignoreNotIncreasingOid: []
@@ -130,74 +131,75 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/spl
 
 ### Worker parameters
 
-| Variable                                                 | Description                                                                                                                     | Default           |
-|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|-------------------|
-| worker.poller.replicaCount                               | Number of poller worker replicas                                                                                                | 2                 |
-| worker.poller.concurrency                                | Minimum number of threads in a poller worker pod                                                                                | 4                 |
-| worker.poller.prefetch                                   | Number of tasks consumed from the queue at once                                                                                 | 1                 |
-| worker.poller.maxTasksPerChild                           | Max number of tasks a poller worker child process can execute before being recycled. `0` disables recycling                     | 0                 |
-| worker.poller.maxMemoryPerChild                          | Maximum resident memory per poller child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling              | 0                 |
-| worker.poller.autoscaling.enabled                        | Enabling autoscaling for poller worker pods                                                                                     | false             |
-| worker.poller.autoscaling.minReplicas                    | Minimum number of running poller worker pods when autoscaling is enabled                                                        | 2                 |
-| worker.poller.autoscaling.maxReplicas                    | Maximum number of running poller worker pods when autoscaling is enabled                                                        | 10                |
-| worker.poller.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on poller worker pods to spawn another replica                                            | 80                |
-| worker.poller.resources.limits                           | The resources limits for poller worker container                                                                                | cpu: 500m         |
-| worker.poller.resources.requests                         | The requested resources for poller worker container                                                                             | cpu: 250m         |
-| worker.trap.replicaCount                                 | Number of trap worker replicas                                                                                                  | 2                 |
-| worker.trap.concurrency                                  | Minimum number of threads in a trap worker pod                                                                                  | 4                 |
-| worker.trap.prefetch                                     | Number of tasks consumed from the queue at once                                                                                 | 30                |
-| worker.trap.maxTasksPerChild                             | Max number of tasks a trap worker child process can execute before being recycled. `0` disables recycling                       | 0                 |
-| worker.trap.maxMemoryPerChild                            | Maximum resident memory per trap child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling                | 0                 |
-| worker.trap.resolveAddress.enabled                       | Enable reverse dns lookup of the IP address of the processed trap                                                               | false             |
-| worker.trap.resolveAddress.cacheSize                     | Maximum number of reverse dns lookup result records stored in cache                                                             | 500               |
-| worker.trap.resolveAddress.cacheTTL                      | Time to live of the cached reverse dns lookup record in seconds                                                                 | 1800              |
-| worker.trap.enableIncludeUnresolvedVarbinds              | Include trap varbinds that could not be MIB-translated under `sc4snmp::unresolved` in Splunk events                             | false             |
-| worker.trap.autoscaling.enabled                          | Enabling autoscaling for trap worker pods                                                                                       | false             |
-| worker.trap.autoscaling.minReplicas                      | Minimum number of running trap worker pods when autoscaling is enabled                                                          | 2                 |
-| worker.trap.autoscaling.maxReplicas                      | Maximum number of running trap worker pods when autoscaling is enabled                                                          | 10                |
-| worker.trap.autoscaling.targetCPUUtilizationPercentage   | CPU % threshold that must be exceeded on trap worker pods to spawn another replica                                              | 80                |
-| worker.trap.resources.limits                             | The resource limits for trap worker pod                                                                                         | cpu: 500m         |
-| worker.trap.resources.requests                           | The requested resources for trap worker pod                                                                                     | cpu: 250m         |
-| worker.sender.replicaCount                               | The number of sender worker replicas                                                                                            | 1                 |
-| worker.sender.concurrency                                | Minimum number of threads in a sender worker pod                                                                                | 4                 |
-| worker.sender.prefetch                                   | Number of tasks consumed from the queue at once                                                                                 | 30                |
-| worker.sender.maxTasksPerChild                           | Max number of tasks a sender worker child process can execute before being recycled. `0` disables recycling                     | 0                 |
-| worker.sender.maxMemoryPerChild                          | Maximum resident memory per sender child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling              | 0                 |
-| worker.sender.autoscaling.enabled                        | Enabling autoscaling for sender worker pods                                                                                     | false             |
-| worker.sender.autoscaling.minReplicas                    | Minimum number of running sender worker pods when autoscaling is enabled                                                        | 2                 |
-| worker.sender.autoscaling.maxReplicas                    | Maximum number of running sender worker pods when autoscaling is enabled                                                        | 10                |
-| worker.sender.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on sender worker pods to spawn another replica                                            | 80                |
-| worker.sender.resources.limits                           | The resource limits for sender worker pod                                                                                       | cpu: 500m         |
-| worker.sender.resources.requests                         | The requested resources for sender worker pod                                                                                   | cpu: 250m         |
-| worker.discovery.replicaCount                            | Number of discovery worker replicas                                                                                             | 1                 |
-| worker.discovery.concurrency                             | Minimum number of threads in a discovery worker pod                                                                             | 4                 |
-| worker.discovery.prefetch                                | Number of tasks consumed from the queue at once                                                                                 | 30                |
-| worker.discovery.maxTasksPerChild                        | Max number of tasks a discovery worker child process can execute before being recycled. `0` disables recycling                  | 0                 |
-| worker.discovery.maxMemoryPerChild                       | Maximum resident memory per discovery child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling           | 0                 |
-| worker.discovery.autoscaling.enabled                     | Enabling autoscaling for discovery worker pods                                                                                  | false             |
-| worker.discovery.autoscaling.minReplicas                 | Minimum number of running discovery worker pods when autoscaling is enabled                                                     | 2                 |
-| worker.discovery.autoscaling.maxReplicas                 | Maximum number of running discovery worker pods when autoscaling is enabled                                                     | 10                |
-| worker.discovery.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on discovery worker pods to spawn another replica                                      | 80                |
-| worker.discovery.resources.limits                        | The resources limits for discovery worker container                                                                             | cpu: 500m         |
-| worker.discovery.resources.requests                      | The requested resources for discovery worker container                                                                          | cpu: 250m         |
-| worker.livenessProbe.enabled                             | Whether the liveness probe is enabled                                                                                           | false             |
-| worker.livenessProbe.exec.command                        | The exec command for the liveness probe to run in the container                                                                 | Check values.yaml |
-| worker.livenessProbe.initialDelaySeconds                 | Number of seconds after the container has started before liveness probe is initiated                                            | 80                |
-| worker.livenessProbe.periodSeconds                       | Frequency of performing the probe in seconds                                                                                    | 10                |
-| worker.readinessProbe.enabled                            | Whether the readiness probe should be turned on or not                                                                          | false             |
-| worker.readinessProbe.exec.command                       | The exec command for the readiness probe to run in the container                                                                | Check values.yaml |
-| worker.readinessProbe.initialDelaySeconds                | Number of seconds after the container has started before readiness probe is initiated                                           | 30                |
-| worker.readinessProbe.periodSeconds                      | Frequency of performing the probe in seconds                                                                                    | 5                 |
-| worker.taskTimeout                                       | Task timeout in seconds when process takes a long time                                                                          | 2400              |
-| worker.walkRetryMaxInterval                              | Maximum time interval between walk attempts                                                                                     | 180               |
-| worker.walkMaxRetries                                    | Maximum number of walk retries                                                                                                  | 5                 |
-| worker.ignoreNotIncreasingOid                            | Ignoring `occurred: OID not increasing` issues for hosts specified in the array                                                 | []                |
-| worker.logLevel                                          | Logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                | INFO              |
-| worker.disableMongoDebugLogging                          | Disable extensive MongoDB and pymongo debug logging on SC4SNMP workers                                                          | true              |
-| worker.udpConnectionTimeout                              | Timeout for SNMP operations in seconds                                                                                          | 3                 |
-| worker.udpConnectionRetries                              | Number of SNMP UDP retries per operation                                                                                        | 5                 |
-| worker.ignoreEmptyVarbinds                               | Ignores "Empty SNMP response message" in responses                                                                              | false             |
-| worker.podAntiAffinity                                   | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) | soft              |
+| Variable                                                    | Description                                                                                                                     | Default           |
+|-------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|-------------------|
+| worker.poller.replicaCount                                  | Number of poller worker replicas                                                                                                | 2                 |
+| worker.poller.concurrency                                   | Minimum number of threads in a poller worker pod                                                                                | 4                 |
+| worker.poller.prefetch                                      | Number of tasks consumed from the queue at once                                                                                 | 1                 |
+| worker.poller.maxTasksPerChild                              | Max number of tasks a poller worker child process can execute before being recycled. `0` disables recycling                     | 0                 |
+| worker.poller.maxMemoryPerChild                             | Maximum resident memory per poller child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling              | 0                 |
+| worker.poller.taskTimeout                                   | Task timeout in seconds for poller tasks                                                                                        | 2400              |
+| worker.poller.autoscaling.enabled                           | Enabling autoscaling for poller worker pods                                                                                     | false             |
+| worker.poller.autoscaling.minReplicas                       | Minimum number of running poller worker pods when autoscaling is enabled                                                        | 2                 |
+| worker.poller.autoscaling.maxReplicas                       | Maximum number of running poller worker pods when autoscaling is enabled                                                        | 10                |
+| worker.poller.autoscaling.targetCPUUtilizationPercentage    | CPU % threshold that must be exceeded on poller worker pods to spawn another replica                                            | 80                |
+| worker.poller.resources.limits                              | The resources limits for poller worker container                                                                                | cpu: 500m         |
+| worker.poller.resources.requests                            | The requested resources for poller worker container                                                                             | cpu: 250m         |
+| worker.trap.replicaCount                                    | Number of trap worker replicas                                                                                                  | 2                 |
+| worker.trap.concurrency                                     | Minimum number of threads in a trap worker pod                                                                                  | 4                 |
+| worker.trap.prefetch                                        | Number of tasks consumed from the queue at once                                                                                 | 30                |
+| worker.trap.maxTasksPerChild                                | Max number of tasks a trap worker child process can execute before being recycled. `0` disables recycling                       | 0                 |
+| worker.trap.maxMemoryPerChild                               | Maximum resident memory per trap child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling                | 0                 |
+| worker.trap.resolveAddress.enabled                          | Enable reverse dns lookup of the IP address of the processed trap                                                               | false             |
+| worker.trap.resolveAddress.cacheSize                        | Maximum number of reverse dns lookup result records stored in cache                                                             | 500               |
+| worker.trap.resolveAddress.cacheTTL                         | Time to live of the cached reverse dns lookup record in seconds                                                                 | 1800              |
+| worker.trap.enableIncludeUnresolvedVarbinds                 | Include trap varbinds that could not be MIB-translated under `sc4snmp::unresolved` in Splunk events                             | false             |
+| worker.trap.autoscaling.enabled                             | Enabling autoscaling for trap worker pods                                                                                       | false             |
+| worker.trap.autoscaling.minReplicas                         | Minimum number of running trap worker pods when autoscaling is enabled                                                          | 2                 |
+| worker.trap.autoscaling.maxReplicas                         | Maximum number of running trap worker pods when autoscaling is enabled                                                          | 10                |
+| worker.trap.autoscaling.targetCPUUtilizationPercentage      | CPU % threshold that must be exceeded on trap worker pods to spawn another replica                                              | 80                |
+| worker.trap.resources.limits                                | The resource limits for trap worker pod                                                                                         | cpu: 500m         |
+| worker.trap.resources.requests                              | The requested resources for trap worker pod                                                                                     | cpu: 250m         |
+| worker.sender.replicaCount                                  | The number of sender worker replicas                                                                                            | 1                 |
+| worker.sender.concurrency                                   | Minimum number of threads in a sender worker pod                                                                                | 4                 |
+| worker.sender.prefetch                                      | Number of tasks consumed from the queue at once                                                                                 | 30                |
+| worker.sender.maxTasksPerChild                              | Max number of tasks a sender worker child process can execute before being recycled. `0` disables recycling                     | 0                 |
+| worker.sender.maxMemoryPerChild                             | Maximum resident memory per sender child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling              | 0                 |
+| worker.sender.autoscaling.enabled                           | Enabling autoscaling for sender worker pods                                                                                     | false             |
+| worker.sender.autoscaling.minReplicas                       | Minimum number of running sender worker pods when autoscaling is enabled                                                        | 2                 |
+| worker.sender.autoscaling.maxReplicas                       | Maximum number of running sender worker pods when autoscaling is enabled                                                        | 10                |
+| worker.sender.autoscaling.targetCPUUtilizationPercentage    | CPU % threshold that must be exceeded on sender worker pods to spawn another replica                                            | 80                |
+| worker.sender.resources.limits                              | The resource limits for sender worker pod                                                                                       | cpu: 500m         |
+| worker.sender.resources.requests                            | The requested resources for sender worker pod                                                                                   | cpu: 250m         |
+| worker.discovery.replicaCount                               | Number of discovery worker replicas                                                                                             | 1                 |
+| worker.discovery.concurrency                                | Minimum number of threads in a discovery worker pod                                                                             | 4                 |
+| worker.discovery.prefetch                                   | Number of tasks consumed from the queue at once                                                                                 | 30                |
+| worker.discovery.maxTasksPerChild                           | Max number of tasks a discovery worker child process can execute before being recycled. `0` disables recycling                  | 0                 |
+| worker.discovery.maxMemoryPerChild                          | Maximum resident memory per discovery child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling           | 0                 |
+| worker.discovery.taskTimeout                                | Task timeout in seconds for a single discovery task                                                                             | 2400              |
+| worker.discovery.autoscaling.enabled                        | Enabling autoscaling for discovery worker pods                                                                                  | false             |
+| worker.discovery.autoscaling.minReplicas                    | Minimum number of running discovery worker pods when autoscaling is enabled                                                     | 2                 |
+| worker.discovery.autoscaling.maxReplicas                    | Maximum number of running discovery worker pods when autoscaling is enabled                                                     | 10                |
+| worker.discovery.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on discovery worker pods to spawn another replica                                         | 80                |
+| worker.discovery.resources.limits                           | The resources limits for discovery worker container                                                                             | cpu: 500m         |
+| worker.discovery.resources.requests                         | The requested resources for discovery worker container                                                                          | cpu: 250m         |
+| worker.livenessProbe.enabled                                | Whether the liveness probe is enabled                                                                                           | false             |
+| worker.livenessProbe.exec.command                           | The exec command for the liveness probe to run in the container                                                                 | Check values.yaml |
+| worker.livenessProbe.initialDelaySeconds                    | Number of seconds after the container has started before liveness probe is initiated                                            | 80                |
+| worker.livenessProbe.periodSeconds                          | Frequency of performing the probe in seconds                                                                                    | 10                |
+| worker.readinessProbe.enabled                               | Whether the readiness probe should be turned on or not                                                                          | false             |
+| worker.readinessProbe.exec.command                          | The exec command for the readiness probe to run in the container                                                                | Check values.yaml |
+| worker.readinessProbe.initialDelaySeconds                   | Number of seconds after the container has started before readiness probe is initiated                                           | 30                |
+| worker.readinessProbe.periodSeconds                         | Frequency of performing the probe in seconds                                                                                    | 5                 |
+| worker.walkRetryMaxInterval                                 | Maximum time interval between walk attempts                                                                                     | 180               |
+| worker.walkMaxRetries                                       | Maximum number of walk retries                                                                                                  | 5                 |
+| worker.ignoreNotIncreasingOid                               | Ignoring `occurred: OID not increasing` issues for hosts specified in the array                                                 | []                |
+| worker.logLevel                                             | Logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                | INFO              |
+| worker.disableMongoDebugLogging                             | Disable extensive MongoDB and pymongo debug logging on SC4SNMP workers                                                          | true              |
+| worker.udpConnectionTimeout                                 | Timeout for SNMP operations in seconds                                                                                          | 3                 |
+| worker.udpConnectionRetries                                 | Number of SNMP UDP retries per operation                                                                                        | 5                 |
+| worker.ignoreEmptyVarbinds                                  | Ignores "Empty SNMP response message" in responses                                                                              | false             |
+| worker.podAntiAffinity                                      | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) | soft              |
 
 ///
 
@@ -227,6 +229,7 @@ WORKER_POLLER_CPU_RESERVATIONS=0.5
 WORKER_POLLER_MEMORY_RESERVATIONS=250M
 WORKER_POLLER_MAX_TASKS_PER_CHILD=0
 WORKER_POLLER_MAX_MEMORY_PER_CHILD=0
+WORKER_POLLER_TASK_TIMEOUT=2400
 ENABLE_WORKER_POLLER_SECRETS=false
 
 # Worker Sender
@@ -267,6 +270,7 @@ WORKER_DISCOVERY_CPU_RESERVATIONS=0.5
 WORKER_DISCOVERY_MEMORY_RESERVATIONS=250M
 WORKER_DISCOVERY_MAX_TASKS_PER_CHILD=0
 WORKER_DISCOVERY_MAX_MEMORY_PER_CHILD=0
+WORKER_DISCOVERY_TASK_TIMEOUT=2400
 ENABLE_WORKER_DISCOVERY_SECRETS=false
 ```
 
@@ -295,18 +299,19 @@ sudo docker compose up -d
 
 ### Worker Poller
 
-| Variable                            | Description                                                                |
-|-------------------------------------|----------------------------------------------------------------------------|
-| `WORKER_POLLER_CONCURRENCY`         | Minimum number of threads in the poller container                          |
-| `PREFETCH_POLLER_COUNT`             | How many tasks are consumed from the queue at once in the poller container |
-| `WORKER_POLLER_REPLICAS`            | Number of docker replicas of worker poller container                       |
-| `WORKER_POLLER_CPU_LIMIT`           | Limit of cpu that worker poller container can use                          |
-| `WORKER_POLLER_MEMORY_LIMIT`        | Limit of memory that worker poller container can use                       |
-| `WORKER_POLLER_CPU_RESERVATIONS`    | Dedicated cpu resources for worker poller container                        |
-| `WORKER_POLLER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker poller container                     |
-| `WORKER_POLLER_MAX_TASKS_PER_CHILD` | Max number of tasks a poller worker child process can execute before being recycled. `0` disables recycling |
+| Variable                             | Description                                                                                                        |
+|--------------------------------------|--------------------------------------------------------------------------------------------------------------------|
+| `WORKER_POLLER_CONCURRENCY`          | Minimum number of threads in the poller container                                                                  |
+| `PREFETCH_POLLER_COUNT`              | How many tasks are consumed from the queue at once in the poller container                                         |
+| `WORKER_POLLER_REPLICAS`             | Number of docker replicas of worker poller container                                                               |
+| `WORKER_POLLER_CPU_LIMIT`            | Limit of cpu that worker poller container can use                                                                  |
+| `WORKER_POLLER_MEMORY_LIMIT`         | Limit of memory that worker poller container can use                                                               |
+| `WORKER_POLLER_CPU_RESERVATIONS`     | Dedicated cpu resources for worker poller container                                                                |
+| `WORKER_POLLER_MEMORY_RESERVATIONS`  | Dedicated memory resources for worker poller container                                                             |
+| `WORKER_POLLER_MAX_TASKS_PER_CHILD`  | Max number of tasks a poller worker child process can execute before being recycled. `0` disables recycling        |
 | `WORKER_POLLER_MAX_MEMORY_PER_CHILD` | Maximum resident memory per poller child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling |
-| `ENABLE_WORKER_POLLER_SECRETS`      | Enable usage of secrets for poller                                         |
+| `WORKER_POLLER_TASK_TIMEOUT`         | Task timeout in seconds for poller tasks                                                                           |
+| `ENABLE_WORKER_POLLER_SECRETS`       | Enable usage of secrets for poller                                                                                 |
 
 ### Worker Sender
 
@@ -355,7 +360,8 @@ sudo docker compose up -d
 | `WORKER_DISCOVERY_MEMORY_RESERVATIONS` | Dedicated memory resources for worker discovery container                              |
 | `WORKER_DISCOVERY_MAX_TASKS_PER_CHILD` | Max number of tasks a discovery worker child process can execute before being recycled. `0` disables recycling |
 | `WORKER_DISCOVERY_MAX_MEMORY_PER_CHILD` | Maximum resident memory per discovery child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling |
-| `ENABLE_WORKER_DISCOVERY_SECRETS`      | Enable usage of SNMPv3 secrets for the discovery worker                                |
+| `WORKER_DISCOVERY_TASK_TIMEOUT`         | Task timeout in seconds for a single discovery task.                                                                  |
+| `ENABLE_WORKER_DISCOVERY_SECRETS`       | Enable usage of SNMPv3 secrets for the discovery worker                                                               |
 ///
 
 ## Worker scaling

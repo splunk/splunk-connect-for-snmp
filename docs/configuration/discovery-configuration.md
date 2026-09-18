@@ -307,7 +307,8 @@ discovery:
   subnetDiscoveryConcurrency: 10
 
 worker:
-  taskTimeout: 2400
+  discovery:
+    taskTimeout: 2400
   udpConnectionTimeout: 3
   udpConnectionRetries: 5
 ```
@@ -315,8 +316,8 @@ worker:
 
 /// tab | docker compose
 ```
+WORKER_DISCOVERY_TASK_TIMEOUT=2400
 SUBNET_DISCOVERY_CONCURRENCY=10
-CELERY_TASK_TIMEOUT=2400
 UDP_CONNECTION_TIMEOUT=3
 UDP_CONNECTION_RETRIES=5
 ```
@@ -325,7 +326,7 @@ UDP_CONNECTION_RETRIES=5
 | Field | microk8s | docker compose | Description | Default |
 |-------|----------|----------------|-------------|---------|
 | Subnet discovery concurrency | `discovery.subnetDiscoveryConcurrency` | `SUBNET_DISCOVERY_CONCURRENCY` | Number of subnet IPs checked concurrently inside one discovery task. This controls per-task subnet discovery, not Celery worker task concurrency. | `10` |
-| Task timeout | `worker.taskTimeout` | `CELERY_TASK_TIMEOUT` | Maximum execution time in seconds for a single discovery task. Increase for large subnets. Make sure it is large enough to accommodate SNMP checks across all IPs. | `2400` |
+| Task timeout | `worker.discovery.taskTimeout` | `WORKER_DISCOVERY_TASK_TIMEOUT` | Maximum execution time in seconds for a single discovery task. Increase for large subnets. Make sure it is large enough to accommodate the `nmap` scan and the SNMP checks across all IPs. | `2400` |
 | UDP timeout | `worker.udpConnectionTimeout` | `UDP_CONNECTION_TIMEOUT` | Timeout in seconds for each SNMP request. Increase for high-latency networks. | `3` |
 | UDP retries | `worker.udpConnectionRetries` | `UDP_CONNECTION_RETRIES` | Number of times a request is retried if there is no response. | `5` |
 

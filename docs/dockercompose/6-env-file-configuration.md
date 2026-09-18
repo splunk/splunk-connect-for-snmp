@@ -128,7 +128,6 @@ These settings control Docker's local retention when bounded `json-file` logging
 | `UDP_CONNECTION_RETRIES`                | Number of SNMP UDP retries per operation (default: `5`)                                                                                                 |
 | `MAX_OID_TO_PROCESS`                    | Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error "TooBig" is visible in logs, decrease the number of MAX_OID_TO_PROCESS   |
 | `MAX_REPETITIONS`                       | The amount of requested next oids in response for each of varbinds in one request sent                                                                 |
-| `CELERY_TASK_TIMEOUT`                   | Timeout in seconds for a single Celery task (default: `2400`)                                                                                           |
 
 #### Worker Poller
 | Variable                            | Description                                                                |
@@ -142,6 +141,7 @@ These settings control Docker's local retention when bounded `json-file` logging
 | `WORKER_POLLER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker poller container                     |
 | `WORKER_POLLER_MAX_TASKS_PER_CHILD` | Max number of tasks a poller worker child process can execute before being recycled. `0` (default) disables recycling. Useful to mitigate memory growth in long-running workers |
 | `WORKER_POLLER_MAX_MEMORY_PER_CHILD` | Maximum resident memory per poller child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling |
+| `WORKER_POLLER_TASK_TIMEOUT`        | Task timeout in seconds for poller tasks (default: `2400`) |
 | `ENABLE_WORKER_POLLER_SECRETS`      | Enable usage of secrets for poller                                         |
 
 #### Worker Sender
@@ -187,6 +187,7 @@ These settings control Docker's local retention when bounded `json-file` logging
 | `WORKER_DISCOVERY_MEMORY_RESERVATIONS`    | Dedicated memory resources for worker discovery container                           |
 | `WORKER_DISCOVERY_MAX_TASKS_PER_CHILD`    | Max number of tasks a discovery worker child process can execute before being recycled. `0` (default) disables recycling |
 | `WORKER_DISCOVERY_MAX_MEMORY_PER_CHILD`   | Maximum resident memory per discovery child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling |
+| `WORKER_DISCOVERY_TASK_TIMEOUT`           | Task timeout in seconds for a single discovery task.  (default: `2400`) |
 | `ENABLE_WORKER_DISCOVERY_SECRETS`         | Enable usage of SNMPv3 secrets for the discovery worker                             |
 
 ### Inventory

@@ -51,14 +51,6 @@ spec:
               value: {{ .Values.deploymentUser | default "sc4snmp" | quote }}
             - name: DISCOVERY_FOLDER_PATH
               value: /app/discovery
-            - name: CELERY_TASK_TIMEOUT
-              value: {{ .Values.worker.taskTimeout | quote}}
-            - name: IPv6_ENABLED
-              {{- if .Values.discovery.ipv6Enabled}}
-              value: "true"
-              {{ else }}
-              value: "false"
-              {{- end }}
           volumeMounts:
             - name: config
               mountPath: "/app/config"

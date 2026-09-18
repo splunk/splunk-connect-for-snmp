@@ -31,6 +31,7 @@ worker:
     #changed replicaCount from 4 to 1
     concurrency: 4
     prefetch: 1
+    taskTimeout: 2400
   trap:
     autoscaling:
       enabled: false
@@ -42,6 +43,8 @@ worker:
     replicaCount: 1
     concurrency: 4
     prefetch: 60
+  discovery:
+    taskTimeout: 2400
   profilesReloadDelay: 1
   # replicas: Number of replicas for worker container should two or more
   # udpConnectionTimeout: timeout in seconds for SNMP operations

@@ -459,6 +459,9 @@
               "type": "integer",
               "minimum": 0
             },
+            "taskTimeout": {
+              "type": "integer"
+            },
             "autoscaling": {
               "type": "object",
               "additionalProperties": false,
@@ -696,6 +699,9 @@
             "maxMemoryPerChild": {
               "type": "integer"
             },
+            "taskTimeout": {
+              "type": "integer"
+            },
             "autoscaling": {
               "type": "object",
               "additionalProperties": false,
@@ -791,9 +797,6 @@
               "type": "integer"
             }
           }
-        },
-        "taskTimeout": {
-          "type": "integer"
         },
         "walkRetryMaxInterval": {
           "type": "integer"

@@ -28,19 +28,20 @@ If the subnet being scanned has a large IP range (e.g., `/22`, `/21`, or bigger)
 ```
 
 /// tab | microk8s
-Increase the task timeout value using the `taskTimeout` field under the `worker` section in your `values.yaml`:
+Increase the task timeout value using the `taskTimeout` field under the `worker.discovery` section in your `values.yaml`:
 
 ```yaml
 worker:
-  taskTimeout: 3600  # Increase based on expected duration
+  discovery:
+    taskTimeout: 3600  # Increase based on expected duration
 ```
 ///
 
 /// tab | docker compose
-Increase the task timeout value by setting `CELERY_TASK_TIMEOUT` in your `.env` file:
+Increase the task timeout value by setting `WORKER_DISCOVERY_TASK_TIMEOUT` in your `.env` file:
 
 ```
-CELERY_TASK_TIMEOUT=3600
+WORKER_DISCOVERY_TASK_TIMEOUT=3600
 ```
 ///
 
