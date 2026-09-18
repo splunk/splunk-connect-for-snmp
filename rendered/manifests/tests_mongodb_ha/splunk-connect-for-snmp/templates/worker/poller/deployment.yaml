@@ -122,10 +122,10 @@ spec:
               value: "0"
             - name: IPv6_ENABLED
               value: "false"
-            - name: USER
-              value: "sc4snmp"
             - name: CELERY_TASK_TIMEOUT
               value: "2400"
+            - name: USER
+              value: "sc4snmp"
           volumeMounts:
             - name: config
               mountPath: "/app/config"
