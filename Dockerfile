@@ -1,4 +1,4 @@
-FROM python:3.10-alpine AS base
+FROM python:3.13-alpine AS base
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
@@ -16,7 +16,7 @@ COPY poetry.lock pyproject.toml /app/
 COPY splunk_connect_for_snmp /app/splunk_connect_for_snmp
 WORKDIR /app
 RUN poetry config virtualenvs.in-project true ;\
-    poetry install --no-root --sync --without dev ;\
+    poetry sync --no-root --without dev ;\
     poetry build ;\
     . /app/.venv/bin/activate ;\
     pip install --no-deps dist/*.whl

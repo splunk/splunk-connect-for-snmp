@@ -81,7 +81,7 @@ def load():
                 )
         return 0
     except Exception as e:
-        logger.error("Error occured while creating the task : {e}")
+        logger.error(f"Error occurred while creating the task: {e}")
         raise
 
 

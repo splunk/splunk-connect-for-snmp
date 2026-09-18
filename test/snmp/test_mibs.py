@@ -437,7 +437,7 @@ class TestMibProcessing(TestCase):
         poller = Poller.__new__(Poller)
         poller.builder = Mock()
         loaded = poller.load_mibs(["a", "b", "c"])
-        calls = poller.builder.loadModules.call_args_list
+        calls = poller.builder.load_modules.call_args_list
 
         self.assertEqual({"a", "b", "c"}, loaded)
         self.assertEqual("a", calls[0][0][0])
@@ -447,7 +447,7 @@ class TestMibProcessing(TestCase):
     def test_load_mib_returns_only_successful(self):
         poller = Poller.__new__(Poller)
         poller.builder = Mock()
-        poller.builder.loadModules.side_effect = [
+        poller.builder.load_modules.side_effect = [
             None,
             error.MibLoadError(),
             None,
@@ -488,7 +488,7 @@ class TestMibProcessing(TestCase):
     def test_exception_during_loading(self):
         poller = Poller.__new__(Poller)
         poller.builder = Mock()
-        poller.builder.loadModules.side_effect = error.MibLoadError()
+        poller.builder.load_modules.side_effect = error.MibLoadError()
         loaded = poller.load_mibs(["a"])
         self.assertEqual(set(), loaded)
 

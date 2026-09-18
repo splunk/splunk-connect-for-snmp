@@ -14,6 +14,7 @@
 #    limitations under the License.
 #   ########################################################################
 import logging
+import os
 import time
 from datetime import datetime, timezone
 
@@ -45,6 +46,8 @@ from integration_tests.utils.splunk_test_utils import (
 )
 
 logger = logging.getLogger(__name__)
+SPLUNK_RESULT_RETRIES = int(os.getenv("POLLER_SPLUNK_RESULT_RETRIES", "5"))
+SPLUNK_RESULT_RETRY_WAIT = int(os.getenv("POLLER_SPLUNK_RESULT_RETRY_WAIT", "30"))
 HVR_POLLER_OID = "1.3.6.1.4.1.42705.2.1.0"
 HVR_POLLER_FIELD = "HVR-MIB.hvrPollerStatus.value"
 HVR_POLLER_VALUE = "mib-index-refresh-poller"
@@ -134,14 +137,18 @@ class TestSanity:
         search_string = (
             """search index="netops" sourcetype="sc4snmp:event" earliest=-5m"""
         )
-        result_count, events_count = splunk_single_search(setup_splunk, search_string)
+        result_count, events_count = run_retried_single_search(
+            setup_splunk, search_string
+        )
         assert result_count > 0
         assert events_count > 0
 
     def test_poller_integration_metric(self, setup_splunk):
         logger.info("Integration test for poller metric")
         search_string = "| mcatalog values(metric_name) where index=netmetrics AND metric_name=sc4snmp.* earliest=-5m"
-        result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string
+        )
 
         assert result_count > 0
         assert metric_count > 0
@@ -151,7 +158,9 @@ class TestSanity:
         search_string = """| mpreview index=netmetrics | search sourcetype="sc4snmp:metric"
         | search "metric_name:sc4snmp.IF-MIB*if"
         | search "ifDescr" AND "ifAdminStatus" AND "ifOperStatus" AND "ifPhysAddress" AND "ifIndex" """
-        result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string
+        )
 
         assert result_count > 0
         assert metric_count > 0
@@ -160,7 +169,9 @@ class TestSanity:
         logger.info("Integration test for sc4snmp:event")
         search_string = """search index=netops | search "IF-MIB.ifAlias" AND "IF-MIB.ifAdminStatus"
         AND "IF-MIB.ifDescr" AND "IF-MIB.ifName" sourcetype="sc4snmp:event" """
-        result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string
+        )
         assert result_count > 0
         assert metric_count > 0
 
@@ -403,12 +414,12 @@ class TestSmartProfiles:
             """| mpreview index=netmetrics| spath profiles | search profiles=BaseIF """
         )
         search_string_baseUpTime = """| mpreview index=netmetrics| spath profiles | search profiles=BaseUpTime """
-        result_count, metric_count = splunk_single_search(
+        result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string_baseIF
         )
         assert result_count > 0
         assert metric_count > 0
-        result_count, metric_count = splunk_single_search(
+        result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string_baseUpTime
         )
         assert result_count > 0
@@ -2024,13 +2035,22 @@ class TestMisconfiguredGroups:
         assert metric_count == 0
 
 
-def run_retried_single_search(setup_splunk, search_string, retries, wait=20):
+def run_retried_single_search(
+    setup_splunk,
+    search_string,
+    retries=SPLUNK_RESULT_RETRIES,
+    wait=SPLUNK_RESULT_RETRY_WAIT,
+):
     for attempt in range(retries + 1):
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
         if result_count or metric_count:
             return result_count, metric_count
-        logger.info(f"Attempt {attempt+1}/{retries}: no results. Waiting {wait}s...")
-        time.sleep(wait)
+        if attempt < retries:
+            logger.info(
+                f"Attempt {attempt + 1}/{retries + 1}: no results. "
+                f"Waiting {wait}s..."
+            )
+            time.sleep(wait)
     return 0, 0
 
 

@@ -10,13 +10,13 @@ from pysnmp.smi.rfc1902 import ObjectIdentity
 class TestTasks(TestCase):
     def setUp(self):
         super().setUp()
-        patcher = patch("pysnmp.smi.rfc1902.ObjectIdentity.resolveWithMib")
+        patcher = patch("pysnmp.smi.rfc1902.ObjectIdentity.resolve_with_mib")
         self.addCleanup(patcher.stop)
         self.mock_identity_resolve = patcher.start()
         resolved_identity = ObjectIdentity("1.3.6.1.2.1.1.1.0")
         mib_node = MagicMock()
         mib_node.getSyntax.return_value.clone.return_value = MagicMock()
-        resolved_identity.getMibNode = MagicMock(return_value=mib_node)
+        resolved_identity.get_mib_node = MagicMock(return_value=mib_node)
         self.mock_identity_resolve.return_value = resolved_identity
 
     @patch("splunk_connect_for_snmp.snmp.manager.get_inventory")
@@ -130,7 +130,7 @@ class TestTasks(TestCase):
             result,
         )
 
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("time.time")
@@ -170,7 +170,7 @@ class TestTasks(TestCase):
             result,
         )
 
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("time.time")
@@ -214,7 +214,7 @@ class TestTasks(TestCase):
             result,
         )
 
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
@@ -270,7 +270,7 @@ class TestTasks(TestCase):
         "splunk_connect_for_snmp.snmp.tasks.INCLUDE_UNRESOLVED_TRAP_VARBINDS",
         True,
     )
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
@@ -324,7 +324,7 @@ class TestTasks(TestCase):
         "splunk_connect_for_snmp.snmp.tasks.INCLUDE_UNRESOLVED_TRAP_VARBINDS",
         True,
     )
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
@@ -369,7 +369,7 @@ class TestTasks(TestCase):
         "splunk_connect_for_snmp.snmp.tasks.INCLUDE_UNRESOLVED_TRAP_VARBINDS",
         False,
     )
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
@@ -412,7 +412,7 @@ class TestTasks(TestCase):
         "splunk_connect_for_snmp.snmp.tasks.INCLUDE_UNRESOLVED_TRAP_VARBINDS",
         False,
     )
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
@@ -434,7 +434,7 @@ class TestTasks(TestCase):
         m_time.return_value = 1640692955.365186
         numeric_oid = "1.3.6.1.4.1.9.9.513.1.1.1.1.1.6.0"
         mock_oid = MagicMock()
-        mock_oid.getOid.return_value = numeric_oid
+        mock_oid.get_oid.return_value = numeric_oid
         mock_oid.prettyPrint.return_value = "CISCO-LWAPP-AP-MIB::cLApUpTime"
         mock_varbind = (mock_oid, MagicMock(prettyPrint=MagicMock(return_value="17")))
         m_resolved.return_value = mock_varbind
@@ -471,7 +471,7 @@ class TestTasks(TestCase):
         "splunk_connect_for_snmp.snmp.tasks.INCLUDE_UNRESOLVED_TRAP_VARBINDS",
         False,
     )
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
@@ -493,12 +493,12 @@ class TestTasks(TestCase):
         m_time.return_value = 1640692955.365186
         numeric_oid = "1.3.6.1.4.1.9.9.513.1.1.1.1.1.6.0"
         pseudo_oid = MagicMock()
-        pseudo_oid.getOid.return_value = numeric_oid
+        pseudo_oid.get_oid.return_value = numeric_oid
         pseudo_oid.prettyPrint.return_value = (
             "SNMPv2-SMI::enterprises.9.9.513.1.1.1.1.1.6.0"
         )
         good_oid = MagicMock()
-        good_oid.getOid.return_value = numeric_oid
+        good_oid.get_oid.return_value = numeric_oid
         good_oid.prettyPrint.return_value = "CISCO-LWAPP-AP-MIB::cLApUpTime"
         pseudo_varbind = (
             pseudo_oid,
@@ -536,7 +536,7 @@ class TestTasks(TestCase):
         "splunk_connect_for_snmp.snmp.tasks.INCLUDE_UNRESOLVED_TRAP_VARBINDS",
         False,
     )
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
@@ -558,12 +558,12 @@ class TestTasks(TestCase):
         m_time.return_value = 1640692955.365186
         numeric_oid = "1.3.6.1.4.1.9.9.513.1.1.1.1.1.6.0"
         pseudo_oid = MagicMock()
-        pseudo_oid.getOid.return_value = numeric_oid
+        pseudo_oid.get_oid.return_value = numeric_oid
         pseudo_oid.prettyPrint.return_value = (
             "SNMPv2-SMI::enterprises.9.9.513.1.1.1.1.1.6.0"
         )
         good_oid = MagicMock()
-        good_oid.getOid.return_value = numeric_oid
+        good_oid.get_oid.return_value = numeric_oid
         good_oid.prettyPrint.return_value = "CISCO-LWAPP-AP-MIB::cLApUpTime"
         pseudo_varbind = (
             pseudo_oid,
@@ -602,7 +602,7 @@ class TestTasks(TestCase):
         "splunk_connect_for_snmp.snmp.tasks.INCLUDE_UNRESOLVED_TRAP_VARBINDS",
         True,
     )
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
@@ -624,7 +624,7 @@ class TestTasks(TestCase):
         m_time.return_value = 1640692955.365186
         numeric_oid = "1.3.6.1.4.1.9.9.513.1.1.1.1.1.6.0"
         mock_oid = MagicMock()
-        mock_oid.getOid.return_value = numeric_oid
+        mock_oid.get_oid.return_value = numeric_oid
         mock_oid.prettyPrint.return_value = numeric_oid
         mock_varbind = (mock_oid, MagicMock(prettyPrint=MagicMock(return_value="17")))
         m_resolved.side_effect = SmiError()
@@ -647,7 +647,7 @@ class TestTasks(TestCase):
         self.assertIn(f"unresolved::{numeric_oid}", unresolved)
         self.assertEqual(17, unresolved[f"unresolved::{numeric_oid}"]["value"])
 
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
@@ -689,7 +689,7 @@ class TestTasks(TestCase):
         self.assertNotIn("CISCO-LWAPP-AP-MIB", trap.already_loaded_mibs)
         self.assertIn("CISCO-LWAPP-AP-MIB", trap.already_attempted_mibs)
 
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
@@ -726,7 +726,7 @@ class TestTasks(TestCase):
         self.assertEqual(2, m_resolved.call_count)
         m_load_mib.assert_not_called()
 
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
@@ -764,7 +764,7 @@ class TestTasks(TestCase):
         self.assertIn("CISCO-LWAPP-AP-MIB", loaded)
         self.assertEqual(1, m_resolved.call_count)
 
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     def test_resolve_trap_varbind_uses_node_location(self, m_resolved, m_mongo_client):
         from splunk_connect_for_snmp.snmp.tasks import _resolve_trap_varbind
 
@@ -782,7 +782,7 @@ class TestTasks(TestCase):
 
     @patch("splunk_connect_for_snmp.snmp.tasks.RESOLVE_TRAP_ADDRESS", "true")
     @patch("splunk_connect_for_snmp.snmp.tasks.resolve_address")
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("time.time")
@@ -842,11 +842,11 @@ class TestTrapVarbindResolveValue(TestCase):
 class TestTrapVarbindCoercion(TestCase):
     def setUp(self):
         super().setUp()
-        patcher = patch("pysnmp.smi.rfc1902.ObjectIdentity.resolveWithMib")
+        patcher = patch("pysnmp.smi.rfc1902.ObjectIdentity.resolve_with_mib")
         self.addCleanup(patcher.stop)
         self.mock_identity_resolve = patcher.start()
         resolved_identity = MagicMock()
-        resolved_identity.getMibNode.return_value = MagicMock()
+        resolved_identity.get_mib_node.return_value = MagicMock()
         self.mock_identity_resolve.return_value = resolved_identity
 
     def test_coerce_wraps_plain_integer_for_notification_nodes(self):
@@ -903,12 +903,12 @@ class TestTrapVarbindCoercion(TestCase):
         )
 
         resolved_identity = MagicMock()
-        m_identity_cls.return_value.resolveWithMib.return_value = resolved_identity
+        m_identity_cls.return_value.resolve_with_mib.return_value = resolved_identity
         mib_node = MagicMock()
         mib_node.__class__.__name__ = "NotificationType"
         mib_node.getSyntax.side_effect = TypeError("notification")
-        resolved_identity.getMibNode.return_value = mib_node
-        m_object_type_cls.return_value.resolveWithMib.return_value = "object_type"
+        resolved_identity.get_mib_node.return_value = mib_node
+        m_object_type_cls.return_value.resolve_with_mib.return_value = "object_type"
         mib_view = MagicMock()
 
         result = _object_type_from_resolved_identity(

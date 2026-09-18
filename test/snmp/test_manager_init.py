@@ -17,7 +17,10 @@ class TestMibMapStartupRefresh(TestCase):
     @patch("pymongo.MongoClient", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.ProfilesManager", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.SnmpEngine", MagicMock())
-    @patch("splunk_connect_for_snmp.snmp.manager.compiler.addMibCompiler", MagicMock())
+    @patch("splunk_connect_for_snmp.snmp.manager.builder.MibBuilder", MagicMock())
+    @patch(
+        "splunk_connect_for_snmp.snmp.manager.compiler.add_mib_compiler", MagicMock()
+    )
     @patch("splunk_connect_for_snmp.snmp.manager.view.MibViewController", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.MongoCache", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.CachedLimiterSession")
@@ -40,7 +43,10 @@ class TestMibMapStartupRefresh(TestCase):
     @patch("pymongo.MongoClient", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.ProfilesManager", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.SnmpEngine", MagicMock())
-    @patch("splunk_connect_for_snmp.snmp.manager.compiler.addMibCompiler", MagicMock())
+    @patch("splunk_connect_for_snmp.snmp.manager.builder.MibBuilder", MagicMock())
+    @patch(
+        "splunk_connect_for_snmp.snmp.manager.compiler.add_mib_compiler", MagicMock()
+    )
     @patch("splunk_connect_for_snmp.snmp.manager.view.MibViewController", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.Session")
     def test_no_mongo_startup_fetch_omits_refresh(self, mock_session_cls):

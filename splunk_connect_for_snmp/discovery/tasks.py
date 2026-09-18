@@ -8,7 +8,7 @@ logger = get_task_logger(__name__)
 
 
 @shared_task(bind=True, base=Discovery)
-def discovery(self, **kwargs) -> dict:
+def discovery(self: Discovery, **kwargs) -> dict:
     discovery_record = DiscoveryRecord(**kwargs)
     result = self.do_work(discovery_record)
     return {"snmp_device_details": result}
