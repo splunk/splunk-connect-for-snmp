@@ -3362,6 +3362,16 @@ Below are the most common options:</p>
 <td></td>
 </tr>
 <tr>
+<td><code>poller.taskTimeout</code></td>
+<td>Task timeout in seconds for poller tasks (usually necessary when the walk process takes a long time)</td>
+<td><code>2400</code></td>
+</tr>
+<tr>
+<td><code>discovery.taskTimeout</code></td>
+<td>Task timeout in seconds for a single discovery task. Increase for large subnets to accommodate the nmap scan and SNMP checks</td>
+<td><code>2400</code></td>
+</tr>
+<tr>
 <td><code>trap.resolveAddress.cacheSize</code></td>
 <td>Maximum number of records in cache</td>
 <td><code>500</code></td>
@@ -3405,11 +3415,6 @@ Below are the most common options:</p>
 <td><code>xProbe.periodSeconds</code></td>
 <td>Frequency of performing the probe in seconds</td>
 <td>livenessProbe - <code>10</code>, readinessProbe - <code>5</code></td>
-</tr>
-<tr>
-<td><code>taskTimeout</code></td>
-<td>Task timeout in seconds when process takes a long time</td>
-<td><code>2400</code></td>
 </tr>
 <tr>
 <td><code>walkRetryMaxInterval</code></td>

@@ -3360,14 +3360,15 @@
 <span class="w">  </span><span class="nt">subnetDiscoveryConcurrency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
 
 <span class="nt">worker</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">taskTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2400</span>
+<span class="w">  </span><span class="nt">discovery</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">taskTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2400</span>
 <span class="w">  </span><span class="nt">udpConnectionTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
 <span class="w">  </span><span class="nt">udpConnectionRetries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>SUBNET_DISCOVERY_CONCURRENCY=10
-CELERY_TASK_TIMEOUT=2400
+<div class="highlight"><pre><span></span><code>WORKER_DISCOVERY_TASK_TIMEOUT=2400
+SUBNET_DISCOVERY_CONCURRENCY=10
 UDP_CONNECTION_TIMEOUT=3
 UDP_CONNECTION_RETRIES=5
 </code></pre></div>
@@ -3394,9 +3395,9 @@ UDP_CONNECTION_RETRIES=5
 </tr>
 <tr>
 <td>Task timeout</td>
-<td><code>worker.taskTimeout</code></td>
-<td><code>CELERY_TASK_TIMEOUT</code></td>
-<td>Maximum execution time in seconds for a single discovery task. Increase for large subnets. Make sure it is large enough to accommodate SNMP checks across all IPs.</td>
+<td><code>worker.discovery.taskTimeout</code></td>
+<td><code>WORKER_DISCOVERY_TASK_TIMEOUT</code></td>
+<td>Maximum execution time in seconds for a single discovery task. Increase for large subnets. Make sure it is large enough to accommodate the <code>nmap</code> scan and the SNMP checks across all IPs.</td>
 <td><code>2400</code></td>
 </tr>
 <tr>

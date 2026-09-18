@@ -3473,10 +3473,6 @@
 <td><code>MAX_REPETITIONS</code></td>
 <td>The amount of requested next oids in response for each of varbinds in one request sent</td>
 </tr>
-<tr>
-<td><code>CELERY_TASK_TIMEOUT</code></td>
-<td>Timeout in seconds for a single Celery task (default: <code>2400</code>)</td>
-</tr>
 </tbody>
 </table>
 <h4 id="worker-poller">Worker Poller<a class="headerlink" href="#worker-poller" title="Permanent link">&para;</a></h4>
@@ -3523,6 +3519,10 @@
 <tr>
 <td><code>WORKER_POLLER_MAX_MEMORY_PER_CHILD</code></td>
 <td>Maximum resident memory per poller child in Celery kilobytes (1 unit = 1,024 bytes). <code>0</code> disables memory recycling</td>
+</tr>
+<tr>
+<td><code>WORKER_POLLER_TASK_TIMEOUT</code></td>
+<td>Task timeout in seconds for poller tasks (default: <code>2400</code>)</td>
 </tr>
 <tr>
 <td><code>ENABLE_WORKER_POLLER_SECRETS</code></td>
@@ -3688,6 +3688,10 @@
 <tr>
 <td><code>WORKER_DISCOVERY_MAX_MEMORY_PER_CHILD</code></td>
 <td>Maximum resident memory per discovery child in Celery kilobytes (1 unit = 1,024 bytes). <code>0</code> disables memory recycling</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_TASK_TIMEOUT</code></td>
+<td>Task timeout in seconds for a single discovery task.  (default: <code>2400</code>)</td>
 </tr>
 <tr>
 <td><code>ENABLE_WORKER_DISCOVERY_SECRETS</code></td>
