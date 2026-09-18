@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.60">
+      <meta name="generator" content="zensical-0.0.62">
     
     
       
@@ -795,6 +795,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#define-subnet-discovery-concurrency" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Define subnet discovery concurrency
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#define-discovery-path" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -856,10 +867,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configure-timeouts-and-retries" class="md-nav__link">
+  <a href="#configure-subnet-discovery-limits-timeouts-and-retries" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Configure timeouts and retries
+        Configure subnet discovery limits, timeouts, and retries
       </span>
     </span>
   </a>
@@ -2921,6 +2932,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#define-subnet-discovery-concurrency" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Define subnet discovery concurrency
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#define-discovery-path" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2982,10 +3004,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configure-timeouts-and-retries" class="md-nav__link">
+  <a href="#configure-subnet-discovery-limits-timeouts-and-retries" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Configure timeouts and retries
+        Configure subnet discovery limits, timeouts, and retries
       </span>
     </span>
   </a>
@@ -3051,6 +3073,7 @@
 <div class="highlight"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">enabled</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">subnetDiscoveryConcurrency</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">ipv6Enabled</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">discoveryPath</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
@@ -3071,6 +3094,7 @@
 <div class="highlight"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">"INFO"</span>
+<span class="w">  </span><span class="nt">subnetDiscoveryConcurrency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
 <span class="w">  </span><span class="nt">ipv6Enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">  </span><span class="nt">discoveryPath</span><span class="p">:</span><span class="w"> </span><span class="s">"/home/user/sc4snmp"</span>
 <span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span>
@@ -3106,7 +3130,7 @@
 <div class="tabbed-block">
 <p>Discovery settings are split across two files:</p>
 <ul>
-<li><strong><code>.env</code></strong> — general settings: log level, output path, SNMPv3 secrets toggle.</li>
+<li><strong><code>.env</code></strong> — general settings: log level, output path, SNMPv3 secrets toggle, and subnet discovery concurrency.</li>
 <li><strong><code>discovery-config.yaml</code></strong> — autodiscovery tasks. Set <code>DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH</code> in <code>.env</code> to the absolute path of this file.</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="nt">ipv6Enabled</span><span class="p">:</span>
@@ -3189,9 +3213,28 @@
 <p class="admonition-title">Info</p>
 <p>If <code>ipv6Enabled</code> is <code>false</code>, then the task will not be created for discovery keys with an IPv6 network address.</p>
 </div>
+<h2 id="define-subnet-discovery-concurrency">Define subnet discovery concurrency<a class="headerlink" href="#define-subnet-discovery-concurrency" title="Permanent link">&para;</a></h2>
+<p>Controls how many subnet IPs are checked concurrently inside one discovery task. Increase it to discover large subnets faster, or lower it to reduce SNMP traffic, memory usage, and load on the discovery worker.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">microk8s</label><label for="__tabbed_5_2">docker compose</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">subnetDiscoveryConcurrency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code>SUBNET_DISCOVERY_CONCURRENCY=10
+</code></pre></div>
+</div>
+</div>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>This setting is separate from <code>worker.discovery.concurrency</code> in microk8s and <code>WORKER_DISCOVERY_CONCURRENCY</code> in docker compose. Those settings control Celery worker task concurrency.</p>
+</div>
 <h2 id="define-discovery-path">Define discovery path<a class="headerlink" href="#define-discovery-path" title="Permanent link">&para;</a></h2>
 <p>Specifies the absolute path where <code>discovery_devices.csv</code> will be created. If the file is not already present, a new one will be created.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">microk8s</label><label for="__tabbed_5_2">docker compose</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">microk8s</label><label for="__tabbed_6_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
@@ -3209,7 +3252,7 @@
 <p>The path provided should have read-write permission for user and group <code>10001</code>.</p>
 </div>
 <h2 id="define-snmpv3-secrets">Define SNMPv3 secrets<a class="headerlink" href="#define-snmpv3-secrets" title="Permanent link">&para;</a></h2>
-<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">microk8s</label><label for="__tabbed_6_2">docker compose</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">microk8s</label><label for="__tabbed_7_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>The <code>usernameSecrets</code> key defines which Kubernetes Secret objects are used for SNMPv3 discovery. The value must be the name of a Secret object.</p>
@@ -3309,18 +3352,22 @@
 <span class="w">    </span><span class="nt">patterns</span><span class="p">:</span><span class="w"> </span><span class="s">"*Linux*"</span>
 <span class="w">    </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="s">"linux-group"</span>
 </code></pre></div>
-<h2 id="configure-timeouts-and-retries">Configure timeouts and retries<a class="headerlink" href="#configure-timeouts-and-retries" title="Permanent link">&para;</a></h2>
-<div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">microk8s</label><label for="__tabbed_7_2">docker compose</label></div>
+<h2 id="configure-subnet-discovery-limits-timeouts-and-retries">Configure subnet discovery limits, timeouts, and retries<a class="headerlink" href="#configure-subnet-discovery-limits-timeouts-and-retries" title="Permanent link">&para;</a></h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="8:2"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">microk8s</label><label for="__tabbed_8_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">subnetDiscoveryConcurrency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+
+<span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">taskTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2400</span>
 <span class="w">  </span><span class="nt">udpConnectionTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
 <span class="w">  </span><span class="nt">udpConnectionRetries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>CELERY_TASK_TIMEOUT=2400
+<div class="highlight"><pre><span></span><code>SUBNET_DISCOVERY_CONCURRENCY=10
+CELERY_TASK_TIMEOUT=2400
 UDP_CONNECTION_TIMEOUT=3
 UDP_CONNECTION_RETRIES=5
 </code></pre></div>
@@ -3339,10 +3386,17 @@ UDP_CONNECTION_RETRIES=5
 </thead>
 <tbody>
 <tr>
+<td>Subnet discovery concurrency</td>
+<td><code>discovery.subnetDiscoveryConcurrency</code></td>
+<td><code>SUBNET_DISCOVERY_CONCURRENCY</code></td>
+<td>Number of subnet IPs checked concurrently inside one discovery task. This controls per-task subnet discovery, not Celery worker task concurrency.</td>
+<td><code>10</code></td>
+</tr>
+<tr>
 <td>Task timeout</td>
 <td><code>worker.taskTimeout</code></td>
 <td><code>CELERY_TASK_TIMEOUT</code></td>
-<td>Maximum execution time in seconds for a single discovery task. Increase for large subnets. Make sure it is large enough to accommodate the <code>nmap</code> scan and the SNMP checks across all IPs.</td>
+<td>Maximum execution time in seconds for a single discovery task. Increase for large subnets. Make sure it is large enough to accommodate SNMP checks across all IPs.</td>
 <td><code>2400</code></td>
 </tr>
 <tr>
@@ -3418,10 +3472,14 @@ UDP_CONNECTION_RETRIES=5
     
       
       
-      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"redirect":null,"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.88ee1349.min.js"></script>
+      <script src="../../assets/javascripts/bundle.8dcc8e9c.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

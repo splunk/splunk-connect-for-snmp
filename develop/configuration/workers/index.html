@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.60">
+      <meta name="generator" content="zensical-0.0.62">
     
     
       
@@ -3579,6 +3579,7 @@ WORKER_TRAP_MAX_MEMORY_PER_CHILD=0
 # Worker Discovery
 WORKER_DISCOVERY_CONCURRENCY=4
 PREFETCH_DISCOVERY_COUNT=30
+SUBNET_DISCOVERY_CONCURRENCY=10
 WORKER_DISCOVERY_REPLICAS=1
 WORKER_DISCOVERY_CPU_LIMIT=1
 WORKER_DISCOVERY_MEMORY_LIMIT=500M
@@ -3826,6 +3827,10 @@ ENABLE_WORKER_DISCOVERY_SECRETS=false
 <td>How many tasks are consumed from the queue at once in the discovery worker container</td>
 </tr>
 <tr>
+<td><code>SUBNET_DISCOVERY_CONCURRENCY</code></td>
+<td>Number of subnet IPs checked concurrently inside one discovery task. This is separate from <code>WORKER_DISCOVERY_CONCURRENCY</code></td>
+</tr>
+<tr>
 <td><code>WORKER_DISCOVERY_REPLICAS</code></td>
 <td>Number of docker replicas of worker discovery container</td>
 </tr>
@@ -4054,10 +4059,14 @@ TTL_DNS_CACHE_TRAPS=1800
     
       
       
-      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"redirect":null,"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.88ee1349.min.js"></script>
+      <script src="../../assets/javascripts/bundle.8dcc8e9c.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       
