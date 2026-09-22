@@ -159,13 +159,12 @@ async def test_trap_v1(request, setup_splunk):
         varbind2,
     )
 
-    # wait for the message to be processed
-    await asyncio.sleep(15)
-
     search_query = """search index="netops" sourcetype="sc4snmp:traps" earliest=-1m
                      | head 1"""
 
-    result_count, events_count = splunk_single_search(setup_splunk, search_query)
+    result_count, events_count = wait_for_splunk_search(
+        setup_splunk, search_query, "test_trap_v1 trap indexed"
+    )
     assert result_count == 1
 
 
@@ -395,13 +394,12 @@ async def test_trap_v3(request, setup_splunk):
     varbind1 = ("1.3.6.1.2.1.1.4.0", OctetString("test_trap_v3"))
     await send_v3_trap(trap_external_ip, 162, "1.3.6.1.2.1.1.0", varbind1)
 
-    # wait for the message to be processed
-    await asyncio.sleep(5)
-
     search_query = (
         """search index=netops "SNMPv2-MIB.sysContact.value"="test_trap_v3"  """
     )
 
-    result_count, events_count = splunk_single_search(setup_splunk, search_query)
+    result_count, events_count = wait_for_splunk_search(
+        setup_splunk, search_query, "test_trap_v3 trap indexed"
+    )
 
     assert result_count == 1
