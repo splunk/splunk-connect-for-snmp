@@ -616,7 +616,7 @@ def setup_small_walk(request):
         update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,"])
         upgrade_docker_compose()
 
-    time.sleep(60)
+    time.sleep(30)
 
     yield
     if deployment == "microk8s":
@@ -636,7 +636,7 @@ def setup_small_walk(request):
 @pytest.mark.part2
 class TestSmallWalk:
     def test_check_if_walk_scope_was_smaller(self, setup_splunk):
-        time.sleep(40)
+        time.sleep(20)
         search_string = (
             """| mpreview index=netmetrics earliest=-20s | search "TCP-MIB" """
         )
@@ -726,7 +726,7 @@ def setup_partial_walk(request):
         upgrade_env_compose("ENABLE_FULL_WALK", "false")
         update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,,f,"])
         upgrade_docker_compose()
-    time.sleep(60)
+    time.sleep(30)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
@@ -744,7 +744,7 @@ def setup_partial_walk(request):
 @pytest.mark.part2
 class TestPartialWalk:
     def test_check_if_partial_walk_is_done(self, setup_splunk):
-        time.sleep(40)
+        time.sleep(20)
         search_string = (
             """| mpreview index=netmetrics earliest=-20s | search "TCP-MIB" """
         )
