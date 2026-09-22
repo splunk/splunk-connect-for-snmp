@@ -607,16 +607,24 @@ def setup_small_walk(request):
     if deployment == "microk8s":
         update_profiles_microk8s(profile)
         update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,20,walk1,f,t"], "inventory2.yaml"
+        )
+        upgrade_helm_microk8s(["inventory2.yaml", "profiles.yaml"])
+        time.sleep(30)
+        update_file_microk8s(
             [f"{trap_external_ip},,2c,public,,,20,walk1,f,"], "inventory2.yaml"
         )
         upgrade_helm_microk8s(["inventory2.yaml", "profiles.yaml"])
     else:
         update_profiles_compose(profile)
         upgrade_env_compose("ENABLE_FULL_WALK", "false")
+        update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,t"])
+        upgrade_docker_compose()
+        time.sleep(30)
         update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,"])
         upgrade_docker_compose()
 
-    time.sleep(60)
+    time.sleep(30)
 
     yield
     if deployment == "microk8s":
@@ -636,7 +644,7 @@ def setup_small_walk(request):
 @pytest.mark.part2
 class TestSmallWalk:
     def test_check_if_walk_scope_was_smaller(self, setup_splunk):
-        time.sleep(40)
+        time.sleep(20)
         search_string = (
             """| mpreview index=netmetrics earliest=-20s | search "TCP-MIB" """
         )
@@ -719,14 +727,22 @@ def setup_partial_walk(request):
 
     if deployment == "microk8s":
         update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,20,,f,t"], "inventory2.yaml"
+        )
+        upgrade_helm_microk8s(["inventory2.yaml", "profiles.yaml"])
+        time.sleep(30)
+        update_file_microk8s(
             [f"{trap_external_ip},,2c,public,,,20,,f,"], "inventory2.yaml"
         )
         upgrade_helm_microk8s(["inventory2.yaml", "profiles.yaml"])
     else:
         upgrade_env_compose("ENABLE_FULL_WALK", "false")
+        update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,,f,t"])
+        upgrade_docker_compose()
+        time.sleep(30)
         update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,,f,"])
         upgrade_docker_compose()
-    time.sleep(60)
+    time.sleep(30)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
@@ -744,7 +760,7 @@ def setup_partial_walk(request):
 @pytest.mark.part2
 class TestPartialWalk:
     def test_check_if_partial_walk_is_done(self, setup_splunk):
-        time.sleep(40)
+        time.sleep(20)
         search_string = (
             """| mpreview index=netmetrics earliest=-20s | search "TCP-MIB" """
         )

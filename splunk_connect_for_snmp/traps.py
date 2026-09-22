@@ -411,13 +411,17 @@ def main():
 
             auth_protocol = get_secret_value(location, "authProtocol", required=False)
             logger.debug(f"authProtocol: {auth_protocol}")
-            auth_protocol = AuthProtocolMap.get(auth_protocol.upper(), "NONE")
+            auth_protocol = AuthProtocolMap.get(
+                auth_protocol.upper(), AuthProtocolMap["NONE"]
+            )
 
             priv_protocol = get_secret_value(
                 location, "privProtocol", required=False, default="NONE"
             )
             logger.debug(f"privProtocol: {priv_protocol}")
-            priv_protocol = PrivProtocolMap.get(priv_protocol.upper(), "NONE")
+            priv_protocol = PrivProtocolMap.get(
+                priv_protocol.upper(), PrivProtocolMap["NONE"]
+            )
 
             v3_user_configs.append(
                 {
