@@ -19,6 +19,7 @@ from contextlib import suppress
 from pyasn1.codec.ber import decoder
 from pyasn1.error import PyAsn1Error
 from pyasn1.type import univ
+from pysnmp.proto import api
 from pysnmp.proto.rfc1902 import OctetString
 
 from splunk_connect_for_snmp.common.common import (
@@ -131,13 +132,9 @@ def decode_security_context(
     Sometimes (for example in ERICSSON devices) the engineID is the only place where device IP is stored.
     """
     try:
-        decoded_message, _ = decoder.decode(hexstr, asn1Spec=univ.Sequence())
-        msg_version = decoded_message.getComponentByPosition(0)
-        if msg_version._value != 3:
-            logger.warning(
-                "SNMP message version is not 3, skipping security context decoding."
-            )
+        if api.decodeMessageVersion(hexstr) != 3:
             return None, None
+        decoded_message, _ = decoder.decode(hexstr, asn1Spec=univ.Sequence())
         msg_security_parameters_raw = decoded_message.getComponentByPosition(
             2
         ).asOctets()
