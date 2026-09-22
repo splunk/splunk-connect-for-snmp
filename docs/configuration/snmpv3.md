@@ -6,6 +6,31 @@
 Configuration of SNMPv3, when supported by the monitored devices, is the most secure choice available
 for authentication and data privacy. We recommend using SNMPv3 whenever possible.
 
+## Supported authentication and privacy protocols
+
+`authProtocol` supports the following values:
+
+- `MD5` — HMAC-MD5-96.
+- `SHA` — HMAC-SHA-96 (SHA-1).
+- `SHA224` — HMAC-SHA-224.
+- `SHA256` — HMAC-SHA-256.
+- `SHA384` — HMAC-SHA-384.
+- `SHA512` — HMAC-SHA-512.
+
+`privProtocol` supports the following values:
+
+- `DES`
+- `3DES`
+- `AES` / `AES128` — 128-bit AES. `AES` and `AES128` are equivalent.
+- `AES192` — 192-bit AES.
+- `AES192BLMT` — 192-bit AES, Blumenthal variant.
+- `AES256` — 256-bit AES.
+- `AES256BLMT` — 256-bit AES, Blumenthal variant.
+
+Values are case-insensitive. If `authProtocol`/`privProtocol` is left unset or does not match one of the
+values above, SC4SNMP falls back to no authentication / no privacy. MD5 and DES are considered
+cryptographically weak; prefer other protocols where the device supports them.
+
 /// tab | microk8s
 Each set of credentials is stored as a Kubernetes Secret object and referenced by name in `values.yaml`.
 This allows the secret to be created once - including automation by third-party password managers - then consumed without storing sensitive data in plain text.
@@ -15,9 +40,9 @@ This allows the secret to be created once - including automation by third-party 
 # <namespace>=Namespace used to install sc4snmp
 # <username>=the SNMPv3 Username
 # <key>=key note must be at least 8 char long subject to target limitations
-# <authProtocol>=One of SHA (SHA1) or MD5
-# <privProtocol>=One of AES or DES
-# Note MD5 and DES are considered insecure but must be supported for standards compliance
+# <authProtocol>=One of MD5, SHA, SHA224, SHA256, SHA384, SHA512
+# <privProtocol>=One of DES, 3DES, AES (=AES128), AES128, AES192, AES192BLMT, AES256, AES256BLMT
+# Note MD5 and DES are considered insecure but are supported for standards compliance
 microk8s kubectl create -n <namespace> secret generic <secretname> \
   --from-literal=userName=<username> \
   --from-literal=authKey=<key> \
