@@ -13,6 +13,7 @@
 - Fix misleading ASN.1 errors generated when processing valid SNMPv1/v2c traps.
 
 ### Fixed
+- Add `TimeStamp`, `TimeInterval`, `TestAndIncr`, and `ZeroBasedCounter32` as metrics types.
 
 ## [1.17.1]
 
