@@ -2712,9 +2712,13 @@ which change dynamically, while textual fields are helpful context to understand
 <li><code>Gauge32</code>, <code>Gauge64</code></li>
 <li><code>Integer</code>, <code>Integer32</code></li>
 <li><code>CounterBasedGauge64</code></li>
-<li><code>ZeroBasedCounter64</code>
-Every other type is interpreted as a field value.</li>
+<li><code>ZeroBasedCounter64</code></li>
+<li><code>ZeroBasedCounter32</code></li>
+<li><code>TimeStamp</code></li>
+<li><code>TimeInterval</code></li>
+<li><code>TestAndIncr</code></li>
 </ul>
+<p>Every other type is interpreted as a field value.</p>
 <p>Sometimes, the MIB file indicates a field as an <code>INTEGER</code>, but there is also some mapping defined. See the following<code>IF-MIB.ifOperStatus</code> example:</p>
 <div class="highlight"><pre><span></span><code>ifOperStatus OBJECT-TYPE
     SYNTAX  INTEGER {
