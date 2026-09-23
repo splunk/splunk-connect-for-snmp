@@ -146,12 +146,16 @@ async def get_auth_v3(logger, rt: RecordType, snmp_engine: SnmpEngine) -> UsmUse
         priv_key = get_secret_value(location, "privKey", required=False)
 
         auth_protocol = get_secret_value(location, "authProtocol", required=False)
-        auth_protocol = AuthProtocolMap.get(auth_protocol.upper(), "NONE")
+        auth_protocol = AuthProtocolMap.get(
+            auth_protocol.upper(), AuthProtocolMap["NONE"]
+        )
 
         priv_protocol = get_secret_value(
             location, "privProtocol", required=False, default="NONE"
         )
-        priv_protocol = PrivProtocolMap.get(priv_protocol.upper(), "NONE")
+        priv_protocol = PrivProtocolMap.get(
+            priv_protocol.upper(), PrivProtocolMap["NONE"]
+        )
 
         auth_key_type = int(
             get_secret_value(location, "authKeyType", required=False, default="0")

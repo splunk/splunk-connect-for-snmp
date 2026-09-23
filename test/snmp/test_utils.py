@@ -101,6 +101,7 @@ class TestUtils(TestCase):
         self.assertEqual("cc", map_metric_type("Counter32", 2))
         self.assertEqual("cc", map_metric_type("Counter64", 2))
         self.assertEqual("cc", map_metric_type("TimeTicks", 2))
+        self.assertEqual("cc", map_metric_type("TimeStamp", 2))
 
         self.assertEqual("g", map_metric_type("Gauge32", 2))
         self.assertEqual("g", map_metric_type("Gauge64", 2))
@@ -108,6 +109,9 @@ class TestUtils(TestCase):
         self.assertEqual("g", map_metric_type("Integer32", 2))
         self.assertEqual("g", map_metric_type("Unsigned32", 2))
         self.assertEqual("g", map_metric_type("Unsigned64", 2))
+        self.assertEqual("g", map_metric_type("TimeInterval", 2))
+        self.assertEqual("g", map_metric_type("TestAndIncr", 2))
+        self.assertEqual("g", map_metric_type("ZeroBasedCounter32", 2))
 
         self.assertEqual("r", map_metric_type("ObjectIdentifier", 2))
         self.assertEqual("r", map_metric_type("ObjectIdentity", 2))

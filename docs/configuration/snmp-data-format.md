@@ -12,6 +12,11 @@ SC4SNMP classifies the data element as a metric when its type is one of the foll
 - `Integer`, `Integer32`
 - `CounterBasedGauge64`
 - `ZeroBasedCounter64`
+- `ZeroBasedCounter32`
+- `TimeStamp`
+- `TimeInterval`
+- `TestAndIncr`
+
 Every other type is interpreted as a field value.
 
 Sometimes, the MIB file indicates a field as an `INTEGER`, but there is also some mapping defined. See the following`IF-MIB.ifOperStatus` example:

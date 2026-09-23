@@ -637,9 +637,7 @@ def setup_small_walk(request):
 class TestSmallWalk:
     def test_check_if_walk_scope_was_smaller(self, setup_splunk):
         time.sleep(20)
-        search_string = (
-            """| mpreview index=netmetrics earliest=-20s | search "TCP-MIB" """
-        )
+        search_string = """| mpreview index=netmetrics earliest=-20s | search metric_name=sc4snmp.TCP-MIB.* """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 1
         )
@@ -745,17 +743,13 @@ def setup_partial_walk(request):
 class TestPartialWalk:
     def test_check_if_partial_walk_is_done(self, setup_splunk):
         time.sleep(20)
-        search_string = (
-            """| mpreview index=netmetrics earliest=-20s | search "TCP-MIB" """
-        )
+        search_string = """| mpreview index=netmetrics earliest=-20s | search metric_name=sc4snmp.TCP-MIB.* """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 1
         )
         assert result_count == 0
         assert metric_count == 0
-        search_string = (
-            """| mpreview index=netmetrics earliest=-20s | search "IP-MIB" """
-        )
+        search_string = """| mpreview index=netmetrics earliest=-20s | search metric_name=sc4snmp.IP-MIB.* """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
         )
