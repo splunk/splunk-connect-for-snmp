@@ -749,9 +749,7 @@ class TestPartialWalk:
         )
         assert result_count == 0
         assert metric_count == 0
-        search_string = (
-            """| mpreview index=netmetrics earliest=-20s | search "IP-MIB" """
-        )
+        search_string = """| mpreview index=netmetrics earliest=-20s | search metric_name=sc4snmp.IP-MIB.* """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
         )
