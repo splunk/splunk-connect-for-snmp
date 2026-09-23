@@ -28,7 +28,8 @@ class TestMibMapStartupRefresh(TestCase):
         mock_session = mock_session_cls.return_value
         mock_session.get.return_value = MagicMock(status_code=200, text="MOD,1.2.3\n")
 
-        Poller()
+        poller = Poller()
+        poller._ensure_worker_initialized()
 
         mock_session.get.assert_called_once()
         args, kwargs = mock_session.get.call_args
@@ -55,7 +56,8 @@ class TestMibMapStartupRefresh(TestCase):
         mock_session = mock_session_cls.return_value
         mock_session.get.return_value = MagicMock(status_code=200, text="MOD,1.2.3\n")
 
-        Poller(no_mongo=True)
+        poller = Poller(no_mongo=True)
+        poller._ensure_worker_initialized()
 
         mock_session.get.assert_called_once()
         args, kwargs = mock_session.get.call_args

@@ -19,6 +19,7 @@ from contextlib import suppress
 from pymongo import UpdateOne
 
 from splunk_connect_for_snmp import customtaskmanager
+from splunk_connect_for_snmp.common.mongo_client import get_mongo_client
 
 with suppress(ImportError, OSError):
     from dotenv import load_dotenv
@@ -27,13 +28,11 @@ with suppress(ImportError, OSError):
 
 import os
 
-import pymongo
 from celery import Task, shared_task
 from celery.utils.log import get_task_logger
 
 logger = get_task_logger(__name__)
 
-MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 
 TRACKED_F = [
@@ -81,15 +80,15 @@ def check_restart(current_target, result, targets_collection, address):
 
 
 class EnrichTask(Task):
-    def __init__(self):
-        # Default class used for shared task
-        pass
+    @property
+    def mongo_client(self):
+        return get_mongo_client()
 
 
 @shared_task(bind=True, base=EnrichTask)
 def enrich(self, result):
     address = result["address"]
-    mongo_client = pymongo.MongoClient(MONGO_URI)
+    mongo_client = self.mongo_client
     targets_collection = mongo_client.sc4snmp.targets
     attributes_collection = mongo_client.sc4snmp.attributes
     attributes_bulk_write_operations = []
