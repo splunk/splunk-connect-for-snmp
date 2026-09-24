@@ -24,6 +24,7 @@ from requests import Session
 from requests.exceptions import RequestException
 
 from splunk_connect_for_snmp.common.collection_manager import ProfilesManager
+from splunk_connect_for_snmp.common.mongo_client import get_mongo_client
 from splunk_connect_for_snmp.inventory.loader import transform_address_to_key
 from splunk_connect_for_snmp.snmp.varbinds_resolver import ProfileCollection
 
@@ -59,7 +60,6 @@ MIB_STANDARD = os.getenv("MIB_STANDARD", "https://pysnmp.github.io/mibs/standard
 HOSTS_TO_IGNORE_NOT_INCREASING_OIDS = os.getenv("IGNORE_NOT_INCREASING_OIDS", "").split(
     ","
 )
-MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 IGNORE_EMPTY_VARBINDS = human_bool(os.getenv("IGNORE_EMPTY_VARBINDS", False))
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
@@ -345,9 +345,51 @@ def extract_indexes(index):
 class Poller(Task):
     def __init__(self, **kwargs):
         self.standard_mibs = []
-        self.mongo_client = pymongo.MongoClient(MONGO_URI)
+        self._no_mongo = bool(kwargs.get("no_mongo"))
+        self._worker_initialized = False
 
-        if kwargs.get("no_mongo"):
+        self.already_loaded_mibs = set()
+        # MIBs we have tried to load (loaded or failed); prevents retrying a
+        # persistently-missing MIB on every trap (and the warning spam).
+        self.already_attempted_mibs = set()
+        # Reusing the MIB data across task runs while creating each network engine
+        # inside the event loop used by its poll or walk.
+        self.builder = builder.MibBuilder()
+        self.mib_view_controller = view.MibViewController(self.builder)
+        # Loading the protocol MIBs that SnmpEngine normally adds to its own builder.
+        self.builder.load_modules(*PYSNMP_PROTOCOL_MIBS)
+        compiler.add_mib_compiler(self.builder, sources=[MIB_SOURCES])
+
+        for mib in DEFAULT_STANDARD_MIBS:
+            self.standard_mibs.append(mib)
+            self.builder.load_modules(mib)
+
+        self.mib_map: Dict[str, str] = {}
+
+    @property
+    def mongo_client(self):
+        return get_mongo_client()
+
+    def before_start(self, task_id, args, kwargs):
+        self._ensure_worker_initialized()
+
+    def _ensure_worker_initialized(self):
+        """Run the Mongo/MIB bootstrap exactly once for this task instance.
+
+        Deferred out of __init__ because __init__ runs once at task
+        registration, in the master, before the prefork pool forks this
+        process - too early to safely touch Mongo. Triggered via the
+        before_start task handler, which Celery calls in the worker child
+        after the fork, so the bootstrap only ever runs - lazily, on first
+        use - for the specific task types a given worker actually executes
+        (e.g. worker-sender never runs a Poller task, so it never pays for
+        this at all). walk.py's CLI entry point calls it explicitly too,
+        since it doesn't go through Celery's task dispatch.
+        """
+        if self._worker_initialized:
+            return
+
+        if self._no_mongo:
             self.session = Session()
             self._uses_cached_mib_index_session = False
         else:
@@ -366,25 +408,11 @@ class Poller(Task):
         self.profiles_collection = ProfileCollection(self.profiles)
         self.profiles_collection.process_profiles()
         self.last_modified = time.time()
-        self.already_loaded_mibs = set()
-        # MIBs we have tried to load (loaded or failed); prevents retrying a
-        # persistently-missing MIB on every trap (and the warning spam).
-        self.already_attempted_mibs = set()
-        # Reusing the MIB data across task runs while creating each network engine
-        # inside the event loop used by its poll or walk.
-        self.builder = builder.MibBuilder()
-        self.mib_view_controller = view.MibViewController(self.builder)
-        # Loading the protocol MIBs that SnmpEngine normally adds to its own builder.
-        self.builder.load_modules(*PYSNMP_PROTOCOL_MIBS)
-        compiler.add_mib_compiler(self.builder, sources=[MIB_SOURCES])
 
-        for mib in DEFAULT_STANDARD_MIBS:
-            self.standard_mibs.append(mib)
-            self.builder.load_modules(mib)
-
-        self.mib_map: Dict[str, str] = {}
         if not self._refresh_mib_map(reason="startup"):
             raise RuntimeError("Unable to initialize the MIB index")
+
+        self._worker_initialized = True
 
     def _refresh_mib_map(self, reason: str) -> bool:
         """
