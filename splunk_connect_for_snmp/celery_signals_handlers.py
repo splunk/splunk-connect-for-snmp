@@ -16,7 +16,8 @@
 
 from pathlib import Path
 
-from celery import Celery, signals
+from celery import Celery, current_app, signals
+from celery.utils.log import get_task_logger
 from opentelemetry.instrumentation.celery import CeleryInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 
@@ -25,6 +26,7 @@ from splunk_connect_for_snmp.common.customised_json_formatter import (
 )
 from splunk_connect_for_snmp.common.mongo_client import close_mongo_client
 
+logger = get_task_logger(__name__)
 formatter = CustomisedJSONFormatter()
 HEARTBEAT_FILE = Path("/tmp/worker_heartbeat")
 READINESS_FILE = Path("/tmp/worker_ready")
@@ -34,6 +36,35 @@ READINESS_FILE = Path("/tmp/worker_ready")
 def init_celery_tracing(*args, **kwargs):
     CeleryInstrumentor().instrument()
     LoggingInstrumentor().instrument()
+
+
+@signals.worker_process_init.connect(weak=False)
+def init_worker_mongo_clients(*args, **kwargs):
+    """Eagerly run each Poller-based task's Mongo/MIB bootstrap right after fork.
+
+    This pins the MIB-index fetch to worker-startup time, matching the
+    documented "restart the worker to pick up a new MIB" behavior: a purely
+    reactive task like trap otherwise wouldn't run its bootstrap until its
+    first real message arrives, which can be arbitrarily later than the
+    worker actually starting up. before_start still calls
+    _ensure_worker_initialized() on every task run; the guard flag on each
+    task instance makes that a no-op once this has already succeeded here,
+    and acts as a lazy retry - visible through normal task-failure handling -
+    if this eager attempt failed (e.g. Mongo/mibserver unreachable at
+    startup, an exception here is logged and swallowed by Celery's signal
+    dispatcher rather than failing the worker).
+    """
+    for task in current_app.tasks.values():
+        ensure_initialized = getattr(task, "_ensure_worker_initialized", None)
+        if ensure_initialized is None:
+            continue
+        try:
+            ensure_initialized()
+        except Exception:
+            logger.exception(
+                f"Eager worker-startup bootstrap failed for task {task.name!r}; "
+                "will retry on its first real task execution"
+            )
 
 
 @signals.worker_process_shutdown.connect(weak=False)

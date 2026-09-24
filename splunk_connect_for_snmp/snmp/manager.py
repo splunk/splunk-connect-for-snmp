@@ -378,13 +378,24 @@ class Poller(Task):
 
         Deferred out of __init__ because __init__ runs once at task
         registration, in the master, before the prefork pool forks this
-        process - too early to safely touch Mongo. Triggered via the
-        before_start task handler, which Celery calls in the worker child
-        after the fork, so the bootstrap only ever runs - lazily, on first
-        use - for the specific task types a given worker actually executes
-        (e.g. worker-sender never runs a Poller task, so it never pays for
-        this at all). walk.py's CLI entry point calls it explicitly too,
-        since it doesn't go through Celery's task dispatch.
+        process - too early to safely touch Mongo. It runs from two call
+        sites, both safely post-fork:
+
+        - Eagerly, via init_worker_mongo_clients (worker_process_init in
+          celery_signals_handlers.py), right after this worker child forks.
+          This pins the MIB-index fetch to worker-startup time, matching the
+          documented "restart the worker to pick up a new MIB" behavior -
+          without it, a purely reactive task like trap wouldn't bootstrap
+          until its first real message, which can be arbitrarily later than
+          the worker actually starting.
+        - Lazily, via the before_start task handler, on every task run. The
+          guard flag below makes this a no-op once the eager attempt above
+          has already succeeded, and a retry - surfaced through normal
+          task-failure handling - if that eager attempt failed (e.g.
+          Mongo/mibserver was unreachable at worker startup).
+
+        walk.py's CLI entry point calls it explicitly too, since it doesn't
+        go through Celery's task dispatch.
         """
         if self._worker_initialized:
             return
