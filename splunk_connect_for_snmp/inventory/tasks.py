@@ -19,6 +19,7 @@ from contextlib import suppress
 from splunk_connect_for_snmp.snmp.manager import get_inventory
 
 from ..common.collection_manager import ProfilesManager
+from ..common.mongo_client import get_mongo_client
 from ..common.task_generator import PollTaskGenerator
 from .loader import transform_address_to_key
 
@@ -30,7 +31,6 @@ with suppress(ImportError, OSError):
 import os
 import re
 
-import pymongo
 import urllib3
 from celery import Task, shared_task
 from celery.utils.log import get_task_logger
@@ -48,7 +48,6 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)  # nosemgrep
 
 logger = get_task_logger(__name__)
 
-MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "300"))
@@ -56,10 +55,15 @@ POLL_BASE_PROFILES = human_bool(os.getenv("POLL_BASE_PROFILES", "true"))
 
 
 class InventoryTask(Task):
-    def __init__(self):
-        self.mongo_client = pymongo.MongoClient(MONGO_URI)
-        self.profiles_manager = ProfilesManager(self.mongo_client)
-        self.profiles = self.profiles_manager.return_collection()
+    @property
+    def mongo_client(self):
+        return get_mongo_client()
+
+    @property
+    def profiles_manager(self):
+        if getattr(self, "_profiles_manager", None) is None:
+            self._profiles_manager = ProfilesManager(self.mongo_client)
+        return self._profiles_manager
 
 
 @shared_task(bind=True, base=InventoryTask)

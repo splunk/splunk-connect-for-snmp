@@ -19,6 +19,7 @@ from asyncio import run
 from csv import DictReader
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
+from splunk_connect_for_snmp.common.mongo_client import close_mongo_client
 from splunk_connect_for_snmp.snmp.manager import Poller
 
 log_level = "DEBUG"
@@ -33,22 +34,26 @@ logger.addHandler(handler)
 
 async def run_walk():
     poller = Poller(no_mongo=True)
+    poller._ensure_worker_initialized()
 
-    with open("inventory.csv", encoding="utf-8") as csv_file:
-        # Dict reader will trust the header of the csv
-        ir_reader = DictReader(csv_file)
-        for source_record in ir_reader:
-            address = source_record["address"]
-            if address.startswith("#"):
-                continue
-            try:
-                ir = InventoryRecord(**source_record)
-                retry = True
-                while retry:
-                    retry, result = await poller.do_work(ir, is_walk=True)
-                    logger.debug(result)
-            except Exception as e:
-                logger.exception(e)
+    try:
+        with open("inventory.csv", encoding="utf-8") as csv_file:
+            # Dict reader will trust the header of the csv
+            ir_reader = DictReader(csv_file)
+            for source_record in ir_reader:
+                address = source_record["address"]
+                if address.startswith("#"):
+                    continue
+                try:
+                    ir = InventoryRecord(**source_record)
+                    retry = True
+                    while retry:
+                        retry, result = await poller.do_work(ir, is_walk=True)
+                        logger.debug(result)
+                except Exception as e:
+                    logger.exception(e)
+    finally:
+        close_mongo_client()
 
 
 if __name__ == "__main__":
