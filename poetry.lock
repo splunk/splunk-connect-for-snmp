@@ -745,21 +745,6 @@ files = [
 dev = ["black", "build", "mypy", "pytest", "pyupgrade", "sphinx", "sphinx-rtd-theme", "twine", "validate-pyproject[all]"]
 
 [[package]]
-name = "deprecation"
-version = "2.1.0"
-description = "A library to handle automated deprecations"
-optional = false
-python-versions = "*"
-groups = ["dev"]
-files = [
-    {file = "deprecation-2.1.0-py2.py3-none-any.whl", hash = "sha256:a10811591210e1fb0e768a8c25517cabeabcba6f0bf96564f8ff45189f90b14a"},
-    {file = "deprecation-2.1.0.tar.gz", hash = "sha256:72b3bde64e5d778694b0cf68178aed03d15e15477116add3fb773e581f9518ff"},
-]
-
-[package.dependencies]
-packaging = "*"
-
-[[package]]
 name = "dnspython"
 version = "2.8.0"
 description = "DNS toolkit"
@@ -2082,17 +2067,22 @@ files = [
 
 [[package]]
 name = "splunk-sdk"
-version = "2.1.1"
-description = "The Splunk Software Development Kit for Python."
+version = "3.0.1"
+description = "Splunk Software Development Kit for Python"
 optional = false
-python-versions = "*"
+python-versions = ">=3.13"
 groups = ["dev"]
 files = [
-    {file = "splunk-sdk-2.1.1.tar.gz", hash = "sha256:46300d52f09e0aed7e5962ce2ba08ef54421ffb3a538c6af6164dcbf9f075faa"},
+    {file = "splunk_sdk-3.0.1-py3-none-any.whl", hash = "sha256:cf5b0dc6a6908c84d13f3c62658f54ef1aec2d8421a6646b5281a2f14f0de6ed"},
+    {file = "splunk_sdk-3.0.1.tar.gz", hash = "sha256:e4077ea6bf5c5ffbe8f28c488041123c72b59095de5eabaeedd3af5022cb4d5d"},
 ]
 
-[package.dependencies]
-deprecation = "*"
+[package.extras]
+ai = ["httpx (==0.28.1)", "langchain (>=1.3.15)", "mcp (>=1.28.1,<2.0.0)", "pydantic (>=2.13.4)"]
+anthropic = ["langchain-anthropic (>=1.5.6)", "splunk-sdk[ai] (>=3.0.0)"]
+compat = ["six (>=1.17.0)"]
+google = ["google-auth (>=2.56.3)", "langchain-google-genai (==4.3.4)", "splunk-sdk[ai] (>=3.0.0)"]
+openai = ["langchain-openai (>=1.5.1)", "splunk-sdk[ai] (>=3.0.0)"]
 
 [[package]]
 name = "tblib"
@@ -2545,4 +2535,4 @@ tomli = ">=2.4.0"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<3.15"
-content-hash = "d9a50027ebb9113cd9b9fab3c3c52429dd774a0be669c81f1cd21d3cd107da7a"
+content-hash = "c516d1dbfa81718edd0368ee5e0cf53d93e371d2897e3e6c929ccffc2784bcc1"
