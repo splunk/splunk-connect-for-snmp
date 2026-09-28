@@ -23,6 +23,7 @@ from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from splunk_connect_for_snmp.common.customised_json_formatter import (
     CustomisedJSONFormatter,
 )
+from splunk_connect_for_snmp.common.mongo_client import close_mongo_client
 
 formatter = CustomisedJSONFormatter()
 HEARTBEAT_FILE = Path("/tmp/worker_heartbeat")
@@ -33,6 +34,11 @@ READINESS_FILE = Path("/tmp/worker_ready")
 def init_celery_tracing(*args, **kwargs):
     CeleryInstrumentor().instrument()
     LoggingInstrumentor().instrument()
+
+
+@signals.worker_process_shutdown.connect(weak=False)
+def close_worker_mongo_client(*args, **kwargs):
+    close_mongo_client()
 
 
 @signals.beat_init.connect(weak=False)

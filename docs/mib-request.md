@@ -6,6 +6,11 @@ They are stored in the MIB server, which is one of the components of SC4SNMP.
 See the following link for a list of currently available MIBs:
 [https://pysnmp.github.io/mibs/index.csv](https://pysnmp.github.io/mibs/index.csv)
 
+SNMP workers load the MIB index when they first process a task after starting.
+If the index is unavailable, the task is retried with a delay, subject to its
+normal expiration. The index request times out after 10 seconds by default;
+set `MIB_INDEX_TIMEOUT` in the worker environment to change that limit.
+
 An alternative way to check if the MIB you are interested in is being served is to check the following link:
 `https://pysnmp.github.io/mibs/asn1/@mib@` where `@mib@` is the name of MIB, for example, `IF-MIB`. If the file 
 is downloading, that means the MIB file exists in the MIB server.

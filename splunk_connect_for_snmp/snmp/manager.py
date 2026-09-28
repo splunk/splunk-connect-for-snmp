@@ -24,6 +24,7 @@ from requests import Session
 from requests.exceptions import RequestException
 
 from splunk_connect_for_snmp.common.collection_manager import ProfilesManager
+from splunk_connect_for_snmp.common.mongo_client import get_mongo_client
 from splunk_connect_for_snmp.inventory.loader import transform_address_to_key
 from splunk_connect_for_snmp.snmp.varbinds_resolver import ProfileCollection
 
@@ -56,10 +57,10 @@ from splunk_connect_for_snmp.snmp.multi_bulk_walk_cmd import multi_bulk_walk_cmd
 MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@")
 MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index.csv")
 MIB_STANDARD = os.getenv("MIB_STANDARD", "https://pysnmp.github.io/mibs/standard.txt")
+MIB_INDEX_TIMEOUT = float(os.getenv("MIB_INDEX_TIMEOUT", "10"))
 HOSTS_TO_IGNORE_NOT_INCREASING_OIDS = os.getenv("IGNORE_NOT_INCREASING_OIDS", "").split(
     ","
 )
-MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 IGNORE_EMPTY_VARBINDS = human_bool(os.getenv("IGNORE_EMPTY_VARBINDS", False))
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
@@ -68,6 +69,9 @@ UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 3))
 MAX_OID_TO_PROCESS = int(os.getenv("MAX_OID_TO_PROCESS", 70))
 PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
 MAX_REPETITIONS = int(os.getenv("MAX_REPETITIONS", 10))
+# Initialization retries use a separate, effectively unbounded budget; a
+# task's smaller SNMP retry limit still applies once its body starts.
+BOOTSTRAP_RETRY_LIMIT = 1_000_000
 
 DEFAULT_STANDARD_MIBS = [
     "HOST-RESOURCES-MIB",
@@ -87,6 +91,10 @@ PYSNMP_PROTOCOL_MIBS = (
 )
 
 logger = get_task_logger(__name__)
+
+
+class MibIndexUnavailable(RuntimeError):
+    """The MIB index could not be loaded for this worker process."""
 
 
 if PYSNMP_DEBUG:
@@ -344,28 +352,54 @@ def extract_indexes(index):
 
 class Poller(Task):
     def __init__(self, **kwargs):
-        self.standard_mibs = []
-        self.mongo_client = pymongo.MongoClient(MONGO_URI)
+        # Celery constructs task instances in the parent before forking.
+        # MIB and Mongo-backed state are built on first use in each child.
+        self._no_mongo = bool(kwargs.get("no_mongo"))
+        self._mib_initialized_pid = None
+        self._initialized_pid = None
 
-        if kwargs.get("no_mongo"):
-            self.session = Session()
-            self._uses_cached_mib_index_session = False
-        else:
-            self.session = CachedLimiterSession(
-                per_second=120,
-                backend=MongoCache(connection=self.mongo_client, db_name=MONGO_DB),
-                expire_after=1800,
-                match_headers=False,
-                stale_if_error=True,
-                allowable_codes=[200],
+    @property
+    def mongo_client(self):
+        return get_mongo_client()
+
+    def before_start(self, task_id, args, kwargs):
+        try:
+            self._ensure_worker_initialized()
+        except (
+            pymongo.errors.PyMongoError,
+            RequestException,
+            error.MibNotFoundError,
+            MibIndexUnavailable,
+        ) as exc:
+            # before_start runs outside Celery's autoretry wrapper. Explicitly
+            # schedule another delivery so a transient outage cannot ack and
+            # discard a trap or a walk before its body starts.
+            countdown = min(300, 5 * 2 ** min(self.request.retries, 6))
+            logger.warning(
+                "Poller initialization failed for %s; retrying in %s seconds: %s",
+                self.name,
+                countdown,
+                exc,
             )
-            self._uses_cached_mib_index_session = True
+            try:
+                raise self.retry(
+                    exc=exc,
+                    countdown=countdown,
+                    max_retries=BOOTSTRAP_RETRY_LIMIT,
+                )
+            finally:
+                # Celery stores this override on the reusable task instance.
+                # Do not change the retry budget for later SNMP failures.
+                self.__dict__.pop("override_max_retries", None)
 
-        self.profiles_manager = ProfilesManager(self.mongo_client)
-        self.profiles = self.profiles_manager.return_collection()
-        self.profiles_collection = ProfileCollection(self.profiles)
-        self.profiles_collection.process_profiles()
-        self.last_modified = time.time()
+    def _ensure_mib_initialized(self):
+        pid = os.getpid()
+        if self._mib_initialized_pid == pid:
+            return
+
+        # Keep MIB state across Mongo/index bootstrap retries in this child.
+        # A fork after direct use of Poller still builds fresh state.
+        self.standard_mibs = []
         self.already_loaded_mibs = set()
         # MIBs we have tried to load (loaded or failed); prevents retrying a
         # persistently-missing MIB on every trap (and the warning spam).
@@ -383,8 +417,43 @@ class Poller(Task):
             self.builder.load_modules(mib)
 
         self.mib_map: Dict[str, str] = {}
-        if not self._refresh_mib_map(reason="startup"):
-            raise RuntimeError("Unable to initialize the MIB index")
+        self._mib_initialized_pid = pid
+
+    def _ensure_worker_initialized(self):
+        pid = os.getpid()
+        if self._initialized_pid == pid:
+            return
+
+        self._ensure_mib_initialized()
+        if self._no_mongo:
+            session = Session()
+            self._uses_cached_mib_index_session = False
+        else:
+            session = CachedLimiterSession(
+                per_second=120,
+                backend=MongoCache(connection=self.mongo_client, db_name=MONGO_DB),
+                expire_after=1800,
+                match_headers=False,
+                stale_if_error=True,
+                allowable_codes=[200],
+                autoclose=False,  # The process-level helper owns the Mongo client.
+            )
+            self._uses_cached_mib_index_session = True
+
+        self.session = session
+        try:
+            self.profiles_manager = ProfilesManager(self.mongo_client)
+            self.profiles = self.profiles_manager.return_collection()
+            self.profiles_collection = ProfileCollection(self.profiles)
+            self.profiles_collection.process_profiles()
+            self.last_modified = time.time()
+            if not self._refresh_mib_map(reason="first_task"):
+                raise MibIndexUnavailable("Unable to initialize the MIB index")
+        except Exception:
+            session.close()
+            raise
+
+        self._initialized_pid = pid
 
     def _refresh_mib_map(self, reason: str) -> bool:
         """
@@ -397,7 +466,7 @@ class Poller(Task):
         replaced only when the result contains at least one mapping. Otherwise,
         the existing map is preserved.
 
-        :param reason: Reason the refresh was requested, such as worker startup
+        :param reason: Reason the refresh was requested, such as first task use
 
         :return: True when a usable MIB index was loaded, otherwise False
         """
@@ -415,10 +484,15 @@ class Poller(Task):
                 # Revalidate the cached index. requests-cache may reuse it when it
                 # is unchanged or mibserver is unavailable.
                 response = self.session.get(
-                    MIB_INDEX, refresh=True, hooks=response_hooks
+                    MIB_INDEX,
+                    refresh=True,
+                    hooks=response_hooks,
+                    timeout=MIB_INDEX_TIMEOUT,
                 )
             else:
-                response = self.session.get(MIB_INDEX, hooks=response_hooks)
+                response = self.session.get(
+                    MIB_INDEX, hooks=response_hooks, timeout=MIB_INDEX_TIMEOUT
+                )
         except (RequestException, pymongo.errors.PyMongoError) as exc:
             failed_response = getattr(exc, "response", None)
             status_code = getattr(failed_response, "status_code", "unavailable")
