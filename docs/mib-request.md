@@ -104,20 +104,28 @@ mibserver:
     pathToMibs: "/home/user/local_mibs"
 ```
 
-To verify that the process of compilation was completed successfully, check the mibserver logs using the following command:
+This creates a Kubernetes pvc with MIB files inside and maps it to the MIB server pod.
+Also, you can change the storageClass and size of persistence according to the `mibserver` schema, see [values.yaml of the mibserver](https://github.com/pysnmp/mibs/blob/main/charts/mibserver/values.yaml).
+The default persistence size is 1 Gibibyte, so consider reducing or expanding it to the amount you actually need.
+
+Whenever you add or update local MIB files, rollout restart MIB server pods to compile them again, using the following command:
+
+```bash
+microk8s kubectl rollout restart deployment snmp-mibserver -n sc4snmp
+```
+
+To verify that compilation completed, check the MIB server logs:
 
 ```bash
 microk8s kubectl logs -f deployments/snmp-mibserver -n sc4snmp
 ```
 
-This creates a Kubernetes pvc with MIB files inside and maps it to the MIB server pod.
-Also, you can change the storageClass and size of persistence according to the `mibserver` schema, see [values.yaml of the mibserver](https://github.com/pysnmp/mibs/blob/main/charts/mibserver/values.yaml).
-The default persistence size is 1 Gibibyte, so consider reducing or expanding it to the amount you actually need.
-
-Whenever you add new MIB files, rollout restart MIB server pods to compile them again, using the following command:
+After the MIB server has compiled the new files, restart both workers so their
+children read the updated MIB index when they next process a task:
 
 ```bash
-microk8s kubectl rollout restart deployment snmp-mibserver -n sc4snmp
+microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-trap -n sc4snmp
+microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-poller -n sc4snmp
 ```
 
 For a multi-node Kubernetes installation, create pvc beforehand, copy files onto it, and add it to the MIB server
@@ -141,7 +149,7 @@ You can put your MIB files there, following the same structure as described abov
 !!!warning
     Make sure that the user running docker has read and write permissions to the `LOCAL_MIBS_PATH` directory. Assign the user with permissions if necessary.
 
-Whenever you add new MIB files, restart MIB service to compile them again, using the following command:
+Whenever you add or update local MIB files, restart MIB service to compile them again, using the following command:
 
 ```bash
 docker compose restart snmp-mibserver
@@ -151,6 +159,13 @@ To verify that the process of compilation was completed successfully, check the 
 
 ```bash
 docker logs snmp-mibserver
+```
+
+After the MIB server has compiled the new files, restart both workers so their
+children read the updated MIB index when they next process a task:
+
+```bash
+docker compose restart worker-trap worker-poller
 ```
 
 If you want to use a different directory, you can change the mapping in the `docker-compose.yaml` file and set an absolute path to your directory.

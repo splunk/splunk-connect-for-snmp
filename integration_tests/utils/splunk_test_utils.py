@@ -1168,8 +1168,8 @@ def mib_index_refresh_test_environment(deployment, worker_type, helm_value_files
             override_file = test_root / "local-mibs-values.yaml"
             worker_values = {"replicaCount": 1}
             if worker_type == "poller":
-                # One child process makes the two-cycle poller assertion
-                # deterministic while a freshly loaded MIB becomes resolvable.
+                # Keep the minimum poller pool small for the baseline and
+                # post-restart phases of the test.
                 worker_values["concurrency"] = 1
 
             yaml = ruamel.yaml.YAML()
@@ -1193,8 +1193,7 @@ def mib_index_refresh_test_environment(deployment, worker_type, helm_value_files
             local_mibs_dir.chmod(0o755)
             environment_changed = True
             upgrade_env_compose("LOCAL_MIBS_PATH", str(local_mibs_dir))
-            # One worker avoids another replica consuming work with a different
-            # process-local MIB map during the negative assertion.
+            # Keep one worker replica for the baseline and post-restart phases.
             replica_variable = f"WORKER_{worker_type.upper()}_REPLICAS"
             upgrade_env_compose(replica_variable, "1")
             if worker_type == "poller":

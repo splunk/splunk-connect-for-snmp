@@ -117,8 +117,7 @@ def hvr_poller_mib_environment(request):
             "poller",
             helm_value_files=helm_value_files,
         ) as local_mibs_dir:
-            install_mib_index_refresh_test_mib(deployment, local_mibs_dir)
-            yield deployment, target
+            yield deployment, target, local_mibs_dir
     finally:
         if inventory_configured:
             if deployment == "microk8s":
@@ -2049,14 +2048,15 @@ def run_retried_single_search(
 
 
 @pytest.mark.part6
-def test_poller_new_local_mib_is_unresolved_before_worker_restart(
+def test_poller_new_local_mib_is_resolved_after_worker_restart(
     hvr_poller_mib_environment, setup_splunk
 ):
-    deployment, target = hvr_poller_mib_environment
+    deployment, target, local_mibs_dir = hvr_poller_mib_environment
     started_at = datetime.now(timezone.utc)
     earliest = int(started_at.timestamp())
     log_start = started_at.isoformat().replace("+00:00", "Z")
 
+    # With no HVR MIB on the server, the poller still emits the standard field.
     _wait_for_poller_field(
         setup_splunk,
         target,
@@ -2080,15 +2080,10 @@ def test_poller_new_local_mib_is_unresolved_before_worker_restart(
         f"lookup from {target}",
     )
 
-
-@pytest.mark.part6
-def test_poller_new_local_mib_is_resolved_after_worker_restart(
-    hvr_poller_mib_environment, setup_splunk
-):
-    deployment, target = hvr_poller_mib_environment
-    earliest = int(time.time())
-
+    install_mib_index_refresh_test_mib(deployment, local_mibs_dir)
     restart_worker_for_mib_index_refresh(deployment, "poller")
+    # Exclude events created in the final second before the restart completed.
+    earliest = int(time.time()) + 1
 
     _wait_for_poller_field(
         setup_splunk,
