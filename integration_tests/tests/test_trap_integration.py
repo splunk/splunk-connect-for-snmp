@@ -343,8 +343,7 @@ async def test_loading_mibs(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
 
-    await asyncio.sleep(2)
-    # send trap
+    marker = f"test_loading_mibs_{time.time_ns()}"
     varbind1 = ("1.3.6.1.6.3.1.1.4.1.0", "1.3.6.1.4.1.15597.1.1.1.1.0.1")
     await send_trap(
         trap_external_ip,
@@ -354,16 +353,10 @@ async def test_loading_mibs(request, setup_splunk):
         "public",
         1,
         varbind1,
+        ("1.3.6.1.2.1.1.1.0", OctetString(marker)),
     )
 
-    # wait for the message to be processed
-    await asyncio.sleep(2)
-
-    search_query = """search index=netops "SNMPv2-MIB.snmpTrapOID.value"="AVAMAR-MCS-MIB::eventTrap"  """
-
-    result_count, events_count = splunk_single_search(setup_splunk, search_query)
-
-    assert result_count == 1
+    _wait_for_trap_value(setup_splunk, marker, "AVAMAR-MCS-MIB::eventTrap")
 
 
 @pytest.mark.part6
