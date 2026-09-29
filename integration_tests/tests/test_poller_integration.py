@@ -41,6 +41,7 @@ from integration_tests.utils.splunk_test_utils import (
     upgrade_helm_microk8s,
     wait_for_mib_refresh_cleanup_microk8s,
     wait_for_mib_refresh_worker_log,
+    wait_for_microk8s_rollout,
     wait_for_splunk_search,
     yaml_escape_list,
 )
@@ -124,6 +125,10 @@ def hvr_poller_mib_environment(request):
                 update_file_microk8s([deleted_inventory_record], "inventory.yaml")
                 upgrade_helm_microk8s(["inventory.yaml"])
                 wait_for_mib_refresh_cleanup_microk8s()
+                wait_for_microk8s_rollout(
+                    "deployment/snmp-splunk-connect-for-snmp-worker-poller",
+                    "worker-poller",
+                )
             else:
                 update_inventory_compose([deleted_inventory_record])
                 upgrade_docker_compose()
@@ -2098,6 +2103,10 @@ def test_poller_new_local_mib_is_resolved_after_worker_restart(
 def setup_rebuild(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
+    # A short walk cycle retries setup if a walk lands during a worker rollout.
+    inventory_record = f"{trap_external_ip},,2c,public,,,60,rebuild_profile,,"
+    deleted_inventory_record = f"{inventory_record}t"
+    helm_value_files = ["inventory.yaml", "profiles.yaml"]
     profile = {
         "rebuild_profile": {
             "frequency": 5,
@@ -2107,26 +2116,22 @@ def setup_rebuild(request):
 
     if str(deployment) == "microk8s":
         update_profiles_microk8s(profile)
-        update_file_microk8s(
-            [f"{trap_external_ip},,2c,public,,,600,rebuild_profile,,"], "inventory.yaml"
+        update_file_microk8s([inventory_record], "inventory.yaml")
+        upgrade_helm_microk8s(helm_value_files)
+        wait_for_microk8s_rollout(
+            "deployment/snmp-splunk-connect-for-snmp-worker-poller", "worker-poller"
         )
-        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
     else:
         update_profiles_compose(profile)
-        update_inventory_compose(
-            [f"{trap_external_ip},,2c,public,,,600,rebuild_profile,,"]
-        )
+        update_inventory_compose([inventory_record])
         upgrade_docker_compose()
     time.sleep(30)
     yield
     if str(deployment) == "microk8s":
-        upgrade_helm_microk8s(
-            [f"{trap_external_ip},,2c,public,,,600,rebuild_profile,,t"]
-        )
+        update_file_microk8s([deleted_inventory_record], "inventory.yaml")
+        upgrade_helm_microk8s(helm_value_files)
     else:
-        update_inventory_compose(
-            [f"{trap_external_ip},,2c,public,,,600,rebuild_profile,,t"]
-        )
+        update_inventory_compose([deleted_inventory_record])
         upgrade_docker_compose()
     time.sleep(20)
 
@@ -2135,21 +2140,19 @@ def setup_rebuild(request):
 @pytest.mark.part6
 class TestRebuildWithoutConfigChange:
     """
-    Reproduces the reported scenario: the environment is rebuilt from scratch (all pods /
-    containers deleted, Redis wiped) while the MongoDB volume/PVC survives untouched, and no
-    inventory/profile/group config is changed. Polling must resume on its own, without any
-    edit made through the UI.
+    Rebuild the scheduler and workers and clear Redis while preserving MongoDB and
+    the inventory/profile/group configuration. Polling must resume without a config edit.
     """
 
     def test_polling_resumes_after_rebuild_without_config_change(
         self, request, setup_splunk
     ):
-        search_string = """| mpreview index=netmetrics | search profiles=rebuild_profile
+        search_string = """| mpreview index=netmetrics earliest=-3m | search profiles=rebuild_profile
         | search "TCP-MIB" """
 
         # Sanity check: metrics are flowing for the profile before the rebuild.
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
+            setup_splunk, search_string, 4
         )
         assert result_count > 0
         assert metric_count > 0
@@ -2160,15 +2163,15 @@ class TestRebuildWithoutConfigChange:
             "volume, with no inventory/profile/group config change"
         )
         if str(deployment) == "microk8s":
-            rebuild_stack_preserve_mongo_microk8s()
+            rebuild_stack_preserve_mongo_microk8s(["inventory.yaml", "profiles.yaml"])
         else:
             rebuild_stack_preserve_mongo_compose()
+        post_rebuild_earliest = int(time.time()) + 1
         time.sleep(60)
 
-        # Metrics must resume for the same profile with a recent time window, even though
-        # nothing was changed in the UI/config after the rebuild.
-        recent_search_string = """| mpreview index=netmetrics earliest=-3m | search profiles=rebuild_profile
-        | search "TCP-MIB" """
+        # Only metrics created after the rebuild can show that polling resumed.
+        recent_search_string = f"""| mpreview index=netmetrics earliest={post_rebuild_earliest}
+        | search profiles=rebuild_profile | search "TCP-MIB" """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, recent_search_string, 5, wait=30
         )

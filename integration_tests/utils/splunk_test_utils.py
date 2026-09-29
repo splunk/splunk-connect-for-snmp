@@ -616,37 +616,101 @@ def upgrade_helm_microk8s(yaml_files):
         raise
 
 
-def rebuild_stack_preserve_mongo_microk8s():
+def rebuild_stack_preserve_mongo_microk8s(helm_value_files=()):
     """
-    Simulate rebuilding the environment from scratch while keeping the MongoDB PVC: delete
-    the Redis StatefulSet (RedBeat's schedule store) and the scheduler/worker Deployments,
-    but never touch the `snmp-mongodb` StatefulSet or its PVC. `helm upgrade` recreates the
-    deleted resources on re-apply. Finally re-run the inventory Job WITHOUT changing any
-    `-f` values file, so the inventory records end up "Unchanged" from Mongo's point of view.
+    Simulate rebuilding the environment while keeping the MongoDB PVC: stop the
+    scheduler/workers, clear Redis (including RedBeat), and recreate those resources.
+    Re-run the inventory Job with the same values files, so MongoDB sees unchanged
+    inventory records.
     """
     try:
+        values_arguments = ["-f", str(BASE_DIR / "values.yaml")]
+        for value_file in helm_value_files:
+            value_path = Path(value_file)
+            if not value_path.is_absolute():
+                value_path = BASE_DIR / value_path
+            if not value_path.is_file():
+                raise FileNotFoundError(f"Missing Helm values file: {value_path}")
+            values_arguments.extend(["-f", str(value_path)])
+
         logger.info(
-            "Deleting Redis/scheduler/worker resources to simulate a rebuild "
-            "that drops RedBeat's schedule, while keeping the Mongo PVC"
+            "Deleting scheduler/worker resources and clearing Redis/RedBeat "
+            "while keeping the Mongo PVC"
         )
-        os.system(
-            "sudo microk8s kubectl delete statefulset snmp-redis-standalone -n sc4snmp"
+        _run_integration_command(
+            [
+                "sudo",
+                "microk8s",
+                "kubectl",
+                "delete",
+                "deployment",
+                "snmp-splunk-connect-for-snmp-scheduler",
+                "snmp-splunk-connect-for-snmp-worker-poller",
+                "snmp-splunk-connect-for-snmp-worker-sender",
+                "snmp-splunk-connect-for-snmp-worker-trap",
+                "-n",
+                "sc4snmp",
+                "--ignore-not-found",
+            ],
+            "deleting the scheduler and worker Deployments",
         )
-        os.system(
-            "sudo microk8s kubectl delete deployment "
-            "snmp-splunk-connect-for-snmp-scheduler "
-            "snmp-splunk-connect-for-snmp-worker-poller "
-            "snmp-splunk-connect-for-snmp-worker-sender "
-            "snmp-splunk-connect-for-snmp-worker-trap "
-            "-n sc4snmp --ignore-not-found"
+        _run_integration_command(
+            [
+                "sudo",
+                "microk8s",
+                "kubectl",
+                "exec",
+                "pod/snmp-redis-standalone-0",
+                "-n",
+                "sc4snmp",
+                "--",
+                "redis-cli",
+                "FLUSHALL",
+            ],
+            "clearing the Redis and RedBeat databases",
         )
-        os.system(
-            "sudo microk8s kubectl delete jobs/snmp-splunk-connect-for-snmp-inventory -n sc4snmp"
+        _run_integration_command(
+            [
+                "sudo",
+                "microk8s",
+                "kubectl",
+                "delete",
+                "statefulset",
+                "snmp-redis-standalone",
+                "-n",
+                "sc4snmp",
+                "--ignore-not-found",
+            ],
+            "deleting the Redis StatefulSet",
+        )
+        _run_integration_command(
+            [
+                "sudo",
+                "microk8s",
+                "kubectl",
+                "delete",
+                "job/snmp-splunk-connect-for-snmp-inventory",
+                "-n",
+                "sc4snmp",
+                "--ignore-not-found",
+            ],
+            "deleting the inventory Job",
         )
         logger.info("Re-installing the release without any config change")
-        os.system(
-            "sudo microk8s helm3 upgrade --install snmp -f values.yaml "
-            "./../charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
+        _run_integration_command(
+            [
+                "sudo",
+                "microk8s",
+                "helm3",
+                "upgrade",
+                "--install",
+                "snmp",
+                *values_arguments,
+                str(BASE_DIR.parent / "charts" / "splunk-connect-for-snmp"),
+                "--namespace=sc4snmp",
+                "--create-namespace",
+            ],
+            "re-installing the release with unchanged Helm values",
         )
 
     except Exception as e:
