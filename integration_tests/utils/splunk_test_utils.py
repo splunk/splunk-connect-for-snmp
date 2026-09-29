@@ -616,38 +616,148 @@ def upgrade_helm_microk8s(yaml_files):
         raise
 
 
-def rebuild_stack_preserve_mongo_microk8s():
+def rebuild_stack_preserve_mongo_microk8s(helm_value_files=()):
     """
-    Simulate rebuilding the environment from scratch while keeping the MongoDB PVC: delete
-    the Redis StatefulSet (RedBeat's schedule store) and the scheduler/worker Deployments,
-    but never touch the `snmp-mongodb` StatefulSet or its PVC. `helm upgrade` recreates the
-    deleted resources on re-apply. Finally re-run the inventory Job WITHOUT changing any
-    `-f` values file, so the inventory records end up "Unchanged" from Mongo's point of view.
+    Simulate rebuilding the environment while keeping the MongoDB PVC: stop the
+    scheduler/workers, clear Redis (including RedBeat), and recreate those resources.
+    Re-run the inventory Job after the workers are ready, using the same values
+    files so MongoDB sees unchanged inventory records.
     """
     try:
+        values_arguments = ["-f", str(BASE_DIR / "values.yaml")]
+        for value_file in helm_value_files:
+            value_path = Path(value_file)
+            if not value_path.is_absolute():
+                value_path = BASE_DIR / value_path
+            if not value_path.is_file():
+                raise FileNotFoundError(f"Missing Helm values file: {value_path}")
+            values_arguments.extend(["-f", str(value_path)])
+        helm_upgrade_command = [
+            "sudo",
+            "microk8s",
+            "helm3",
+            "upgrade",
+            "--install",
+            "snmp",
+            *values_arguments,
+            str(BASE_DIR.parent / "charts" / "splunk-connect-for-snmp"),
+            "--namespace=sc4snmp",
+            "--create-namespace",
+        ]
+
+        # A completed Job normally remains for 300 seconds. If its TTL has
+        # removed it, restore it before the staged rebuild so the first Helm
+        # upgrade below cannot start inventory ahead of the workers.
+        existing_job = subprocess.run(
+            [
+                "sudo",
+                "microk8s",
+                "kubectl",
+                "get",
+                "job/snmp-splunk-connect-for-snmp-inventory",
+                "-n",
+                "sc4snmp",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        if existing_job.returncode != 0:
+            logger.info("Restoring the completed inventory Job before rebuilding")
+            _run_integration_command(
+                helm_upgrade_command,
+                "restoring the completed inventory Job before rebuilding",
+            )
+            wait_for_microk8s_job_complete(
+                "job/snmp-splunk-connect-for-snmp-inventory", "inventory Job"
+            )
+
         logger.info(
-            "Deleting Redis/scheduler/worker resources to simulate a rebuild "
-            "that drops RedBeat's schedule, while keeping the Mongo PVC"
+            "Deleting scheduler/worker resources and clearing Redis/RedBeat "
+            "while keeping the Mongo PVC"
         )
-        os.system(
-            "sudo microk8s kubectl delete statefulset snmp-redis-standalone -n sc4snmp"
+        _run_integration_command(
+            [
+                "sudo",
+                "microk8s",
+                "kubectl",
+                "delete",
+                "deployment",
+                "snmp-splunk-connect-for-snmp-scheduler",
+                "snmp-splunk-connect-for-snmp-worker-poller",
+                "snmp-splunk-connect-for-snmp-worker-sender",
+                "snmp-splunk-connect-for-snmp-worker-trap",
+                "-n",
+                "sc4snmp",
+                "--ignore-not-found",
+            ],
+            "deleting the scheduler and worker Deployments",
         )
-        os.system(
-            "sudo microk8s kubectl delete deployment "
-            "snmp-splunk-connect-for-snmp-scheduler "
-            "snmp-splunk-connect-for-snmp-worker-poller "
-            "snmp-splunk-connect-for-snmp-worker-sender "
-            "snmp-splunk-connect-for-snmp-worker-trap "
-            "-n sc4snmp --ignore-not-found"
+        _run_integration_command(
+            [
+                "sudo",
+                "microk8s",
+                "kubectl",
+                "exec",
+                "pod/snmp-redis-standalone-0",
+                "-n",
+                "sc4snmp",
+                "--",
+                "redis-cli",
+                "FLUSHALL",
+            ],
+            "clearing the Redis and RedBeat databases",
         )
-        os.system(
-            "sudo microk8s kubectl delete jobs/snmp-splunk-connect-for-snmp-inventory -n sc4snmp"
+        _run_integration_command(
+            [
+                "sudo",
+                "microk8s",
+                "kubectl",
+                "delete",
+                "statefulset",
+                "snmp-redis-standalone",
+                "-n",
+                "sc4snmp",
+                "--ignore-not-found",
+            ],
+            "deleting the Redis StatefulSet",
         )
         logger.info("Re-installing the release without any config change")
-        os.system(
-            "sudo microk8s helm3 upgrade --install snmp -f values.yaml "
-            "./../charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
+        _run_integration_command(
+            helm_upgrade_command,
+            "re-installing the release with unchanged Helm values",
         )
+        for worker in ("poller", "sender"):
+            deployment = f"deployment/snmp-splunk-connect-for-snmp-worker-{worker}"
+            wait_for_microk8s_rollout(deployment, f"worker-{worker}")
+            wait_for_microk8s_worker_ready(deployment, f"worker-{worker}")
+
+        # Keep the completed Job during the first upgrade so it cannot schedule
+        # the only immediate full walk before the new workers are consuming tasks.
+        _run_integration_command(
+            [
+                "sudo",
+                "microk8s",
+                "kubectl",
+                "delete",
+                "job/snmp-splunk-connect-for-snmp-inventory",
+                "-n",
+                "sc4snmp",
+                "--ignore-not-found",
+            ],
+            "deleting the inventory Job after the workers are ready",
+        )
+        # Capture the boundary before the Job can trigger the immediate walk.
+        post_rebuild_earliest = int(time.time())
+        logger.info("Re-running inventory with unchanged Helm values")
+        _run_integration_command(
+            helm_upgrade_command,
+            "re-running the inventory Job with unchanged Helm values",
+        )
+        wait_for_microk8s_job_complete(
+            "job/snmp-splunk-connect-for-snmp-inventory", "unchanged inventory Job"
+        )
+        return post_rebuild_earliest
 
     except Exception as e:
         logger.info(f"[ERROR] Rebuild simulation failed: {e}")
@@ -819,6 +929,60 @@ def wait_for_microk8s_rollout(kubernetes_resource, description):
             "--timeout=180s",
         ],
         f"waiting for the {description} Kubernetes rollout",
+    )
+
+
+def wait_for_microk8s_job_complete(kubernetes_resource, description):
+    _run_integration_command(
+        [
+            "sudo",
+            "microk8s",
+            "kubectl",
+            "wait",
+            "--for=condition=complete",
+            kubernetes_resource,
+            "-n",
+            "sc4snmp",
+            "--timeout=180s",
+        ],
+        f"waiting for the {description} to finish",
+        timeout=INTEGRATION_TEST_TIMEOUT + 10,
+    )
+
+
+def wait_for_microk8s_worker_ready(kubernetes_resource, description):
+    deadline = time.monotonic() + INTEGRATION_TEST_TIMEOUT
+    command = [
+        "sudo",
+        "microk8s",
+        "kubectl",
+        "exec",
+        kubernetes_resource,
+        "-n",
+        "sc4snmp",
+        "--",
+        "sh",
+        "-c",
+        "test -e /tmp/worker_ready",
+    ]
+    last_error = None
+    while time.monotonic() < deadline:
+        try:
+            result = subprocess.run(
+                command,
+                capture_output=True,
+                text=True,
+                timeout=min(30, max(1, deadline - time.monotonic())),
+            )
+            if result.returncode == 0:
+                logger.info("%s is ready to accept Celery tasks", description)
+                return
+            last_error = (result.stderr or result.stdout).strip()
+        except subprocess.TimeoutExpired as exc:
+            last_error = str(exc)
+        time.sleep(2)
+    raise AssertionError(
+        f"Timed out waiting for {description} to accept Celery tasks: {last_error}"
     )
 
 
@@ -1168,8 +1332,8 @@ def mib_index_refresh_test_environment(deployment, worker_type, helm_value_files
             override_file = test_root / "local-mibs-values.yaml"
             worker_values = {"replicaCount": 1}
             if worker_type == "poller":
-                # One child process makes the two-cycle poller assertion
-                # deterministic while a freshly loaded MIB becomes resolvable.
+                # Keep the minimum poller pool small for the baseline and
+                # post-restart phases of the test.
                 worker_values["concurrency"] = 1
 
             yaml = ruamel.yaml.YAML()
@@ -1193,8 +1357,7 @@ def mib_index_refresh_test_environment(deployment, worker_type, helm_value_files
             local_mibs_dir.chmod(0o755)
             environment_changed = True
             upgrade_env_compose("LOCAL_MIBS_PATH", str(local_mibs_dir))
-            # One worker avoids another replica consuming work with a different
-            # process-local MIB map during the negative assertion.
+            # Keep one worker replica for the baseline and post-restart phases.
             replica_variable = f"WORKER_{worker_type.upper()}_REPLICAS"
             upgrade_env_compose(replica_variable, "1")
             if worker_type == "poller":

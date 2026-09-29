@@ -15,6 +15,7 @@ from urllib3.response import HTTPResponse
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.manager import (
     MIB_INDEX,
+    MIB_INDEX_TIMEOUT,
     Poller,
     format_trap_varbind_value,
     is_mib_resolved,
@@ -158,6 +159,7 @@ class TestMibIndexRefresh(TestCase):
         poller.session.get.assert_called_once_with(
             MIB_INDEX,
             hooks={"response": ANY},
+            timeout=MIB_INDEX_TIMEOUT,
         )
         request_options = poller.session.get.call_args.kwargs
         self.assertNotIn("refresh", request_options)

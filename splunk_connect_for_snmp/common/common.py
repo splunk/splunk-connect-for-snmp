@@ -109,20 +109,19 @@ def wait_for_mongodb_replicaset(logger=None, max_retries=120, retry_interval=5):
             time.sleep(retry_interval)
         try:
             # Try to connect
-            client = MongoClient(
+            with MongoClient(
                 mongo_uri, serverSelectionTimeoutMS=5000, connectTimeoutMS=5000
-            )
+            ) as client:
 
-            # Execute a simple operation to verify PRIMARY exists
-            client.admin.command("ping")
+                # Execute a simple operation to verify PRIMARY exists
+                client.admin.command("ping")
 
-            # For replica sets, verify PRIMARY exists
-            if "replicaSet=" in mongo_uri:
-                if client.primary is None:
-                    continue
-                logger.info(f"PRIMARY found: {client.primary}")
+                # For replica sets, verify PRIMARY exists
+                if "replicaSet=" in mongo_uri:
+                    if client.primary is None:
+                        continue
+                    logger.info(f"PRIMARY found: {client.primary}")
 
-            client.close()
             logger.info("MongoDB is ready")
             return
 

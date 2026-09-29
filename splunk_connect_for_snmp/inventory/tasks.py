@@ -30,9 +30,8 @@ with suppress(ImportError, OSError):
 import os
 import re
 
-import pymongo
 import urllib3
-from celery import Task, shared_task
+from celery import shared_task
 from celery.utils.log import get_task_logger
 
 from splunk_connect_for_snmp import customtaskmanager
@@ -41,6 +40,7 @@ from splunk_connect_for_snmp.common.common import (
     convert_to_float,
     human_bool,
 )
+from splunk_connect_for_snmp.common.mongo_client import get_mongo_client
 
 from ..poller import app
 
@@ -48,31 +48,24 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)  # nosemgrep
 
 logger = get_task_logger(__name__)
 
-MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "300"))
 POLL_BASE_PROFILES = human_bool(os.getenv("POLL_BASE_PROFILES", "true"))
 
 
-class InventoryTask(Task):
-    def __init__(self):
-        self.mongo_client = pymongo.MongoClient(MONGO_URI)
-        self.profiles_manager = ProfilesManager(self.mongo_client)
-        self.profiles = self.profiles_manager.return_collection()
-
-
-@shared_task(bind=True, base=InventoryTask)
-def inventory_setup_poller(self, work):
+@shared_task
+def inventory_setup_poller(work):
     address = work["address"]
     group = work.get("group")
     chain_of_tasks_expiry_time = work.get("chain_of_tasks_expiry_time")
-    self.profiles = self.profiles_manager.return_collection()
+    mongo_client = get_mongo_client()
+    profiles = ProfilesManager(mongo_client).return_collection()
     logger.debug("Profiles reloaded")
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
-    mongo_db = self.mongo_client[MONGO_DB]
+    mongo_db = mongo_client[MONGO_DB]
 
     mongo_inventory = mongo_db.inventory
     targets_collection = mongo_db.targets
@@ -85,7 +78,7 @@ def inventory_setup_poller(self, work):
     )
 
     assigned_profiles, computed_conditional_profiles = assign_profiles(
-        ir, self.profiles, target
+        ir, profiles, target
     )
     for profile in computed_conditional_profiles:
         conditional_profile_name = list(profile.keys())[0]
