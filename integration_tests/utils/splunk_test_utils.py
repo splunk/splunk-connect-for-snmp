@@ -620,8 +620,8 @@ def rebuild_stack_preserve_mongo_microk8s(helm_value_files=()):
     """
     Simulate rebuilding the environment while keeping the MongoDB PVC: stop the
     scheduler/workers, clear Redis (including RedBeat), and recreate those resources.
-    Re-run the inventory Job with the same values files, so MongoDB sees unchanged
-    inventory records.
+    Re-run the inventory Job after the workers are ready, using the same values
+    files so MongoDB sees unchanged inventory records.
     """
     try:
         values_arguments = ["-f", str(BASE_DIR / "values.yaml")]
@@ -632,6 +632,45 @@ def rebuild_stack_preserve_mongo_microk8s(helm_value_files=()):
             if not value_path.is_file():
                 raise FileNotFoundError(f"Missing Helm values file: {value_path}")
             values_arguments.extend(["-f", str(value_path)])
+        helm_upgrade_command = [
+            "sudo",
+            "microk8s",
+            "helm3",
+            "upgrade",
+            "--install",
+            "snmp",
+            *values_arguments,
+            str(BASE_DIR.parent / "charts" / "splunk-connect-for-snmp"),
+            "--namespace=sc4snmp",
+            "--create-namespace",
+        ]
+
+        # A completed Job normally remains for 300 seconds. If its TTL has
+        # removed it, restore it before the staged rebuild so the first Helm
+        # upgrade below cannot start inventory ahead of the workers.
+        existing_job = subprocess.run(
+            [
+                "sudo",
+                "microk8s",
+                "kubectl",
+                "get",
+                "job/snmp-splunk-connect-for-snmp-inventory",
+                "-n",
+                "sc4snmp",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        if existing_job.returncode != 0:
+            logger.info("Restoring the completed inventory Job before rebuilding")
+            _run_integration_command(
+                helm_upgrade_command,
+                "restoring the completed inventory Job before rebuilding",
+            )
+            wait_for_microk8s_job_complete(
+                "job/snmp-splunk-connect-for-snmp-inventory", "inventory Job"
+            )
 
         logger.info(
             "Deleting scheduler/worker resources and clearing Redis/RedBeat "
@@ -683,6 +722,18 @@ def rebuild_stack_preserve_mongo_microk8s(helm_value_files=()):
             ],
             "deleting the Redis StatefulSet",
         )
+        logger.info("Re-installing the release without any config change")
+        _run_integration_command(
+            helm_upgrade_command,
+            "re-installing the release with unchanged Helm values",
+        )
+        for worker in ("poller", "sender"):
+            deployment = f"deployment/snmp-splunk-connect-for-snmp-worker-{worker}"
+            wait_for_microk8s_rollout(deployment, f"worker-{worker}")
+            wait_for_microk8s_worker_ready(deployment, f"worker-{worker}")
+
+        # Keep the completed Job during the first upgrade so it cannot schedule
+        # the only immediate full walk before the new workers are consuming tasks.
         _run_integration_command(
             [
                 "sudo",
@@ -694,24 +745,19 @@ def rebuild_stack_preserve_mongo_microk8s(helm_value_files=()):
                 "sc4snmp",
                 "--ignore-not-found",
             ],
-            "deleting the inventory Job",
+            "deleting the inventory Job after the workers are ready",
         )
-        logger.info("Re-installing the release without any config change")
+        # Capture the boundary before the Job can trigger the immediate walk.
+        post_rebuild_earliest = int(time.time())
+        logger.info("Re-running inventory with unchanged Helm values")
         _run_integration_command(
-            [
-                "sudo",
-                "microk8s",
-                "helm3",
-                "upgrade",
-                "--install",
-                "snmp",
-                *values_arguments,
-                str(BASE_DIR.parent / "charts" / "splunk-connect-for-snmp"),
-                "--namespace=sc4snmp",
-                "--create-namespace",
-            ],
-            "re-installing the release with unchanged Helm values",
+            helm_upgrade_command,
+            "re-running the inventory Job with unchanged Helm values",
         )
+        wait_for_microk8s_job_complete(
+            "job/snmp-splunk-connect-for-snmp-inventory", "unchanged inventory Job"
+        )
+        return post_rebuild_earliest
 
     except Exception as e:
         logger.info(f"[ERROR] Rebuild simulation failed: {e}")
@@ -883,6 +929,60 @@ def wait_for_microk8s_rollout(kubernetes_resource, description):
             "--timeout=180s",
         ],
         f"waiting for the {description} Kubernetes rollout",
+    )
+
+
+def wait_for_microk8s_job_complete(kubernetes_resource, description):
+    _run_integration_command(
+        [
+            "sudo",
+            "microk8s",
+            "kubectl",
+            "wait",
+            "--for=condition=complete",
+            kubernetes_resource,
+            "-n",
+            "sc4snmp",
+            "--timeout=180s",
+        ],
+        f"waiting for the {description} to finish",
+        timeout=INTEGRATION_TEST_TIMEOUT + 10,
+    )
+
+
+def wait_for_microk8s_worker_ready(kubernetes_resource, description):
+    deadline = time.monotonic() + INTEGRATION_TEST_TIMEOUT
+    command = [
+        "sudo",
+        "microk8s",
+        "kubectl",
+        "exec",
+        kubernetes_resource,
+        "-n",
+        "sc4snmp",
+        "--",
+        "sh",
+        "-c",
+        "test -e /tmp/worker_ready",
+    ]
+    last_error = None
+    while time.monotonic() < deadline:
+        try:
+            result = subprocess.run(
+                command,
+                capture_output=True,
+                text=True,
+                timeout=min(30, max(1, deadline - time.monotonic())),
+            )
+            if result.returncode == 0:
+                logger.info("%s is ready to accept Celery tasks", description)
+                return
+            last_error = (result.stderr or result.stdout).strip()
+        except subprocess.TimeoutExpired as exc:
+            last_error = str(exc)
+        time.sleep(2)
+    raise AssertionError(
+        f"Timed out waiting for {description} to accept Celery tasks: {last_error}"
     )
 
 

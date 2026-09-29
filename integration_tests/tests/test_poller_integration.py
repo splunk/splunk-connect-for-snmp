@@ -2103,7 +2103,7 @@ def test_poller_new_local_mib_is_resolved_after_worker_restart(
 def setup_rebuild(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
-    # A short walk cycle retries setup if a walk lands during a worker rollout.
+    # Full walks clamp this to 1800 seconds, so the first walk must run.
     inventory_record = f"{trap_external_ip},,2c,public,,,60,rebuild_profile,,"
     deleted_inventory_record = f"{inventory_record}t"
     helm_value_files = ["inventory.yaml", "profiles.yaml"]
@@ -2163,10 +2163,12 @@ class TestRebuildWithoutConfigChange:
             "volume, with no inventory/profile/group config change"
         )
         if str(deployment) == "microk8s":
-            rebuild_stack_preserve_mongo_microk8s(["inventory.yaml", "profiles.yaml"])
+            post_rebuild_earliest = rebuild_stack_preserve_mongo_microk8s(
+                ["inventory.yaml", "profiles.yaml"]
+            )
         else:
             rebuild_stack_preserve_mongo_compose()
-        post_rebuild_earliest = int(time.time()) + 1
+            post_rebuild_earliest = int(time.time()) + 1
         time.sleep(60)
 
         # Only metrics created after the rebuild can show that polling resumed.
