@@ -44,7 +44,7 @@ from pysnmp.smi import builder, compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from requests_cache import MongoCache
 
-from splunk_connect_for_snmp.common.common import human_bool
+from splunk_connect_for_snmp.common.common import get_mongo_client, human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.auth import get_auth, setup_transport_target
@@ -59,7 +59,6 @@ MIB_STANDARD = os.getenv("MIB_STANDARD", "https://pysnmp.github.io/mibs/standard
 HOSTS_TO_IGNORE_NOT_INCREASING_OIDS = os.getenv("IGNORE_NOT_INCREASING_OIDS", "").split(
     ","
 )
-MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 IGNORE_EMPTY_VARBINDS = human_bool(os.getenv("IGNORE_EMPTY_VARBINDS", False))
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
@@ -345,7 +344,7 @@ def extract_indexes(index):
 class Poller(Task):
     def __init__(self, **kwargs):
         self.standard_mibs = []
-        self.mongo_client = pymongo.MongoClient(MONGO_URI)
+        self.mongo_client = get_mongo_client()
 
         if kwargs.get("no_mongo"):
             self.session = Session()
@@ -358,6 +357,7 @@ class Poller(Task):
                 match_headers=False,
                 stale_if_error=True,
                 allowable_codes=[200],
+                autoclose=False,  # don't close the shared process-wide client
             )
             self._uses_cached_mib_index_session = True
 
@@ -385,6 +385,11 @@ class Poller(Task):
         self.mib_map: Dict[str, str] = {}
         if not self._refresh_mib_map(reason="startup"):
             raise RuntimeError("Unable to initialize the MIB index")
+
+    def rebind_mongo_client(self):
+        # self.session keeps the startup client; it is only used before fork.
+        self.mongo_client = get_mongo_client()
+        self.profiles_manager = ProfilesManager(self.mongo_client)
 
     def _refresh_mib_map(self, reason: str) -> bool:
         """

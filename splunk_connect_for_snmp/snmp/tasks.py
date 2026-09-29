@@ -35,13 +35,12 @@ import os
 import socket
 import time
 
-import pymongo
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from mongolock import MongoLock, MongoLockLocked
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
-from splunk_connect_for_snmp.common.common import human_bool
+from splunk_connect_for_snmp.common.common import get_mongo_client, human_bool
 from splunk_connect_for_snmp.common.custom_cache import ttl_lru_cache
 from splunk_connect_for_snmp.snmp.manager import (
     Poller,
@@ -53,7 +52,6 @@ from splunk_connect_for_snmp.snmp.trap_varbind_limit import limit_trap_varbind_p
 
 logger = get_task_logger(__name__)
 
-MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 WALK_RETRY_MAX_INTERVAL = int(os.getenv("WALK_RETRY_MAX_INTERVAL", "180"))
@@ -83,9 +81,7 @@ async def walk_async_wrapper(self: Poller, **kwargs):
     chain_of_tasks_expiry_time = kwargs.get("chain_of_tasks_expiry_time")
     if profile:
         profile = [profile]
-    mongo_client = pymongo.MongoClient(MONGO_URI)
-    mongo_db = mongo_client[MONGO_DB]
-    mongo_inventory = mongo_db.inventory
+    mongo_inventory = get_mongo_client()[MONGO_DB].inventory
 
     ir = get_inventory(mongo_inventory, address)
     retry = True
@@ -129,9 +125,7 @@ async def poll_async_wrapper(self: Poller, **kwargs):
     address = kwargs["address"]
     profiles = kwargs["profiles"]
     group = kwargs.get("group")
-    mongo_client = pymongo.MongoClient(MONGO_URI)
-    mongo_db = mongo_client[MONGO_DB]
-    mongo_inventory = mongo_db.inventory
+    mongo_inventory = get_mongo_client()[MONGO_DB].inventory
 
     ir = get_inventory(mongo_inventory, address)
     _, result = await self.do_work(ir, profiles=profiles)

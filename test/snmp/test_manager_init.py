@@ -30,6 +30,7 @@ class TestMibMapStartupRefresh(TestCase):
 
         Poller()
 
+        self.assertIs(False, mock_session_cls.call_args.kwargs["autoclose"])
         mock_session.get.assert_called_once()
         args, kwargs = mock_session.get.call_args
         self.assertTrue(
