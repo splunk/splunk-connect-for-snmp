@@ -16,10 +16,11 @@
 
 from pathlib import Path
 
-from celery import Celery, signals
+from celery import Celery, current_app, signals
 from opentelemetry.instrumentation.celery import CeleryInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 
+from splunk_connect_for_snmp.common.common import close_mongo_client
 from splunk_connect_for_snmp.common.customised_json_formatter import (
     CustomisedJSONFormatter,
 )
@@ -33,6 +34,20 @@ READINESS_FILE = Path("/tmp/worker_ready")
 def init_celery_tracing(*args, **kwargs):
     CeleryInstrumentor().instrument()
     LoggingInstrumentor().instrument()
+
+
+@signals.worker_process_init.connect(weak=False)
+def rebind_mongo_clients(*args, **kwargs):
+    # Task instances are built in the parent before fork; give each child its own client.
+    for task in current_app.tasks.values():
+        rebind = getattr(task, "rebind_mongo_client", None)
+        if rebind is not None:
+            rebind()
+
+
+@signals.worker_process_shutdown.connect(weak=False)
+def close_process_mongo_client(*args, **kwargs):
+    close_mongo_client()
 
 
 @signals.beat_init.connect(weak=False)
