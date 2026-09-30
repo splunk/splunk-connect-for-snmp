@@ -1620,21 +1620,21 @@ dev = ["black (==22.3.0)", "bump2version (>=1.0.1)", "doc8 (>=1.1.1)", "flake8 (
 
 [[package]]
 name = "pysnmp"
-version = "7.1.29"
+version = "7.1.30"
 description = "A Python library for SNMP"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "pysnmp-7.1.29-py3-none-any.whl", hash = "sha256:6d08124574c474853870f20d728b54335b42fb1e68068bbb486ec077b3d052cf"},
-    {file = "pysnmp-7.1.29.tar.gz", hash = "sha256:d0da6726c4d35b1e57027c98e2065928656b0cc5d3ce5a60b3535e1825cc60ee"},
+    {file = "pysnmp-7.1.30-py3-none-any.whl", hash = "sha256:1f648b7e38fc400e63b493a45d06581d837d07cddd901e6dc9c45be03e9ed685"},
+    {file = "pysnmp-7.1.30.tar.gz", hash = "sha256:db72f439b066725d2586dff068478dc8e9b303a4dba3294462b0e76b3cb63bc2"},
 ]
 
 [package.dependencies]
-pyasn1 = ">=0.6.3"
+pyasn1 = ">=0.6.4"
 
 [package.extras]
-dev = ["Sphinx (>=7.0.0,<8.0.0)", "bump2version (>=1.0.1)", "codecov (>=2.1.12)", "cryptography (>=50.0.0)", "doc8 (>=1.0.0)", "flake8 (>=7.0.0)", "furo (>=2023.1.1)", "jinja2 (>=3.1.6)", "pep8-naming (>=0.14.1)", "pre-commit (==2.21.0)", "pysmi (>=2.0.0)", "pytest (>=7.2.0)", "pytest-asyncio (>=0.21.1)", "pytest-codecov (>=0.4.0)", "pytest-cov (>=4.1.0)", "pytest-rerunfailures (>=12.0,<13.0)", "ruff (>=0.11.7)", "sphinx-copybutton (>=0.5.2)", "sphinx-notfound-page (>=1.0.0)", "sphinx-polyversion (>=1.0.0)", "sphinx-sitemap-lextudio (>=2.5.2)", "tomli (>=2.0.1,<3.0.0) ; python_version < \"3.11\""]
+dev = ["Sphinx (>=7.0.0,<8.0.0)", "bump2version (>=1.0.1)", "codecov (>=2.1.12)", "cryptography (>=50.0.1)", "doc8 (>=1.0.0)", "flake8 (>=7.0.0)", "furo (>=2023.1.1)", "jinja2 (>=3.1.6)", "pep8-naming (>=0.14.1)", "pre-commit (==2.21.0)", "pysmi (>=2.0.0)", "pytest (>=7.2.0)", "pytest-asyncio (>=0.21.1)", "pytest-codecov (>=0.4.0)", "pytest-cov (>=4.1.0)", "pytest-rerunfailures (>=12.0,<13.0)", "ruff (>=0.11.7)", "sphinx-copybutton (>=0.5.2)", "sphinx-notfound-page (>=1.0.0)", "sphinx-polyversion (>=1.0.0)", "sphinx-sitemap-lextudio (>=2.5.2)", "tomli (>=2.0.1,<3.0.0) ; python_version < \"3.11\""]
 
 [[package]]
 name = "pysnmpcrypto"
