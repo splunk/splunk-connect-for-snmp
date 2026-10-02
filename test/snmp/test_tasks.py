@@ -56,6 +56,28 @@ class TestTasks(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.get_inventory")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
+    def test_poll_and_walk_reuse_mongo_client(
+        self,
+        m_do_work,
+        m_poller,
+        m_get_inventory,
+        m_mongo_client,
+    ):
+        m_poller.return_value = None
+        from splunk_connect_for_snmp.snmp.tasks import poll, walk
+
+        m_do_work.return_value = (False, {})
+        kwargs = {"address": "192.168.0.1", "profiles": ["profile1"], "frequency": 70}
+
+        poll(**kwargs)
+        poll(**kwargs)
+        walk(address="192.168.0.1")
+
+        m_mongo_client.assert_called_once()
+
+    @patch("splunk_connect_for_snmp.snmp.manager.get_inventory")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
     @patch("time.time")
     def test_poll_with_group(
         self,
