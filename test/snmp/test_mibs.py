@@ -279,7 +279,7 @@ class TestMibIndexRefresh(TestCase):
         poller = _poller_for_mib_refresh(session)
 
         with self.assertLogs(
-            "splunk_connect_for_snmp.snmp.manager", level="WARNING"
+            "splunk_connect_for_snmp.snmp.manager.startup", level="WARNING"
         ) as captured_logs:
             refreshed = poller._refresh_mib_map(reason="startup")
 

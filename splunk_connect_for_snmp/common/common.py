@@ -23,6 +23,10 @@ from typing import Union
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 
+from splunk_connect_for_snmp.common.customised_json_formatter import (
+    CustomisedJSONFormatter,
+)
+
 
 def human_bool(flag: Union[str, bool], default: bool = False) -> bool:
 
@@ -70,26 +74,33 @@ def disable_mongo_logging():
     logging.getLogger("pymongo").setLevel(logging.CRITICAL)
 
 
+def get_startup_logger(name: str) -> logging.Logger:
+    """
+    Return a logger usable before Celery configures task logging.
+
+    :param name: Name of the logger used for startup messages
+
+    :return: Logger configured to emit startup messages independently of Celery
+    """
+    logger = logging.getLogger(name)
+    logger.setLevel(os.getenv("LOG_LEVEL", "INFO").upper())
+    if not logger.handlers:
+        handler = logging.StreamHandler()
+        handler.setFormatter(CustomisedJSONFormatter())
+        logger.addHandler(handler)
+        logger.propagate = False
+    return logger
+
+
 def wait_for_mongodb_replicaset(logger=None, max_retries=120, retry_interval=5):
     """
     Wait for MongoDB to be ready before starting the application.
     For replica sets, waits for PRIMARY to be elected.
     """
     if logger is None:
-        logger = logging.getLogger(
+        logger = get_startup_logger(
             "splunk_connect_for_snmp.wait_for_mongodb_replicaset"
         )
-        logger.setLevel(os.getenv("LOG_LEVEL", "INFO").upper())
-        if not logger.handlers:
-            handler = logging.StreamHandler()
-            handler.setFormatter(
-                logging.Formatter(
-                    "[%(asctime)s: %(levelname)s] %(message)s",
-                    "%Y-%m-%d %H:%M:%S",
-                )
-            )
-            logger.addHandler(handler)
-            logger.propagate = False
 
     mongo_mode = os.getenv("MONGODB_MODE", "standalone").lower()
     if mongo_mode == "standalone":

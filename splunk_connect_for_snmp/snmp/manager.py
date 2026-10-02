@@ -44,7 +44,7 @@ from pysnmp.smi import builder, compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from requests_cache import MongoCache
 
-from splunk_connect_for_snmp.common.common import human_bool
+from splunk_connect_for_snmp.common.common import get_startup_logger, human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.auth import get_auth, setup_transport_target
@@ -87,6 +87,7 @@ PYSNMP_PROTOCOL_MIBS = (
 )
 
 logger = get_task_logger(__name__)
+startup_logger = get_startup_logger(f"{__name__}.startup")
 
 
 if PYSNMP_DEBUG:
@@ -406,8 +407,8 @@ class Poller(Task):
         response_validator: MibIndexResponseValidator = MibIndexResponseValidator()
         response_hooks = {"response": response_validator}
 
-        logger.info(
-            f"MIB index refresh requested reason={reason} "
+        startup_logger.info(
+            f"MIB index refresh requested reason={reason} task={self.name} "
             f"conditional_refresh={conditional_refresh}"
         )
         try:
@@ -423,9 +424,9 @@ class Poller(Task):
             failed_response = getattr(exc, "response", None)
             status_code = getattr(failed_response, "status_code", "unavailable")
             from_cache = getattr(failed_response, "from_cache", "unknown")
-            logger.exception(
-                f"MIB index refresh failed reason={reason} status={status_code} "
-                f"from_cache={from_cache} "
+            startup_logger.exception(
+                f"MIB index refresh failed reason={reason} task={self.name} "
+                f"status={status_code} from_cache={from_cache} "
                 "valid_mappings=0 previous_map_preserved=True "
                 f"previous_mappings={previous_mapping_count}"
             )
@@ -435,23 +436,24 @@ class Poller(Task):
         from_cache = bool(getattr(response, "from_cache", False))
         # requests-cache sets revalidated=True after a successful 304 response.
         revalidated = bool(getattr(response, "revalidated", False))
-        logger.info(
-            f"MIB index refresh response reason={reason} status={status_code} "
-            f"from_cache={from_cache} revalidated={revalidated}"
+        startup_logger.info(
+            f"MIB index refresh response reason={reason} task={self.name} "
+            f"status={status_code} from_cache={from_cache} revalidated={revalidated}"
         )
 
         if conditional_refresh and from_cache and not revalidated:
-            logger.warning(
-                f"Live MIB index could not be confirmed during the {reason} refresh; "
-                "stale cached MIB metadata may be in use, and newly compiled MIBs "
-                "may not be available until a successful worker restart or later "
-                "refresh"
+            startup_logger.warning(
+                f"Live MIB index could not be confirmed during the {reason} refresh "
+                f"task={self.name}; stale cached MIB metadata may be in use, and "
+                "newly compiled MIBs may not be available until a successful worker "
+                "restart or later refresh"
             )
 
         if status_code != 200:
-            logger.error(
-                f"MIB index refresh failed reason={reason} status={status_code} "
-                f"from_cache={from_cache} revalidated={revalidated} "
+            startup_logger.error(
+                f"MIB index refresh failed reason={reason} task={self.name} "
+                f"status={status_code} from_cache={from_cache} "
+                f"revalidated={revalidated} "
                 "valid_mappings=0 previous_map_preserved=True "
                 f"previous_mappings={previous_mapping_count}"
             )
@@ -460,16 +462,17 @@ class Poller(Task):
         new_mib_map, malformed_rows = response_validator.parse_response(response)
 
         if malformed_rows:
-            logger.warning(
+            startup_logger.warning(
                 f"MIB index refresh ignored malformed rows reason={reason} "
-                f"status={status_code} from_cache={from_cache} "
+                f"task={self.name} status={status_code} from_cache={from_cache} "
                 f"revalidated={revalidated} malformed_rows={malformed_rows}"
             )
 
         if not new_mib_map:
-            logger.error(
-                f"MIB index refresh failed reason={reason} status={status_code} "
-                f"from_cache={from_cache} revalidated={revalidated} "
+            startup_logger.error(
+                f"MIB index refresh failed reason={reason} task={self.name} "
+                f"status={status_code} from_cache={from_cache} "
+                f"revalidated={revalidated} "
                 f"valid_mappings=0 malformed_rows={malformed_rows} "
                 "previous_map_preserved=True "
                 f"previous_mappings={previous_mapping_count}"
@@ -477,9 +480,9 @@ class Poller(Task):
             return False
 
         self.mib_map = new_mib_map
-        logger.info(
-            f"MIB index refresh completed reason={reason} status={status_code} "
-            f"from_cache={from_cache} revalidated={revalidated} "
+        startup_logger.info(
+            f"MIB index refresh completed reason={reason} task={self.name} "
+            f"status={status_code} from_cache={from_cache} revalidated={revalidated} "
             f"valid_mappings={len(new_mib_map)} malformed_rows={malformed_rows}"
         )
         return True
