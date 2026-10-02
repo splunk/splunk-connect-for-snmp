@@ -18,14 +18,14 @@ import os
 import sys
 import time
 import typing
-from typing import Optional, Union
+from typing import Union
 
 import pymongo
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 
-_mongo_client: Optional[MongoClient] = None
-_mongo_client_pid: Optional[int] = None
+_mongo_client: MongoClient | None = None
+_mongo_client_pid: int | None = None
 
 
 def get_mongo_client() -> MongoClient:

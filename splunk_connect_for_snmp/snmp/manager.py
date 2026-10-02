@@ -385,9 +385,12 @@ class Poller(Task):
         self.mib_map: Dict[str, str] = {}
         if not self._refresh_mib_map(reason="startup"):
             raise RuntimeError("Unable to initialize the MIB index")
+        # Drop the MIB server connection so forked children don't inherit its socket.
+        self.session.close()
 
     def rebind_mongo_client(self):
-        # self.session keeps the startup client; it is only used before fork.
+        """Use this process's MongoClient; called in each forked child."""
+        # self.session keeps the parent's (closed) client; only startup uses it.
         self.mongo_client = get_mongo_client()
         self.profiles_manager = ProfilesManager(self.mongo_client)
 
