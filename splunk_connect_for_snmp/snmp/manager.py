@@ -408,7 +408,7 @@ class Poller(Task):
         response_hooks = {"response": response_validator}
 
         startup_logger.info(
-            f"MIB index refresh requested reason={reason} "
+            f"MIB index refresh requested reason={reason} task={self.name} "
             f"conditional_refresh={conditional_refresh}"
         )
         try:
@@ -425,8 +425,8 @@ class Poller(Task):
             status_code = getattr(failed_response, "status_code", "unavailable")
             from_cache = getattr(failed_response, "from_cache", "unknown")
             startup_logger.exception(
-                f"MIB index refresh failed reason={reason} status={status_code} "
-                f"from_cache={from_cache} "
+                f"MIB index refresh failed reason={reason} task={self.name} "
+                f"status={status_code} from_cache={from_cache} "
                 "valid_mappings=0 previous_map_preserved=True "
                 f"previous_mappings={previous_mapping_count}"
             )
@@ -437,22 +437,23 @@ class Poller(Task):
         # requests-cache sets revalidated=True after a successful 304 response.
         revalidated = bool(getattr(response, "revalidated", False))
         startup_logger.info(
-            f"MIB index refresh response reason={reason} status={status_code} "
-            f"from_cache={from_cache} revalidated={revalidated}"
+            f"MIB index refresh response reason={reason} task={self.name} "
+            f"status={status_code} from_cache={from_cache} revalidated={revalidated}"
         )
 
         if conditional_refresh and from_cache and not revalidated:
             startup_logger.warning(
-                f"Live MIB index could not be confirmed during the {reason} refresh; "
-                "stale cached MIB metadata may be in use, and newly compiled MIBs "
-                "may not be available until a successful worker restart or later "
-                "refresh"
+                f"Live MIB index could not be confirmed during the {reason} refresh "
+                f"task={self.name}; stale cached MIB metadata may be in use, and "
+                "newly compiled MIBs may not be available until a successful worker "
+                "restart or later refresh"
             )
 
         if status_code != 200:
             startup_logger.error(
-                f"MIB index refresh failed reason={reason} status={status_code} "
-                f"from_cache={from_cache} revalidated={revalidated} "
+                f"MIB index refresh failed reason={reason} task={self.name} "
+                f"status={status_code} from_cache={from_cache} "
+                f"revalidated={revalidated} "
                 "valid_mappings=0 previous_map_preserved=True "
                 f"previous_mappings={previous_mapping_count}"
             )
@@ -463,14 +464,15 @@ class Poller(Task):
         if malformed_rows:
             startup_logger.warning(
                 f"MIB index refresh ignored malformed rows reason={reason} "
-                f"status={status_code} from_cache={from_cache} "
+                f"task={self.name} status={status_code} from_cache={from_cache} "
                 f"revalidated={revalidated} malformed_rows={malformed_rows}"
             )
 
         if not new_mib_map:
             startup_logger.error(
-                f"MIB index refresh failed reason={reason} status={status_code} "
-                f"from_cache={from_cache} revalidated={revalidated} "
+                f"MIB index refresh failed reason={reason} task={self.name} "
+                f"status={status_code} from_cache={from_cache} "
+                f"revalidated={revalidated} "
                 f"valid_mappings=0 malformed_rows={malformed_rows} "
                 "previous_map_preserved=True "
                 f"previous_mappings={previous_mapping_count}"
@@ -479,8 +481,8 @@ class Poller(Task):
 
         self.mib_map = new_mib_map
         startup_logger.info(
-            f"MIB index refresh completed reason={reason} status={status_code} "
-            f"from_cache={from_cache} revalidated={revalidated} "
+            f"MIB index refresh completed reason={reason} task={self.name} "
+            f"status={status_code} from_cache={from_cache} revalidated={revalidated} "
             f"valid_mappings={len(new_mib_map)} malformed_rows={malformed_rows}"
         )
         return True

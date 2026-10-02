@@ -23,6 +23,10 @@ from typing import Union
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 
+from splunk_connect_for_snmp.common.customised_json_formatter import (
+    CustomisedJSONFormatter,
+)
+
 
 def human_bool(flag: Union[str, bool], default: bool = False) -> bool:
 
@@ -82,14 +86,9 @@ def get_startup_logger(name: str) -> logging.Logger:
     logger.setLevel(os.getenv("LOG_LEVEL", "INFO").upper())
     if not logger.handlers:
         handler = logging.StreamHandler()
-        handler.setFormatter(
-            logging.Formatter(
-                "[%(asctime)s: %(levelname)s] %(message)s",
-                "%Y-%m-%d %H:%M:%S",
-            )
-        )
+        handler.setFormatter(CustomisedJSONFormatter())
         logger.addHandler(handler)
-    logger.propagate = False
+        logger.propagate = False
     return logger
 
 
