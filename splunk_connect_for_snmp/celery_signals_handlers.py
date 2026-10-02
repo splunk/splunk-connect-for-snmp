@@ -36,6 +36,12 @@ def init_celery_tracing(*args, **kwargs):
     LoggingInstrumentor().instrument()
 
 
+@signals.worker_before_create_process.connect(weak=False)
+def close_parent_mongo_client(*args, **kwargs):
+    # Runs in the prefork parent before each fork, so children don't inherit its sockets.
+    close_mongo_client()
+
+
 @signals.worker_process_init.connect(weak=False)
 def rebind_mongo_clients(*args, **kwargs):
     # Task instances are built in the parent before fork; give each child its own client.
