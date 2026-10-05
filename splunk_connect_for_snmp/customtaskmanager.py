@@ -55,6 +55,17 @@ class CustomPeriodicTaskManager:
                     f"Deleting Schedule: {periodic_document.name} delete_unused_poll_tasks"
                 )
 
+    def delete_unused_discovery_tasks(self, active_schedules: List[str]):
+        for periodic_document in RedBeatSchedulerEntry.get_schedules(app=app):
+            if (
+                periodic_document.task == DISCOVERY_TASK
+                and periodic_document.name not in active_schedules
+            ):
+                periodic_document.delete()
+                logger.info(
+                    f"Deleting Schedule: {periodic_document.name} delete_unused_discovery_tasks"
+                )
+
     def did_expiry_time_change(self, new_expiry_time, task_types: List[str]):
         previous_expiry_time = self.get_chain_of_task_expiry(task_types)
         if previous_expiry_time is None or previous_expiry_time == new_expiry_time:

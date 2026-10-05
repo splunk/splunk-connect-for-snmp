@@ -65,6 +65,7 @@ def load():
                 f"Task expiry time was modified, generating new tasks for discovery"
             )
 
+        active_schedules = []
         for key, value in autodiscovery.items():
             value["discovery_name"] = key
             discovery_record = DiscoveryRecord(**value)
@@ -75,10 +76,12 @@ def load():
                     discovery_record=discovery_record, app=app
                 )
                 periodic_obj.manage_task(**task_config)
+                active_schedules.append(task_config["name"])
             else:
                 logger.info(
                     f"Skipping task for the discovery: {key} because IPv6 is disabled."
                 )
+        periodic_obj.delete_unused_discovery_tasks(active_schedules)
         return 0
     except Exception as e:
         logger.error(f"Error occurred while creating the task: {e}")

@@ -77,6 +77,29 @@ class TestCustomTaskManager(TestCase):
         self.assertFalse(task3.delete.called)
         self.assertFalse(task4.delete.called)
 
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules")
+    def test_delete_unused_discovery_tasks(self, m_objects):
+        task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
+        active = Mock()
+        active.task = DISCOVERY_TASK
+        active.name = "sc4snmp;active;discovery"
+
+        removed = Mock()
+        removed.task = DISCOVERY_TASK
+        removed.name = "sc4snmp;removed;discovery"
+
+        walk = Mock()
+        walk.task = WALK_TASK
+        walk.name = "sc4snmp;192.168.0.1:161;walk"
+
+        m_objects.return_value = [active, removed, walk]
+
+        task_manager.delete_unused_discovery_tasks(["sc4snmp;active;discovery"])
+
+        removed.delete.assert_called_once()
+        active.delete.assert_not_called()
+        walk.delete.assert_not_called()
+
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
     def test_manage_existing_task(self, redbeat_scheduler_entry_from_key):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
