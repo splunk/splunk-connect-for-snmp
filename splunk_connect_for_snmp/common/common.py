@@ -20,6 +20,7 @@ import time
 import typing
 from typing import Union
 
+import pymongo
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 
@@ -37,7 +38,7 @@ def get_mongo_client() -> MongoClient:
     pid = os.getpid()
     if _mongo_client is None or _mongo_client_pid != pid:
         # A client inherited via fork belongs to the parent: replace, don't close.
-        _mongo_client = MongoClient(os.getenv("MONGO_URI"), connect=False)
+        _mongo_client = pymongo.MongoClient(os.getenv("MONGO_URI"), connect=False)
         _mongo_client_pid = pid
     return _mongo_client
 
