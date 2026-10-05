@@ -22,6 +22,10 @@ from .poller import app
 
 logger = logging.getLogger(__name__)
 
+WALK_TASK = "splunk_connect_for_snmp.snmp.tasks.walk"
+POLL_TASK = "splunk_connect_for_snmp.snmp.tasks.poll"
+DISCOVERY_TASK = "splunk_connect_for_snmp.discovery.tasks.discovery"
+
 
 class CustomPeriodicTaskManager:
     def __delete_all_tasks_of_type(self, task, function_name):
@@ -51,31 +55,16 @@ class CustomPeriodicTaskManager:
                     f"Deleting Schedule: {periodic_document.name} delete_unused_poll_tasks"
                 )
 
-    def did_expiry_time_change(self, new_expiry_time):
-        previous_expiry_time = self.get_chain_of_task_expiry()
-        expiry_time_changed = False
-        if previous_expiry_time is not None and previous_expiry_time != new_expiry_time:
-            self.delete_all_walk_tasks()
-            self.delete_all_poll_tasks()
-            self.delete_all_discovery_tasks()
-            expiry_time_changed = True
-        return expiry_time_changed
+    def did_expiry_time_change(self, new_expiry_time, task_types: List[str]):
+        previous_expiry_time = self.get_chain_of_task_expiry(task_types)
+        if previous_expiry_time is None or previous_expiry_time == new_expiry_time:
+            return False
+        for task_type in task_types:
+            self.__delete_all_tasks_of_type(task_type, "did_expiry_time_change")
+        return True
 
     def delete_all_poll_tasks(self):
-        self.__delete_all_tasks_of_type(
-            "splunk_connect_for_snmp.snmp.tasks.poll", "delete_all_poll_tasks"
-        )
-
-    def delete_all_walk_tasks(self):
-        self.__delete_all_tasks_of_type(
-            "splunk_connect_for_snmp.snmp.tasks.walk", "delete_all_walk_tasks"
-        )
-
-    def delete_all_discovery_tasks(self):
-        self.__delete_all_tasks_of_type(
-            "splunk_connect_for_snmp.discovery.tasks.discovery",
-            "delete_all_discovery_tasks",
-        )
+        self.__delete_all_tasks_of_type(POLL_TASK, "delete_all_poll_tasks")
 
     def rerun_all_walks(self):
         periodic_tasks = RedBeatSchedulerEntry.get_schedules()
@@ -126,12 +115,11 @@ class CustomPeriodicTaskManager:
             return
         periodic_document.save()
 
-    def get_chain_of_task_expiry(self):
-        periodic_tasks = RedBeatSchedulerEntry.get_schedules(app=app)
-        if periodic_tasks:
-            return periodic_tasks[0].options.get("expires", None)
-        else:
-            return None
+    def get_chain_of_task_expiry(self, task_types: List[str]):
+        for periodic_task in RedBeatSchedulerEntry.get_schedules(app=app):
+            if periodic_task.task in task_types:
+                return periodic_task.options.get("expires", None)
+        return None
 
     def walk_task_exists(self, target: str) -> bool:
         walk_task_name = f"sc4snmp;{target};walk"

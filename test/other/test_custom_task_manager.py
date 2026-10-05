@@ -3,11 +3,33 @@ from unittest.mock import ANY, MagicMock, Mock, patch
 
 from celery.schedules import schedule
 
-from splunk_connect_for_snmp.customtaskmanager import CustomPeriodicTaskManager
+from splunk_connect_for_snmp.customtaskmanager import (
+    DISCOVERY_TASK,
+    POLL_TASK,
+    WALK_TASK,
+    CustomPeriodicTaskManager,
+)
 
 
 def raise_exception():
     raise KeyError
+
+
+def mock_schedules(m_from_key, m_get_schedules, options):
+    schedules = []
+    from_key_entries = {}
+    for task_type in (WALK_TASK, POLL_TASK, DISCOVERY_TASK):
+        schedule_entry = Mock()
+        schedule_entry.task = task_type
+        schedule_entry.name = f"sc4snmp;{task_type}"
+        schedule_entry.options = options
+        schedules.append(schedule_entry)
+        from_key_entries[task_type] = Mock()
+    m_get_schedules.return_value = schedules
+    m_from_key.side_effect = lambda key, app=None: from_key_entries[
+        key.removeprefix("redbeat:sc4snmp;")
+    ]
+    return from_key_entries
 
 
 class TestCustomTaskManager(TestCase):
@@ -206,96 +228,80 @@ class TestCustomTaskManager(TestCase):
         self.assertFalse(task_from_key3.delete.called)
 
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules")
-    @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
-    def test_delete_all_walk_tasks(self, m_from_key, m_objects):
-        task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
-        task1 = Mock()
-        task1.task = "splunk_connect_for_snmp.snmp.tasks.walk"
-        task1.name = "test1"
-
-        task2 = Mock()
-        task2.task = "splunk_connect_for_snmp.snmp.tasks.walk"
-        task2.name = "test2"
-
-        task3 = Mock()
-        task3.task = "splunk_connect_for_snmp.snmp.tasks.poll"
-        task3.name = "test3"
-
-        periodic_list = [task1, task2, task3]
-
-        m_objects.return_value = periodic_list
-        task_from_key1, task_from_key2, task_from_key3 = Mock(), Mock(), Mock()
-        m_from_key.side_effect = [task_from_key1, task_from_key2, task_from_key3]
-        task_manager.delete_all_walk_tasks()
-        self.assertTrue(task_from_key1.delete.called)
-        self.assertTrue(task_from_key2.delete.called)
-        self.assertFalse(task_from_key3.delete.called)
-
-    @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules")
     def test_get_chain_of_task_expiry(self, m_objects):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
-        task1 = Mock()
-        task1.task = "splunk_connect_for_snmp.snmp.tasks.walk"
-        task1.options = {"expires": 120}
+        discovery = Mock()
+        discovery.task = DISCOVERY_TASK
+        discovery.options = {"expires": 300}
 
-        task2 = Mock()
-        task2.task = "splunk_connect_for_snmp.snmp.tasks.walk"
-        task2.options = {"expires": 120}
+        walk = Mock()
+        walk.task = WALK_TASK
+        walk.options = {"expires": 120}
 
-        periodic_list = [task1, task2]
-        m_objects.return_value = periodic_list
-        self.assertEqual(120, task_manager.get_chain_of_task_expiry())
+        m_objects.return_value = [discovery, walk]
+        self.assertEqual(
+            120, task_manager.get_chain_of_task_expiry([WALK_TASK, POLL_TASK])
+        )
+        self.assertEqual(300, task_manager.get_chain_of_task_expiry([DISCOVERY_TASK]))
+
+        m_objects.return_value = [walk]
+        self.assertIsNone(task_manager.get_chain_of_task_expiry([DISCOVERY_TASK]))
 
         m_objects.return_value = []
-        self.assertIsNone(task_manager.get_chain_of_task_expiry())
+        self.assertIsNone(task_manager.get_chain_of_task_expiry([WALK_TASK]))
 
-        task1 = Mock()
-        task1.task = "splunk_connect_for_snmp.snmp.tasks.walk"
-        task1.options = {}
-        m_objects.return_value = [task1]
-        self.assertIsNone(task_manager.get_chain_of_task_expiry())
+        walk.options = {}
+        m_objects.return_value = [walk]
+        self.assertIsNone(task_manager.get_chain_of_task_expiry([WALK_TASK]))
 
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules")
-    def test_did_expiry_time_change_true(self, m_objects):
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
+    def test_did_expiry_time_change_deletes_only_polling_tasks(
+        self, m_from_key, m_objects
+    ):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
-        task_manager.delete_all_poll_tasks = Mock()
-        task_manager.delete_all_walk_tasks = Mock()
+        entries = mock_schedules(m_from_key, m_objects, {"expires": 120})
 
-        task1 = Mock()
-        task1.task = "splunk_connect_for_snmp.snmp.tasks.walk"
-        task1.options = {"expires": 120}
-        periodic_list = [task1]
-        m_objects.return_value = periodic_list
+        did_time_change = task_manager.did_expiry_time_change(
+            300, [WALK_TASK, POLL_TASK]
+        )
 
-        did_time_change = task_manager.did_expiry_time_change(300)
-        task_manager.delete_all_poll_tasks.assert_called()
-        task_manager.delete_all_walk_tasks.assert_called()
         self.assertTrue(did_time_change)
+        entries[WALK_TASK].delete.assert_called_once()
+        entries[POLL_TASK].delete.assert_called_once()
+        entries[DISCOVERY_TASK].delete.assert_not_called()
 
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules")
-    def test_did_expiry_time_change_false(self, m_objects):
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
+    def test_did_expiry_time_change_deletes_only_discovery_tasks(
+        self, m_from_key, m_objects
+    ):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
-        task_manager.delete_all_poll_tasks = Mock()
-        task_manager.delete_all_walk_tasks = Mock()
+        entries = mock_schedules(m_from_key, m_objects, {"expires": 120})
 
-        task1 = Mock()
-        task1.task = "splunk_connect_for_snmp.snmp.tasks.walk"
-        task1.options = {"expires": 120}
-        periodic_list = [task1]
-        m_objects.return_value = periodic_list
+        did_time_change = task_manager.did_expiry_time_change(300, [DISCOVERY_TASK])
 
-        m_objects.return_value = periodic_list
-        did_time_change = task_manager.did_expiry_time_change(120)
-        task_manager.delete_all_poll_tasks.assert_not_called()
-        task_manager.delete_all_walk_tasks.assert_not_called()
-        self.assertFalse(did_time_change)
+        self.assertTrue(did_time_change)
+        entries[DISCOVERY_TASK].delete.assert_called_once()
+        entries[WALK_TASK].delete.assert_not_called()
+        entries[POLL_TASK].delete.assert_not_called()
 
-        task1.options = {}
-        m_objects.return_value = [task1]
-        did_time_change = task_manager.did_expiry_time_change(200)
-        task_manager.delete_all_poll_tasks.assert_not_called()
-        task_manager.delete_all_walk_tasks.assert_not_called()
-        self.assertFalse(did_time_change)
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules")
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
+    def test_did_expiry_time_change_false(self, m_from_key, m_objects):
+        task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
+
+        mock_schedules(m_from_key, m_objects, {"expires": 120})
+        self.assertFalse(task_manager.did_expiry_time_change(120, [WALK_TASK]))
+        self.assertFalse(task_manager.did_expiry_time_change(120, [DISCOVERY_TASK]))
+
+        mock_schedules(m_from_key, m_objects, {})
+        self.assertFalse(task_manager.did_expiry_time_change(200, [WALK_TASK]))
+
+        m_objects.return_value = []
+        self.assertFalse(task_manager.did_expiry_time_change(200, [DISCOVERY_TASK]))
+
+        m_from_key.assert_not_called()
 
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
     def test_walk_task_exists_true(self, redbeat_scheduler_entry_from_key):

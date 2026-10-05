@@ -22,7 +22,7 @@ with suppress(ImportError, OSError):
 DISCOVERY_CONFIG_PATH = os.getenv(
     "DISCOVERY_CONFIG_PATH", "/app/discovery/discovery-config.yaml"
 )
-CHAIN_OF_TASKS_EXPIRY_TIME = os.getenv("CHAIN_OF_TASKS_EXPIRY_TIME", "60")
+CHAIN_OF_TASKS_EXPIRY_TIME = int(os.getenv("CHAIN_OF_TASKS_EXPIRY_TIME", "60"))
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 
 formatter = CustomisedJSONFormatter()
@@ -58,7 +58,7 @@ def load():
         autodiscovery = config_runtime.get("autodiscovery", {})
         periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
         expiry_time_changed = periodic_obj.did_expiry_time_change(
-            CHAIN_OF_TASKS_EXPIRY_TIME
+            CHAIN_OF_TASKS_EXPIRY_TIME, [customtaskmanager.DISCOVERY_TASK]
         )
         if expiry_time_changed:
             logger.info(
