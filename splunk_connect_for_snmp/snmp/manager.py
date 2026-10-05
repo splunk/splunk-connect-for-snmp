@@ -44,7 +44,11 @@ from pysnmp.smi import builder, compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from requests_cache import MongoCache
 
-from splunk_connect_for_snmp.common.common import get_mongo_client, get_startup_logger, human_bool
+from splunk_connect_for_snmp.common.common import (
+    get_mongo_client,
+    get_startup_logger,
+    human_bool,
+)
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.auth import get_auth, setup_transport_target

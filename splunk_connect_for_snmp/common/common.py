@@ -20,9 +20,12 @@ import time
 import typing
 from typing import Union
 
-import pymongo
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
+
+from splunk_connect_for_snmp.common.customised_json_formatter import (
+    CustomisedJSONFormatter,
+)
 
 _mongo_client: MongoClient | None = None
 _mongo_client_pid: int | None = None
@@ -34,7 +37,7 @@ def get_mongo_client() -> MongoClient:
     pid = os.getpid()
     if _mongo_client is None or _mongo_client_pid != pid:
         # A client inherited via fork belongs to the parent: replace, don't close.
-        _mongo_client = pymongo.MongoClient(os.getenv("MONGO_URI"), connect=False)
+        _mongo_client = MongoClient(os.getenv("MONGO_URI"), connect=False)
         _mongo_client_pid = pid
     return _mongo_client
 
@@ -45,10 +48,6 @@ def close_mongo_client() -> None:
         _mongo_client.close()
     _mongo_client = None
     _mongo_client_pid = None
-
-from splunk_connect_for_snmp.common.customised_json_formatter import (
-    CustomisedJSONFormatter,
-)
 
 
 def human_bool(flag: Union[str, bool], default: bool = False) -> bool:
