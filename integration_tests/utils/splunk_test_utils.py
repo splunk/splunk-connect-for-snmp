@@ -1037,7 +1037,7 @@ def wait_for_mib_refresh_worker_log(
     )
 
 
-def _get_trap_receiver_logs(deployment):
+def _get_trap_receiver_logs(deployment, since=None):
     if deployment == "microk8s":
         command = [
             "sudo",
@@ -1048,8 +1048,13 @@ def _get_trap_receiver_logs(deployment):
             "-n",
             "sc4snmp",
         ]
+        if since:
+            command.append(f"--since-time={since}")
     elif deployment == "docker-compose":
-        command = _sc4snmp_compose_command("logs", "--no-color", "traps")
+        since_arguments = ("--since", since) if since else ()
+        command = _sc4snmp_compose_command(
+            "logs", "--no-color", *since_arguments, "traps"
+        )
     else:
         raise ValueError(f"Unsupported SC4SNMP deployment: {deployment}")
 
@@ -1059,14 +1064,16 @@ def _get_trap_receiver_logs(deployment):
 
 
 def wait_for_trap_receiver_ready(
-    deployment, timeout=INTEGRATION_TEST_TIMEOUT, settle_seconds=5
+    deployment, since=None, timeout=INTEGRATION_TEST_TIMEOUT, settle_seconds=5
 ):
+    """Pass ``since`` (taken before a restart) so that logs from the old,
+    still-terminating pod, which already contain the startup line, are ignored."""
     started = time.monotonic()
     if deployment == "microk8s":
         wait_for_microk8s_rollout(TRAP_RECEIVER_KUBERNETES_RESOURCE, "traps")
 
     _wait_for_mib_refresh_result(
-        lambda: _get_trap_receiver_logs(deployment),
+        lambda: _get_trap_receiver_logs(deployment, since),
         lambda logs: TRAP_RECEIVER_STARTUP_LOG in logs,
         "the trap receiver to start",
         timeout,

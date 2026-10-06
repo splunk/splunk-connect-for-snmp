@@ -16,6 +16,7 @@
 import asyncio
 import logging
 import time
+from datetime import datetime, timezone
 
 import pytest
 from pysnmp.hlapi.v3arch.asyncio import (
@@ -380,6 +381,7 @@ async def test_loading_mibs(request, setup_splunk):
 async def test_trap_v3(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
+    restarted_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     if deployment == "microk8s":
         create_v3_secrets_microk8s()
         update_file_microk8s(["- secretv4"], "traps_secrets.yaml")
@@ -389,7 +391,7 @@ async def test_trap_v3(request, setup_splunk):
         update_traps_secrets_compose(["secretv4"])
         upgrade_docker_compose()
     logger.info(f"I have: {trap_external_ip}")
-    wait_for_trap_receiver_ready(deployment)
+    wait_for_trap_receiver_ready(deployment, since=restarted_at)
     # send trap
     varbind1 = ("1.3.6.1.2.1.1.4.0", OctetString("test_trap_v3"))
     await send_v3_trap(trap_external_ip, 162, "1.3.6.1.2.1.1.0", varbind1)
