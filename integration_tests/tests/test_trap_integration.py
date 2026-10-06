@@ -16,6 +16,7 @@
 import asyncio
 import logging
 import time
+from datetime import datetime, timezone
 
 import pytest
 from pysnmp.hlapi.v3arch.asyncio import (
@@ -44,9 +45,8 @@ from integration_tests.utils.splunk_test_utils import (
     update_traps_secrets_compose,
     upgrade_docker_compose,
     upgrade_helm_microk8s,
-    wait_for_containers_initialization,
-    wait_for_pod_initialization_microk8s,
     wait_for_splunk_search,
+    wait_for_trap_receiver_ready,
 )
 
 logger = logging.getLogger(__name__)
@@ -108,6 +108,11 @@ async def _send_hvr_trap(host, marker):
     )
 
 
+@pytest.fixture(scope="module", autouse=True)
+def trap_receiver_ready(request):
+    wait_for_trap_receiver_ready(request.config.getoption("sc4snmp_deployment"))
+
+
 @pytest.fixture
 def hvr_trap_mib_environment(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
@@ -143,11 +148,11 @@ async def send_v3_trap(host, port, object_identity, *var_binds):
 async def test_trap_v1(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
+    marker = f"test_trap_v1_{time.time_ns()}"
 
-    await asyncio.sleep(2)
     # send trap
     varbind1 = ("1.3.6.1.6.3.1.1.4.3.0", "1.3.6.1.4.1.20408.4.1.1.2")
-    varbind2 = ("1.3.6.1.2.1.1.4.0", OctetString("my contact"))
+    varbind2 = ("1.3.6.1.2.1.1.4.0", OctetString(marker))
     await send_trap(
         trap_external_ip,
         162,
@@ -159,8 +164,8 @@ async def test_trap_v1(request, setup_splunk):
         varbind2,
     )
 
-    search_query = """search index="netops" sourcetype="sc4snmp:traps" earliest=-1m
-                     | head 1"""
+    search_query = f"""search index="netops" sourcetype="sc4snmp:traps" earliest=-2m
+        "{marker}" | head 1"""
 
     result_count, events_count = wait_for_splunk_search(
         setup_splunk, search_query, "test_trap_v1 trap indexed"
@@ -376,6 +381,7 @@ async def test_loading_mibs(request, setup_splunk):
 async def test_trap_v3(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
+    restarted_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     if deployment == "microk8s":
         create_v3_secrets_microk8s()
         update_file_microk8s(["- secretv4"], "traps_secrets.yaml")
@@ -385,11 +391,7 @@ async def test_trap_v3(request, setup_splunk):
         update_traps_secrets_compose(["secretv4"])
         upgrade_docker_compose()
     logger.info(f"I have: {trap_external_ip}")
-    if deployment == "microk8s":
-        wait_for_pod_initialization_microk8s()
-    else:
-        wait_for_containers_initialization()
-    await asyncio.sleep(20)
+    wait_for_trap_receiver_ready(deployment, since=restarted_at)
     # send trap
     varbind1 = ("1.3.6.1.2.1.1.4.0", OctetString("test_trap_v3"))
     await send_v3_trap(trap_external_ip, 162, "1.3.6.1.2.1.1.0", varbind1)

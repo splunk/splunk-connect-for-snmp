@@ -14,13 +14,17 @@
 # limitations under the License.
 #
 import logging
-from typing import List
+from typing import List, Set
 
 from redbeat.schedulers import RedBeatSchedulerEntry
 
 from .poller import app
 
 logger = logging.getLogger(__name__)
+
+WALK_TASK = "splunk_connect_for_snmp.snmp.tasks.walk"
+POLL_TASK = "splunk_connect_for_snmp.snmp.tasks.poll"
+DISCOVERY_TASK = "splunk_connect_for_snmp.discovery.tasks.discovery"
 
 
 class CustomPeriodicTaskManager:
@@ -51,31 +55,32 @@ class CustomPeriodicTaskManager:
                     f"Deleting Schedule: {periodic_document.name} delete_unused_poll_tasks"
                 )
 
-    def did_expiry_time_change(self, new_expiry_time):
-        previous_expiry_time = self.get_chain_of_task_expiry()
-        expiry_time_changed = False
-        if previous_expiry_time is not None and previous_expiry_time != new_expiry_time:
-            self.delete_all_walk_tasks()
-            self.delete_all_poll_tasks()
-            self.delete_all_discovery_tasks()
-            expiry_time_changed = True
-        return expiry_time_changed
+    def delete_unused_discovery_tasks(self, active_schedules: List[str]):
+        for periodic_document in RedBeatSchedulerEntry.get_schedules(app=app):
+            if (
+                periodic_document.task == DISCOVERY_TASK
+                and periodic_document.name not in active_schedules
+            ):
+                periodic_document.delete()
+                logger.info(
+                    f"Deleting Schedule: {periodic_document.name} delete_unused_discovery_tasks"
+                )
+
+    def did_expiry_time_change(self, new_expiry_time, task_types: List[str]):
+        expiry_times = self.get_chain_of_task_expiries(task_types)
+        # manage_task never updates options, so a stale expiry is only fixed by recreating the tasks
+        if not expiry_times or expiry_times == {new_expiry_time}:
+            return False
+        logger.debug(
+            f"Expiry times {sorted(expiry_times)} of {task_types} differ from "
+            f"configured {new_expiry_time}, recreating tasks"
+        )
+        for task_type in task_types:
+            self.__delete_all_tasks_of_type(task_type, "did_expiry_time_change")
+        return True
 
     def delete_all_poll_tasks(self):
-        self.__delete_all_tasks_of_type(
-            "splunk_connect_for_snmp.snmp.tasks.poll", "delete_all_poll_tasks"
-        )
-
-    def delete_all_walk_tasks(self):
-        self.__delete_all_tasks_of_type(
-            "splunk_connect_for_snmp.snmp.tasks.walk", "delete_all_walk_tasks"
-        )
-
-    def delete_all_discovery_tasks(self):
-        self.__delete_all_tasks_of_type(
-            "splunk_connect_for_snmp.discovery.tasks.discovery",
-            "delete_all_discovery_tasks",
-        )
+        self.__delete_all_tasks_of_type(POLL_TASK, "delete_all_poll_tasks")
 
     def rerun_all_walks(self):
         periodic_tasks = RedBeatSchedulerEntry.get_schedules()
@@ -126,12 +131,13 @@ class CustomPeriodicTaskManager:
             return
         periodic_document.save()
 
-    def get_chain_of_task_expiry(self):
-        periodic_tasks = RedBeatSchedulerEntry.get_schedules(app=app)
-        if periodic_tasks:
-            return periodic_tasks[0].options.get("expires", None)
-        else:
-            return None
+    def get_chain_of_task_expiries(self, task_types: List[str]) -> Set[int]:
+        return {
+            periodic_task.options["expires"]
+            for periodic_task in RedBeatSchedulerEntry.get_schedules(app=app)
+            if periodic_task.task in task_types
+            and periodic_task.options.get("expires") is not None
+        }
 
     def walk_task_exists(self, target: str) -> bool:
         walk_task_name = f"sc4snmp;{target};walk"

@@ -184,7 +184,8 @@ def load():
     configure_ui_database(mongo_client)
 
     expiry_time_changed = periodic_obj.did_expiry_time_change(
-        CHAIN_OF_TASKS_EXPIRY_TIME
+        CHAIN_OF_TASKS_EXPIRY_TIME,
+        [customtaskmanager.WALK_TASK, customtaskmanager.POLL_TASK],
     )
 
     previous_groups = groups_manager.return_collection()

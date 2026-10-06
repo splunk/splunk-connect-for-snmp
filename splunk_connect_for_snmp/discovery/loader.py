@@ -22,7 +22,7 @@ with suppress(ImportError, OSError):
 DISCOVERY_CONFIG_PATH = os.getenv(
     "DISCOVERY_CONFIG_PATH", "/app/discovery/discovery-config.yaml"
 )
-CHAIN_OF_TASKS_EXPIRY_TIME = os.getenv("CHAIN_OF_TASKS_EXPIRY_TIME", "60")
+CHAIN_OF_TASKS_EXPIRY_TIME = int(os.getenv("CHAIN_OF_TASKS_EXPIRY_TIME", "60"))
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 
 formatter = CustomisedJSONFormatter()
@@ -58,13 +58,14 @@ def load():
         autodiscovery = config_runtime.get("autodiscovery", {})
         periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
         expiry_time_changed = periodic_obj.did_expiry_time_change(
-            CHAIN_OF_TASKS_EXPIRY_TIME
+            CHAIN_OF_TASKS_EXPIRY_TIME, [customtaskmanager.DISCOVERY_TASK]
         )
         if expiry_time_changed:
             logger.info(
                 f"Task expiry time was modified, generating new tasks for discovery"
             )
 
+        active_schedules = []
         for key, value in autodiscovery.items():
             value["discovery_name"] = key
             discovery_record = DiscoveryRecord(**value)
@@ -75,10 +76,12 @@ def load():
                     discovery_record=discovery_record, app=app
                 )
                 periodic_obj.manage_task(**task_config)
+                active_schedules.append(task_config["name"])
             else:
                 logger.info(
                     f"Skipping task for the discovery: {key} because IPv6 is disabled."
                 )
+        periodic_obj.delete_unused_discovery_tasks(active_schedules)
         return 0
     except Exception as e:
         logger.error(f"Error occurred while creating the task: {e}")
