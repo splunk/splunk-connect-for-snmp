@@ -566,7 +566,6 @@ class TestLoader(TestCase):
 
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
-        m_taskManager.get_chain_of_task_expiry.return_value = 180
         m_load_profiles.return_value = default_profiles
         self.assertFalse(load())
 

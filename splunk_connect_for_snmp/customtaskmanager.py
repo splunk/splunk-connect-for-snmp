@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 import logging
-from typing import List
+from typing import List, Set
 
 from redbeat.schedulers import RedBeatSchedulerEntry
 
@@ -67,9 +67,14 @@ class CustomPeriodicTaskManager:
                 )
 
     def did_expiry_time_change(self, new_expiry_time, task_types: List[str]):
-        previous_expiry_time = self.get_chain_of_task_expiry(task_types)
-        if previous_expiry_time is None or previous_expiry_time == new_expiry_time:
+        expiry_times = self.get_chain_of_task_expiries(task_types)
+        # manage_task never updates options, so a stale expiry is only fixed by recreating the tasks
+        if not expiry_times or expiry_times == {new_expiry_time}:
             return False
+        logger.debug(
+            f"Expiry times {sorted(expiry_times)} of {task_types} differ from "
+            f"configured {new_expiry_time}, recreating tasks"
+        )
         for task_type in task_types:
             self.__delete_all_tasks_of_type(task_type, "did_expiry_time_change")
         return True
@@ -126,11 +131,13 @@ class CustomPeriodicTaskManager:
             return
         periodic_document.save()
 
-    def get_chain_of_task_expiry(self, task_types: List[str]):
-        for periodic_task in RedBeatSchedulerEntry.get_schedules(app=app):
-            if periodic_task.task in task_types:
-                return periodic_task.options.get("expires", None)
-        return None
+    def get_chain_of_task_expiries(self, task_types: List[str]) -> Set[int]:
+        return {
+            periodic_task.options["expires"]
+            for periodic_task in RedBeatSchedulerEntry.get_schedules(app=app)
+            if periodic_task.task in task_types
+            and periodic_task.options.get("expires") is not None
+        }
 
     def walk_task_exists(self, target: str) -> bool:
         walk_task_name = f"sc4snmp;{target};walk"

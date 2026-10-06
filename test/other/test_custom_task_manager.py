@@ -15,14 +15,15 @@ def raise_exception():
     raise KeyError
 
 
-def mock_schedules(m_from_key, m_get_schedules, options):
+def mock_schedules(m_from_key, m_get_schedules, options, options_by_type=None):
+    options_by_type = options_by_type or {}
     schedules = []
     from_key_entries = {}
     for task_type in (WALK_TASK, POLL_TASK, DISCOVERY_TASK):
         schedule_entry = Mock()
         schedule_entry.task = task_type
         schedule_entry.name = f"sc4snmp;{task_type}"
-        schedule_entry.options = options
+        schedule_entry.options = options_by_type.get(task_type, options)
         schedules.append(schedule_entry)
         from_key_entries[task_type] = Mock()
     m_get_schedules.return_value = schedules
@@ -251,7 +252,7 @@ class TestCustomTaskManager(TestCase):
         self.assertFalse(task_from_key3.delete.called)
 
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules")
-    def test_get_chain_of_task_expiry(self, m_objects):
+    def test_get_chain_of_task_expiries(self, m_objects):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
         discovery = Mock()
         discovery.task = DISCOVERY_TASK
@@ -261,21 +262,32 @@ class TestCustomTaskManager(TestCase):
         walk.task = WALK_TASK
         walk.options = {"expires": 120}
 
-        m_objects.return_value = [discovery, walk]
+        poll = Mock()
+        poll.task = POLL_TASK
+        poll.options = {"expires": 60}
+
+        no_expiry_poll = Mock()
+        no_expiry_poll.task = POLL_TASK
+        no_expiry_poll.options = {}
+
+        m_objects.return_value = [discovery, walk, poll, no_expiry_poll]
         self.assertEqual(
-            120, task_manager.get_chain_of_task_expiry([WALK_TASK, POLL_TASK])
+            {60, 120}, task_manager.get_chain_of_task_expiries([WALK_TASK, POLL_TASK])
         )
-        self.assertEqual(300, task_manager.get_chain_of_task_expiry([DISCOVERY_TASK]))
+        self.assertEqual(
+            {300}, task_manager.get_chain_of_task_expiries([DISCOVERY_TASK])
+        )
 
         m_objects.return_value = [walk]
-        self.assertIsNone(task_manager.get_chain_of_task_expiry([DISCOVERY_TASK]))
+        self.assertEqual(
+            set(), task_manager.get_chain_of_task_expiries([DISCOVERY_TASK])
+        )
 
         m_objects.return_value = []
-        self.assertIsNone(task_manager.get_chain_of_task_expiry([WALK_TASK]))
+        self.assertEqual(set(), task_manager.get_chain_of_task_expiries([WALK_TASK]))
 
-        walk.options = {}
-        m_objects.return_value = [walk]
-        self.assertIsNone(task_manager.get_chain_of_task_expiry([WALK_TASK]))
+        m_objects.return_value = [no_expiry_poll]
+        self.assertEqual(set(), task_manager.get_chain_of_task_expiries([POLL_TASK]))
 
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules")
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
@@ -308,6 +320,27 @@ class TestCustomTaskManager(TestCase):
         entries[DISCOVERY_TASK].delete.assert_called_once()
         entries[WALK_TASK].delete.assert_not_called()
         entries[POLL_TASK].delete.assert_not_called()
+
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules")
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
+    def test_did_expiry_time_change_mixed_expiry_times(self, m_from_key, m_objects):
+        task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
+        mixed = {WALK_TASK: {"expires": 300}, POLL_TASK: {"expires": 60}}
+
+        for configured_expiry in (300, 60):
+            with self.subTest(configured_expiry=configured_expiry):
+                entries = mock_schedules(
+                    m_from_key, m_objects, {"expires": 300}, options_by_type=mixed
+                )
+
+                did_time_change = task_manager.did_expiry_time_change(
+                    configured_expiry, [WALK_TASK, POLL_TASK]
+                )
+
+                self.assertTrue(did_time_change)
+                entries[WALK_TASK].delete.assert_called_once()
+                entries[POLL_TASK].delete.assert_called_once()
+                entries[DISCOVERY_TASK].delete.assert_not_called()
 
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules")
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
