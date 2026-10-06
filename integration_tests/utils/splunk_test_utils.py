@@ -36,6 +36,9 @@ LOCAL_MIB_DIR = BASE_DIR / "mibs"
 MIB_INDEX_REFRESH_MIB = LOCAL_MIB_DIR / "HVRVENDOR" / "HVR-MIB"
 MIB_INDEX_REFRESH_ROW = "HVR-MIB,1.3.6.1.4.1.42705"
 INTEGRATION_TEST_TIMEOUT = 180
+# Last INFO line traps.main() logs before binding UDP 2162.
+TRAP_RECEIVER_STARTUP_LOG = "Engine ID sync:"
+TRAP_RECEIVER_KUBERNETES_RESOURCE = "deployment/snmp-splunk-connect-for-snmp-trap"
 
 
 def splunk_single_search(service, search, timeout=300, max_retries=5):
@@ -1032,6 +1035,45 @@ def wait_for_mib_refresh_worker_log(
         expectation,
         timeout,
     )
+
+
+def _get_trap_receiver_logs(deployment):
+    if deployment == "microk8s":
+        command = [
+            "sudo",
+            "microk8s",
+            "kubectl",
+            "logs",
+            TRAP_RECEIVER_KUBERNETES_RESOURCE,
+            "-n",
+            "sc4snmp",
+        ]
+    elif deployment == "docker-compose":
+        command = _sc4snmp_compose_command("logs", "--no-color", "traps")
+    else:
+        raise ValueError(f"Unsupported SC4SNMP deployment: {deployment}")
+
+    return _run_integration_command(
+        command, "reading trap receiver logs", timeout=30, include_stderr=True
+    )
+
+
+def wait_for_trap_receiver_ready(
+    deployment, timeout=INTEGRATION_TEST_TIMEOUT, settle_seconds=5
+):
+    started = time.monotonic()
+    if deployment == "microk8s":
+        wait_for_microk8s_rollout(TRAP_RECEIVER_KUBERNETES_RESOURCE, "traps")
+
+    _wait_for_mib_refresh_result(
+        lambda: _get_trap_receiver_logs(deployment),
+        lambda logs: TRAP_RECEIVER_STARTUP_LOG in logs,
+        "the trap receiver to start",
+        timeout,
+    )
+    # The UDP socket is bound shortly after the startup log, once the event loop runs.
+    time.sleep(settle_seconds)
+    logger.info(f"Trap receiver ready after {time.monotonic() - started:.1f}s")
 
 
 def _celery_worker_is_ready(logs):
