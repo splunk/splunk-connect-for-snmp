@@ -26,6 +26,11 @@ WALK_TASK = "splunk_connect_for_snmp.snmp.tasks.walk"
 POLL_TASK = "splunk_connect_for_snmp.snmp.tasks.poll"
 DISCOVERY_TASK = "splunk_connect_for_snmp.discovery.tasks.discovery"
 
+# RedBeatSchedulerEntry cannot be constructed without these. A partial
+# definition (e.g. only name + run_immediately) can only update an entry that
+# already exists, via the "existing task" branch below.
+REQUIRED_NEW_TASK_FIELDS = ("name", "task", "schedule", "app")
+
 
 class CustomPeriodicTaskManager:
     def __delete_all_tasks_of_type(self, task, function_name):
@@ -123,6 +128,18 @@ class CustomPeriodicTaskManager:
                     setattr(periodic_document, arg, task_data.get(arg))
             logger.info(update_log)
         except KeyError:
+            missing_fields = [
+                field
+                for field in REQUIRED_NEW_TASK_FIELDS
+                if task_data.get(field) is None
+            ]
+            if missing_fields:
+                logger.error(
+                    f"Cannot set up a new task {task_name}: it is not in the "
+                    f"scheduler and its definition is missing "
+                    f"{', '.join(missing_fields)}"
+                )
+                return
             logger.info(f"Setting up a new task: {task_name}")
             periodic_document = RedBeatSchedulerEntry(**task_data)
             periodic_document.save()
