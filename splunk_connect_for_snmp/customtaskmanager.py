@@ -135,9 +135,9 @@ class CustomPeriodicTaskManager:
             ]
             if missing_fields:
                 logger.error(
-                    f"Cannot set up a new task {task_name}: it is not in the "
-                    f"scheduler and its definition is missing "
-                    f"{', '.join(missing_fields)}"
+                    f"Cannot set up a new task {task_name}: no definition "
+                    f"exists for it in Redis, and the task_data provided to "
+                    f"create one is missing {', '.join(missing_fields)}"
                 )
                 return
             logger.info(f"Setting up a new task: {task_name}")
