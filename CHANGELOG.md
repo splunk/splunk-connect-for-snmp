@@ -15,6 +15,8 @@
 - Fix misleading ASN.1 errors generated when processing valid SNMPv1/v2c traps.
 - Add `TimeStamp`, `TimeInterval`, `TestAndIncr`, and `ZeroBasedCounter32` as metrics types.
 - Fix the discovery job deleting all walk and poll schedules on every run. When `CHAIN_OF_TASKS_EXPIRY_TIME` changes, the inventory and discovery jobs now only reset their own schedules.
+- Fix MongoDB client leaks in Celery workers that made worker memory and MongoDB connection counts grow over time.
+- Fix devices with a missing walk schedule getting stuck in a permanent restart-detection loop. Missing or failing walk is logged instead of crashing enrichment.
 
 ## [1.17.1]
 

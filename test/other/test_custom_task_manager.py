@@ -6,6 +6,7 @@ from celery.schedules import schedule
 from splunk_connect_for_snmp.customtaskmanager import (
     DISCOVERY_TASK,
     POLL_TASK,
+    REQUIRED_NEW_TASK_FIELDS,
     WALK_TASK,
     CustomPeriodicTaskManager,
 )
@@ -148,12 +149,69 @@ class TestCustomTaskManager(TestCase):
             "options": "some+option",
             "enabled": True,
             "run_immediately": False,
+            "app": Mock(),
         }
 
         redbeat_scheduler.return_value = task1
         task_manager.manage_task(**task_data)
 
         redbeat_scheduler_entry_from_key.assert_called_with("redbeat:test1", app=ANY)
+        self.assertTrue(task1.save.called)
+        task1.reschedule.assert_not_called()
+
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
+    def test_manage_new_task_incomplete_definition_is_skipped(
+        self, redbeat_scheduler_entry_from_key
+    ):
+        """
+        Regression test for the historical crash: enrich/tasks.py's
+        check_restart only ever sends name + run_immediately for a walk that
+        turns out to be missing. The real RedBeatSchedulerEntry constructor
+        is NOT mocked here, so this proves the guard, not a mock, prevents it.
+        """
+        task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
+        redbeat_scheduler_entry_from_key.side_effect = KeyError
+
+        with patch(
+            "redbeat.schedulers.RedBeatSchedulerEntry.save", autospec=True
+        ) as m_save, self.assertLogs(
+            "splunk_connect_for_snmp.customtaskmanager", level="ERROR"
+        ) as logs:
+            task_manager.manage_task(
+                name="sc4snmp;192.168.0.1:161;walk", run_immediately=True
+            )
+
+        m_save.assert_not_called()
+        self.assertTrue(logs.output[0].endswith("missing task, schedule, app"))
+
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
+    def test_manage_new_task_missing_required_field(
+        self, redbeat_scheduler_entry_from_key
+    ):
+        task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
+        redbeat_scheduler_entry_from_key.side_effect = KeyError
+        complete_task_data = {
+            "name": "test1",
+            "task": "task1",
+            "schedule": schedule(60),
+            "app": Mock(),
+            "args": [],
+            "kwargs": {},
+            "run_immediately": False,
+        }
+
+        for field in REQUIRED_NEW_TASK_FIELDS:
+            with self.subTest(field):
+                task_data = {**complete_task_data, field: None}
+                with patch(
+                    "redbeat.schedulers.RedBeatSchedulerEntry.save", autospec=True
+                ) as m_save, self.assertLogs(
+                    "splunk_connect_for_snmp.customtaskmanager", level="ERROR"
+                ) as logs:
+                    task_manager.manage_task(**task_data)
+
+                m_save.assert_not_called()
+                self.assertTrue(logs.output[0].endswith(f"missing {field}"))
 
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
     def test_manage_task_existing_target(self, redbeat_scheduler_entry_from_key):
