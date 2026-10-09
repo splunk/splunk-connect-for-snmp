@@ -17,7 +17,7 @@
 - Fix the discovery job deleting all walk and poll schedules on every run. When `CHAIN_OF_TASKS_EXPIRY_TIME` changes, the inventory and discovery jobs now only reset their own schedules.
 - Fix MongoDB client leaks in Celery workers that made worker memory and MongoDB connection counts grow over time.
 - Fix devices with a missing walk schedule getting stuck in a permanent restart-detection loop. Missing or failing walk is logged instead of crashing enrichment.
-- Fix the inventory job launched by the UI's "Apply changes" using a different `CHAIN_OF_TASKS_EXPIRY_TIME` than the one launched by `helm upgrade`, which deleted and recreated every walk and poll schedule whenever the two were used interchangeably. It now reads `scheduler.tasksExpiryTime` like the Helm-launched job does.
+- Fix the inventory job launched by the UI's "Apply changes" using a different `CHAIN_OF_TASKS_EXPIRY_TIME` than the one launched by `helm upgrade`.
 
 ## [1.17.1]
 
