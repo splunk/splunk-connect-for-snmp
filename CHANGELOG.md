@@ -15,6 +15,11 @@
 - Fix misleading ASN.1 errors generated when processing valid SNMPv1/v2c traps.
 - Add `TimeStamp`, `TimeInterval`, `TestAndIncr`, and `ZeroBasedCounter32` as metrics types.
 - Fix the discovery job deleting all walk and poll schedules on every run. When `CHAIN_OF_TASKS_EXPIRY_TIME` changes, the inventory and discovery jobs now only reset their own schedules.
+- Fix the inventory job launched by the UI's "Apply changes" using a different `CHAIN_OF_TASKS_EXPIRY_TIME` than the one launched by `helm upgrade`, which deleted and recreated every walk and poll schedule whenever the two were used interchangeably. It now reads `scheduler.tasksExpiryTime` like the Helm-launched job does.
+- Fix `worker.x.maxMemoryPerChild` rendering in scientific notation (e.g. `1.5e+06` instead of `1500000`) when set to a large value, which silently disabled `--max-memory-per-child` for that worker.
+- Fix MongoDB client leaks in Celery workers that made worker memory and MongoDB connection counts grow over time.
+- Fix devices with a missing walk schedule getting stuck in a permanent restart-detection loop. Missing or failing walk is logged instead of crashing enrichment.
+- Fix the inventory loader crashing entirely when a single RedBeat schedule is missing its definition in Redis (e.g. a key left over from a race between a schedule update and Celery Beat). The malformed entry is now skipped and logged, so inventory, profile, and group changes are no longer blocked by it, and the existing self-heal recreates the skipped schedule on the next loader run.
 
 ## [1.17.1]
 

@@ -55,28 +55,41 @@ def check_restart(current_target, result, targets_collection, address):
             sysuptime = group_dict["metrics"][SYS_UP_TIME]
             new_value = sysuptime["value"]
 
-            logger.debug(f"current target = {current_target}")
-            if "sysUpTime" in current_target:
-                old_value = current_target["sysUpTime"]["value"]
-                logger.debug(f"new_value = {new_value}  old_value = {old_value}")
-                if int(new_value) < int(old_value):
-                    task_config = {
-                        "name": f"sc4snmp;{address};walk",
-                        "run_immediately": True,
-                    }
-                    logger.info(f"Detected restart of {address}, triggering walk")
-                    periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
-                    periodic_obj.manage_task(**task_config)
-
             state = {
                 "value": sysuptime["value"],
                 "type": sysuptime["type"],
                 "oid": sysuptime["oid"],
             }
-
             targets_collection.update_one(
                 {"address": address}, {"$set": {"sysUpTime": state}}, upsert=True
             )
+
+            logger.debug(f"current target = {current_target}")
+            if "sysUpTime" in current_target:
+                old_value = current_target["sysUpTime"]["value"]
+                logger.debug(f"new_value = {new_value}  old_value = {old_value}")
+                if int(new_value) < int(old_value):
+                    trigger_walk_after_restart(address)
+
+
+def trigger_walk_after_restart(address):
+    walk_task_name = f"sc4snmp;{address};walk"
+    try:
+        periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
+        if not periodic_obj.walk_task_exists(address):
+            logger.warning(
+                f"Detected restart of {address}, but its walk schedule "
+                f"{walk_task_name} is missing, so no walk was triggered. "
+                f"It is recreated the next time the inventory job runs."
+            )
+            return
+        logger.info(f"Detected restart of {address}, triggering walk")
+        periodic_obj.manage_task(name=walk_task_name, run_immediately=True)
+    except Exception:
+        logger.exception(
+            f"Detected restart of {address}, but triggering walk "
+            f"{walk_task_name} failed"
+        )
 
 
 class EnrichTask(Task):
