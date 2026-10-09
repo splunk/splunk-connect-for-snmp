@@ -16,7 +16,7 @@
 import logging
 from typing import List, Set
 
-from redbeat.schedulers import RedBeatSchedulerEntry
+from redbeat.schedulers import RedBeatSchedulerEntry, get_redis
 
 from .poller import app
 
@@ -26,29 +26,52 @@ WALK_TASK = "splunk_connect_for_snmp.snmp.tasks.walk"
 POLL_TASK = "splunk_connect_for_snmp.snmp.tasks.poll"
 DISCOVERY_TASK = "splunk_connect_for_snmp.discovery.tasks.discovery"
 
+# RedBeatSchedulerEntry cannot be constructed without these. A partial
+# definition (e.g. only name + run_immediately) can only update an entry that
+# already exists, via the "existing task" branch below.
+REQUIRED_NEW_TASK_FIELDS = ("name", "task", "schedule", "app")
+
+
+def _load_schedules(match: str) -> List[RedBeatSchedulerEntry]:
+    # Per-key safe replacement for RedBeatSchedulerEntry.get_schedules()/
+    # get_schedules_by_target(), which abort the whole scan with a raw
+    # KeyError on the first key missing a "definition" field (e.g. a
+    # meta-only orphan hash). from_key raises a clean KeyError for such a
+    # key instead, so only that key is skipped.
+    schedules = []
+    for key in get_redis(app).scan_iter(match):
+        try:
+            schedules.append(RedBeatSchedulerEntry.from_key(key, app=app))
+        except KeyError:
+            logger.warning(f"Skipping schedule {key}: no definition stored in Redis")
+        except ValueError as e:
+            logger.warning(f"Skipping schedule {key}: invalid JSON ({e})")
+    return schedules
+
+
+def _get_all_schedules() -> List[RedBeatSchedulerEntry]:
+    return _load_schedules("redbeat:sc4snmp;*")
+
+
+def _get_schedules_by_target(target: str) -> List[RedBeatSchedulerEntry]:
+    return _load_schedules(f"*{target};*")
+
 
 class CustomPeriodicTaskManager:
     def __delete_all_tasks_of_type(self, task, function_name):
-        periodic_tasks = RedBeatSchedulerEntry.get_schedules()
+        periodic_tasks = _get_all_schedules()
         for periodic_document in periodic_tasks:
             if periodic_document.task != task:
                 continue
-            logger.debug(f"Got Schedule: {periodic_document.name}")
-            periodic_document = RedBeatSchedulerEntry.from_key(
-                f"redbeat:{periodic_document.name}", app=app
-            )
             periodic_document.delete()
             logger.debug(f"Deleting Schedule {periodic_document.name} {function_name}")
 
     def delete_unused_poll_tasks(self, target: str, activeschedules: List[str]):
-        periodic_tasks = RedBeatSchedulerEntry.get_schedules_by_target(target, app=app)
+        periodic_tasks = _get_schedules_by_target(target)
         for periodic_document in periodic_tasks:
             if periodic_document.task != "splunk_connect_for_snmp.snmp.tasks.poll":
                 continue
             logger.debug(f"Got Schedule: {periodic_document.name}")
-            periodic_document = RedBeatSchedulerEntry.from_key(
-                f"redbeat:{periodic_document.name}", app=app
-            )
             if periodic_document.name not in activeschedules:
                 periodic_document.delete()
                 logger.debug(
@@ -56,7 +79,7 @@ class CustomPeriodicTaskManager:
                 )
 
     def delete_unused_discovery_tasks(self, active_schedules: List[str]):
-        for periodic_document in RedBeatSchedulerEntry.get_schedules(app=app):
+        for periodic_document in _get_all_schedules():
             if (
                 periodic_document.task == DISCOVERY_TASK
                 and periodic_document.name not in active_schedules
@@ -83,13 +106,10 @@ class CustomPeriodicTaskManager:
         self.__delete_all_tasks_of_type(POLL_TASK, "delete_all_poll_tasks")
 
     def rerun_all_walks(self):
-        periodic_tasks = RedBeatSchedulerEntry.get_schedules()
+        periodic_tasks = _get_all_schedules()
         for periodic_document in periodic_tasks:
             if periodic_document.task != "splunk_connect_for_snmp.snmp.tasks.walk":
                 continue
-            periodic_document = RedBeatSchedulerEntry.from_key(
-                f"redbeat:{periodic_document.name}", app=app
-            )
             periodic_document.set_run_immediately(True)
             logger.debug("Got Schedule")
             periodic_document.save()
@@ -123,6 +143,18 @@ class CustomPeriodicTaskManager:
                     setattr(periodic_document, arg, task_data.get(arg))
             logger.info(update_log)
         except KeyError:
+            missing_fields = [
+                field
+                for field in REQUIRED_NEW_TASK_FIELDS
+                if task_data.get(field) is None
+            ]
+            if missing_fields:
+                logger.error(
+                    f"Cannot set up a new task {task_name}: no definition "
+                    f"exists for it in Redis, and the task_data provided to "
+                    f"create one is missing {', '.join(missing_fields)}"
+                )
+                return
             logger.info(f"Setting up a new task: {task_name}")
             periodic_document = RedBeatSchedulerEntry(**task_data)
             periodic_document.save()
@@ -134,7 +166,7 @@ class CustomPeriodicTaskManager:
     def get_chain_of_task_expiries(self, task_types: List[str]) -> Set[int]:
         return {
             periodic_task.options["expires"]
-            for periodic_task in RedBeatSchedulerEntry.get_schedules(app=app)
+            for periodic_task in _get_all_schedules()
             if periodic_task.task in task_types
             and periodic_task.options.get("expires") is not None
         }
