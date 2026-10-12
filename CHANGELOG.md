@@ -18,6 +18,7 @@
 - Fix MongoDB client leaks in Celery workers that made worker memory and MongoDB connection counts grow over time.
 - Fix devices with a missing walk schedule getting stuck in a permanent restart-detection loop. Missing or failing walk is logged instead of crashing enrichment.
 - Fix the inventory job launched by the UI's "Apply changes" using a different `CHAIN_OF_TASKS_EXPIRY_TIME` than the one launched by `helm upgrade`.
+- Fix the inventory loader crashing entirely when a single RedBeat schedule is missing its definition in Redis. The malformed entry is now skipped and logged, so inventory, profile, and group changes are no longer blocked by it, and the existing self-heal recreates the skipped schedule on the next loader run.
 
 ## [1.17.1]
 
