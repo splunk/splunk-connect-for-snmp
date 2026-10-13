@@ -35,7 +35,7 @@ def test_trying_to_configure_profle_with_the_same_name():
     p_profiles.set_frequency(profile_freq)
     p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=True)
     assert exist is True
 
     p_profiles.click_add_profile_button()
@@ -50,7 +50,7 @@ def test_trying_to_configure_profle_with_the_same_name():
         == f"Profile with name {profile_name} already exists. Profile was not added."
     )
     p_header.close_error_popup()
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=True)
     assert exist is True
 
     p_profiles.delete_profile_from_list(profile_name)
@@ -69,7 +69,7 @@ def test_trying_to_configure_group_with_the_same_name():
     p_groups.click_add_new_group_button()
     p_groups.set_group_name(group_name)
     p_groups.click_submit_button_for_add_group()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=True)
     assert is_on_list is True
 
     # try to add same group again
@@ -83,7 +83,7 @@ def test_trying_to_configure_group_with_the_same_name():
     )
     p_header.close_error_popup()
 
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=True)
     assert is_on_list is True
 
     p_groups.delete_group_from_list(group_name)
@@ -113,7 +113,7 @@ def test_trying_to_add_group_device_which_already_exists():
     p_groups.set_snmp_version(snmp_version)
     p_groups.set_community_string(community_string)
     p_groups.click_submit_button_for_add_device()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=True)
     assert is_on_list is True
 
     # try to add same device again
@@ -121,7 +121,7 @@ def test_trying_to_add_group_device_which_already_exists():
     p_groups.set_device_ip(device_ip)
     p_groups.set_device_port(port)
     p_groups.click_submit_button_for_add_device()
-    is_configured = p_groups.check_if_device_is_configured(device_ip)
+    is_configured = p_groups.check_if_device_is_configured(device_ip, expected=True)
     assert is_configured is True
 
     # check error message
@@ -132,7 +132,7 @@ def test_trying_to_add_group_device_which_already_exists():
     )
     p_header.close_error_popup()
 
-    is_configured = p_groups.check_if_device_is_configured(device_ip)
+    is_configured = p_groups.check_if_device_is_configured(device_ip, expected=True)
     assert is_configured is True
 
     p_groups.delete_group_from_list(group_name)
@@ -153,7 +153,7 @@ def test_trying_to_add_inventory_with_host_which_already_exists():
     p_inventory.set_host_or_group_name(host_ip)
     p_inventory.set_community_string(community_string)
     p_inventory.click_submit_button_for_add_entry()
-    is_on_list = p_inventory.check_if_entry_is_on_list(host_ip)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host_ip, expected=True)
     assert is_on_list is True
 
     # try to add same device again
@@ -169,7 +169,7 @@ def test_trying_to_add_inventory_with_host_which_already_exists():
         == f"Host {host_ip}:{config.DEFAULT_PORT} already exists in the inventory. Record was not added."
     )
     p_header.close_error_popup()
-    is_on_list = p_inventory.check_if_entry_is_on_list(host_ip)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host_ip, expected=True)
     assert is_on_list is True
 
     p_inventory.delete_entry_from_list(host_ip)
@@ -196,7 +196,7 @@ def test_trying_to_add_inventory_with_group_which_is_already_added():
     p_inventory.set_host_or_group_name(group_name)
     p_inventory.set_community_string(community_string)
     p_inventory.click_submit_button_for_add_entry()
-    is_on_list = p_inventory.check_if_entry_is_on_list(group_name)
+    is_on_list = p_inventory.check_if_entry_is_on_list(group_name, expected=True)
     assert is_on_list is True
 
     # try to add same device again
@@ -213,7 +213,7 @@ def test_trying_to_add_inventory_with_group_which_is_already_added():
         == f"Group {group_name} has already been added to the inventory. Record was not added."
     )
     p_header.close_error_popup()
-    is_on_list = p_inventory.check_if_entry_is_on_list(group_name)
+    is_on_list = p_inventory.check_if_entry_is_on_list(group_name, expected=True)
     assert is_on_list is True
 
     # delete
@@ -242,7 +242,7 @@ def test_trying_to_add_inventory_group_with_host_which_is_configured_as_host():
     p_groups.click_add_device_to_group(group_name)
     p_groups.set_device_ip(device_ip)
     p_groups.click_submit_button_for_add_device()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=True)
     assert is_on_list is True
 
     p_header.switch_to_inventory()
@@ -251,7 +251,7 @@ def test_trying_to_add_inventory_group_with_host_which_is_configured_as_host():
     p_inventory.set_host_or_group_name(group_name)
     p_inventory.set_community_string(community_string)
     p_inventory.click_submit_button_for_add_entry()
-    is_on_list = p_inventory.check_if_entry_is_on_list(group_name)
+    is_on_list = p_inventory.check_if_entry_is_on_list(group_name, expected=True)
     assert is_on_list is True
 
     # try to add the same host as inventory entry again
@@ -267,7 +267,7 @@ def test_trying_to_add_inventory_group_with_host_which_is_configured_as_host():
         == f"Host {device_ip}:{config.DEFAULT_PORT} already exists in group {group_name}. Record was not added."
     )
     p_header.close_error_popup()
-    is_on_list = p_inventory.check_if_entry_is_on_list(group_name)
+    is_on_list = p_inventory.check_if_entry_is_on_list(group_name, expected=True)
     assert is_on_list is True
 
     # delete
@@ -298,7 +298,7 @@ def test_removing_group_which_is_configured_in_inventory():
     p_inventory.set_host_or_group_name(group_name)
     p_inventory.set_community_string(community_string)
     p_inventory.click_submit_button_for_add_entry()
-    is_on_list = p_inventory.check_if_entry_is_on_list(group_name)
+    is_on_list = p_inventory.check_if_entry_is_on_list(group_name, expected=True)
     assert is_on_list is True
 
     # delete group
@@ -313,10 +313,10 @@ def test_removing_group_which_is_configured_in_inventory():
     p_groups.close_delete_popup()
 
     # check inventory is also removed
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
     p_header.switch_to_inventory()
-    is_on_list = p_inventory.check_if_entry_is_on_list(group_name)
+    is_on_list = p_inventory.check_if_entry_is_on_list(group_name, expected=False)
     assert is_on_list is False
 
 
@@ -337,7 +337,7 @@ def test_removing_profile_which_is_configured_in_inventory():
     p_profiles.set_profile_name(profile_name)
     p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=True)
     assert exist is True
 
     p_header.switch_to_inventory()
@@ -346,7 +346,7 @@ def test_removing_profile_which_is_configured_in_inventory():
     p_inventory.select_profiles([profile_name])
     p_inventory.set_community_string(community_string)
     p_inventory.click_submit_button_for_add_entry()
-    is_on_list = p_inventory.check_if_entry_is_on_list(host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host, expected=True)
     assert is_on_list is True
 
     # delete profile
@@ -362,12 +362,12 @@ def test_removing_profile_which_is_configured_in_inventory():
     )
     p_profiles._confirm_delete_profile()
     p_profiles.close_profile_delete_popup()
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=False)
     assert exist is False
 
     # check inventory - no profile
     p_header.switch_to_inventory()
-    is_on_list = p_inventory.check_if_entry_is_on_list(host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host, expected=True)
     assert is_on_list is True
     received_profiles = p_inventory.get_profiles_for_entry(host)
     assert "" == received_profiles
@@ -399,7 +399,7 @@ def test_try_to_add_to_inventory_group_which_does_not_exist():
         == f"Group {group_name} doesn't exist in the configuration. Record was not added."
     )
     p_header.close_error_popup()
-    is_on_list = p_inventory.check_if_entry_is_on_list(group_name)
+    is_on_list = p_inventory.check_if_entry_is_on_list(group_name, expected=False)
     assert is_on_list is False
 
 
@@ -435,9 +435,9 @@ def test_trying_to_edit_profile_name_into_profile_name_that_exists():
         == f"Profile with name {profile_name_2} already exists. Profile was not edited."
     )
     p_header.close_error_popup()
-    exist = p_profiles.check_if_profile_is_configured(profile_name_1)
+    exist = p_profiles.check_if_profile_is_configured(profile_name_1, expected=True)
     assert exist is True
-    exist = p_profiles.check_if_profile_is_configured(profile_name_2)
+    exist = p_profiles.check_if_profile_is_configured(profile_name_2, expected=True)
     assert exist is True
 
     p_profiles.delete_profile_from_list(profile_name_1)
@@ -472,9 +472,9 @@ def test_trying_to_edit_group_name_into_another_group_name():
         == f"Group with name {group_name_2} already exists. Group was not edited."
     )
     p_header.close_error_popup()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name_1)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name_1, expected=True)
     assert is_on_list is True
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name_2)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name_2, expected=True)
     assert is_on_list is True
 
     p_groups.delete_group_from_list(group_name_1)
@@ -515,9 +515,9 @@ def test_trying_to_edit_inventory_host_into_host_which_exists():
         == f"Host {host_2}:{config.DEFAULT_PORT} already exists in the inventory. Record was not edited."
     )
     p_header.close_error_popup()
-    is_on_list = p_inventory.check_if_entry_is_on_list(host_1)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host_1, expected=True)
     assert is_on_list is True
-    is_on_list = p_inventory.check_if_entry_is_on_list(host_2)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host_2, expected=True)
     assert is_on_list is True
 
     p_inventory.delete_entry_from_list(host_1)

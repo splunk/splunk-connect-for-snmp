@@ -5,6 +5,7 @@ import selenium.common.exceptions
 from logger.logger import Logger
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
 from webdriver.webriver_factory import WebDriverFactory
 
 logger = Logger().get_logger()
@@ -18,17 +19,10 @@ class InventoryPage:
         inventory_container = driver.find_element(By.XPATH, inventory_table_xpath)
         return inventory_container.is_displayed()
 
-    def check_if_entry_is_on_list(self, host_ip):
+    def check_if_entry_is_on_list(self, host_ip, expected=None):
         logger.info("Checking if host/group entry is configured (is on list)")
         entries_on_list_xpath = "//td[@data-test='sc4snmp:inventory-address']"
-        entries = driver.find_elements(By.XPATH, entries_on_list_xpath)
-        logger.info(f"list length: {len(entries)}")
-        for el in entries:
-            # logger.info(f"entry name >  |{el.text}|")  # debug
-            if host_ip == el.text:
-                return True
-        logger.info("Entry has not been found on list")
-        return False
+        return helper.entry_is_listed(driver, entries_on_list_xpath, host_ip, expected)
 
     def click_add_new_device_group_button(self):
         logger.info("Click add new device/group entry button")
@@ -46,8 +40,7 @@ class InventoryPage:
         add_group_device_item_button_xpath = (
             "//button[@data-test='sc4snmp:form:submit-form-button']"
         )
-        helper.safe_click(driver, add_group_device_item_button_xpath)
-        time.sleep(5)  # wait for group to be shown on the list
+        helper.submit_form(driver, add_group_device_item_button_xpath)
 
     def click_submit_button_for_edit_entry(self):
         self._click_submit_button()
@@ -87,8 +80,8 @@ class InventoryPage:
         community_input_field_xpath = (
             "//div[@data-test='sc4snmp:form:community-input']//input"
         )
-        community_input_field = driver.find_element(
-            By.XPATH, community_input_field_xpath
+        community_input_field = helper.wait_for_visible(
+            driver, community_input_field_xpath
         )
         if edit:
             helper.clear_input(community_input_field)
@@ -102,8 +95,8 @@ class InventoryPage:
     def get_edit_inventory_notice(self):
         logger.info("Get edited inventory popup text")
         edited_inventory_popup_text_xpath = "//div[@data-test='modal']//div//p"
-        edited_inventory_popup_text = driver.find_element(
-            By.XPATH, edited_inventory_popup_text_xpath
+        edited_inventory_popup_text = helper.wait_for_visible(
+            driver, edited_inventory_popup_text_xpath
         )
         return edited_inventory_popup_text.text
 
@@ -112,8 +105,8 @@ class InventoryPage:
         group_inventory_type_btn_xpath = (
             "//button[@data-test='sc4snmp:form:inventory-type-group']"
         )
-        group_inventory_type_btn = driver.find_element(
-            By.XPATH, group_inventory_type_btn_xpath
+        group_inventory_type_btn = helper.wait_for_visible(
+            driver, group_inventory_type_btn_xpath
         )
         group_inventory_type_btn.click()
 
@@ -155,7 +148,7 @@ class InventoryPage:
     def edit_device_port(self, port):
         logger.info(f"set/edit inventory device port: {port}")
         device_port_field_xpath = "//div[@data-test='sc4snmp:form:port-input']//input"
-        port_field = driver.find_element(By.XPATH, device_port_field_xpath)
+        port_field = helper.wait_for_visible(driver, device_port_field_xpath)
         helper.clear_input(port_field)
         port_field.send_keys(port)
 
@@ -169,10 +162,10 @@ class InventoryPage:
         snmp_version_expander_xpath = (
             "//button[@data-test='sc4snmp:form:select-version']"
         )
-        expander = driver.find_element(By.XPATH, snmp_version_expander_xpath)
+        expander = helper.wait_for_visible(driver, snmp_version_expander_xpath)
         expander.click()
         time.sleep(1)
-        option = driver.find_element(By.XPATH, options[snmp_version])
+        option = helper.wait_for_visible(driver, options[snmp_version])
         option.click()
 
     def set_host_or_group_name(self, host_ip, edit=False):
@@ -193,7 +186,7 @@ class InventoryPage:
             "secret": "//div[@data-test='sc4snmp:form:secret-input']//input",
             "security_engine": "//div[@data-test='sc4snmp:form:security-engine-input']//input",
         }
-        field_input = driver.find_element(By.XPATH, xpath[field])
+        field_input = helper.wait_for_visible(driver, xpath[field])
         if edit:
             helper.clear_input(field_input)
         field_input.send_keys(value)
@@ -203,7 +196,7 @@ class InventoryPage:
         sec_engine_field_xpath = (
             "//div[@data-test='sc4snmp:form:walk-interval-input']//input"
         )
-        sec_engine = driver.find_element(By.XPATH, sec_engine_field_xpath)
+        sec_engine = helper.wait_for_visible(driver, sec_engine_field_xpath)
         helper.clear_input(sec_engine)
         sec_engine.send_keys(walk_interval)
         time.sleep(1)
@@ -215,8 +208,8 @@ class InventoryPage:
         max_oid_to_process_field_xpath = (
             "//div[@data-test='sc4snmp:form:max-oid-to-process-input']//input"
         )
-        max_oid_to_process_field = driver.find_element(
-            By.XPATH, max_oid_to_process_field_xpath
+        max_oid_to_process_field = helper.wait_for_visible(
+            driver, max_oid_to_process_field_xpath
         )
         helper.clear_input(max_oid_to_process_field)
         max_oid_to_process_field.send_keys(max_oid_to_process)
@@ -228,7 +221,7 @@ class InventoryPage:
             smart_profile_true_xpath = (
                 f"//button[@data-test='sc4snmp:form:smart-profile-{param}']"
             )
-            option = driver.find_element(By.XPATH, smart_profile_true_xpath)
+            option = helper.wait_for_visible(driver, smart_profile_true_xpath)
             option.click()
         else:
             logger.error(
@@ -316,10 +309,18 @@ class InventoryPage:
         )
         logger.info(f"Need to remove {len(delete_btns)} items")
         while len(delete_btns) > 0:
-            delete_btns[0].click()
-            time.sleep(1)
+            previous_count = len(delete_btns)
+            helper.safe_click(driver, delete_btn_for_inventory_with_host_ip_xpath)
             self.confirm_delete()
             self.close_delete_popup()
+            WebDriverWait(driver, 30).until(
+                lambda current_driver: len(
+                    current_driver.find_elements(
+                        By.XPATH, delete_btn_for_inventory_with_host_ip_xpath
+                    )
+                )
+                < previous_count
+            )
             delete_btns = driver.find_elements(
                 By.XPATH, delete_btn_for_inventory_with_host_ip_xpath
             )

@@ -1,5 +1,3 @@
-import time
-
 import pytest
 from logger.logger import Logger
 from pages.groups_page import GroupsPage
@@ -26,16 +24,16 @@ def test_add_and_remove_inventory_entry():
     host_ip = "1.2.3.4"
     community_string = "public"
     p_header.switch_to_inventory()
-    is_on_list = p_inventory.check_if_entry_is_on_list(host_ip)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host_ip, expected=False)
     assert is_on_list is False
     p_inventory.click_add_new_device_group_button()
     p_inventory.set_host_or_group_name(host_ip)
     p_inventory.set_community_string(community_string)
     p_inventory.click_submit_button_for_add_entry()
-    is_on_list = p_inventory.check_if_entry_is_on_list(host_ip)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host_ip, expected=True)
     assert is_on_list is True
     p_inventory.delete_entry_from_list(host_ip)
-    is_on_list = p_inventory.check_if_entry_is_on_list(host_ip)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host_ip, expected=False)
     assert is_on_list is False
 
 
@@ -51,13 +49,13 @@ def test_add_device_into_inventory_then_change_it():
     host_ip = "1.2.3.4"
     community_string = "public"
     p_header.switch_to_inventory()
-    is_on_list = p_inventory.check_if_entry_is_on_list(host_ip)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host_ip, expected=False)
     assert is_on_list is False
     p_inventory.click_add_new_device_group_button()
     p_inventory.set_host_or_group_name(host_ip)
     p_inventory.set_community_string(community_string)
     p_inventory.click_submit_button_for_add_entry()
-    is_on_list = p_inventory.check_if_entry_is_on_list(host_ip)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host_ip, expected=True)
     assert is_on_list is True
     # change
     new_host_ip = "10.20.30.40"
@@ -70,13 +68,13 @@ def test_add_device_into_inventory_then_change_it():
     assert expected_notice == received_notice
     p_inventory.close_edit_inventory_entry()
 
-    is_on_list = p_inventory.check_if_entry_is_on_list(host_ip)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host_ip, expected=False)
     assert is_on_list is False
-    is_on_list = p_inventory.check_if_entry_is_on_list(new_host_ip)
+    is_on_list = p_inventory.check_if_entry_is_on_list(new_host_ip, expected=True)
     assert is_on_list is True
     # delete
     p_inventory.delete_entry_from_list(new_host_ip)
-    is_on_list = p_inventory.check_if_entry_is_on_list(new_host_ip)
+    is_on_list = p_inventory.check_if_entry_is_on_list(new_host_ip, expected=False)
     assert is_on_list is False
 
 
@@ -95,28 +93,28 @@ def test_add_group_into_inventory_entry():
     p_groups.click_add_new_group_button()
     p_groups.set_group_name(group_name)
     p_groups.click_submit_button_for_add_group()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=True)
     assert is_on_list is True
 
     community_string = "public"
     p_header.switch_to_inventory()
-    is_on_list = p_inventory.check_if_entry_is_on_list(group_name)
+    is_on_list = p_inventory.check_if_entry_is_on_list(group_name, expected=False)
     assert is_on_list is False
     p_inventory.click_add_new_device_group_button()
     p_inventory.select_group_inventory_type()
     p_inventory.set_host_or_group_name(group_name)
     p_inventory.set_community_string(community_string)
     p_inventory.click_submit_button_for_add_entry()
-    is_on_list = p_inventory.check_if_entry_is_on_list(group_name)
+    is_on_list = p_inventory.check_if_entry_is_on_list(group_name, expected=True)
     assert is_on_list is True
 
     # delete
     p_inventory.delete_entry_from_list(group_name)
-    is_on_list = p_inventory.check_if_entry_is_on_list(group_name)
+    is_on_list = p_inventory.check_if_entry_is_on_list(group_name, expected=False)
     assert is_on_list is False
     p_header.switch_to_groups()
     p_groups.delete_group_from_list(group_name)
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
 
 
@@ -141,7 +139,7 @@ def test_try_to_add_device_with_no_data_into_inventory():
     assert (
         error == "When using SNMP version 1 or 2c, community string must be specified"
     )
-    is_on_list = p_inventory.check_if_entry_is_on_list(host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host, expected=False)
     assert is_on_list is False
 
     p_inventory.set_host_or_group_name(host)
@@ -152,7 +150,7 @@ def test_try_to_add_device_with_no_data_into_inventory():
     assert (
         error == "When using SNMP version 1 or 2c, community string must be specified"
     )
-    is_on_list = p_inventory.check_if_entry_is_on_list(host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host, expected=False)
     assert is_on_list is False
 
     p_inventory.set_community_string(community)
@@ -161,12 +159,12 @@ def test_try_to_add_device_with_no_data_into_inventory():
         error == "When using SNMP version 1 or 2c, community string must be specified"
     )
     p_inventory.click_submit_button_for_add_entry()
-    is_on_list = p_inventory.check_if_entry_is_on_list(host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host, expected=True)
     assert is_on_list is True
 
     # delete
     p_inventory.delete_entry_from_list(host)
-    is_on_list = p_inventory.check_if_entry_is_on_list(host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host, expected=False)
     assert is_on_list is False
 
 
@@ -199,12 +197,12 @@ def test_setting_min_walk_interval_value_in_inventory():
     p_inventory.set_host_or_group_name(host)
     p_inventory.set_community_string(community)
     p_inventory.click_submit_button_for_add_entry()
-    is_on_list = p_inventory.check_if_entry_is_on_list(host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host, expected=True)
     assert is_on_list is True
 
     # delete
     p_inventory.delete_entry_from_list(host)
-    is_on_list = p_inventory.check_if_entry_is_on_list(host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host, expected=False)
     assert is_on_list is False
 
 
@@ -236,12 +234,12 @@ def test_setting_max_walk_interval_value_in_inventory():
     p_inventory.set_host_or_group_name(host)
     p_inventory.set_community_string(community)
     p_inventory.click_submit_button_for_add_entry()
-    is_on_list = p_inventory.check_if_entry_is_on_list(host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host, expected=True)
     assert is_on_list is True
 
     # delete
     p_inventory.delete_entry_from_list(host)
-    is_on_list = p_inventory.check_if_entry_is_on_list(host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host, expected=False)
     assert is_on_list is False
 
 
@@ -268,13 +266,11 @@ def test_try_to_add_device_with_all_available_fields_into_inventory():
     p_profiles.set_profile_name(profile_1)
     p_profiles.add_varbind("IP-MIB", "ifDescr")
     p_profiles.click_submit_button()
-    time.sleep(1)  # wait for profile to be shown on the list
 
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_2)
     p_profiles.add_varbind("IP-MIB", "ifError")
     p_profiles.click_submit_button()
-    time.sleep(1)  # wait for profile to be shown on the list
 
     p_header.switch_to_inventory()
     p_inventory.click_add_new_device_group_button()
@@ -289,14 +285,13 @@ def test_try_to_add_device_with_all_available_fields_into_inventory():
     p_inventory.select_profiles(profiles)
     p_inventory.set_smart_profiles("true")
     p_inventory.click_submit_button_for_add_entry()
-    is_on_list = p_inventory.check_if_entry_is_on_list(host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host, expected=True)
     assert is_on_list is True
 
     # delete
     p_inventory.delete_entry_from_list(host)
-    is_on_list = p_inventory.check_if_entry_is_on_list(host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host, expected=False)
     assert is_on_list is False
-    time.sleep(10)
 
     p_header.switch_to_profiles()
     p_profiles.delete_profile_from_list(profile_1)
@@ -328,13 +323,11 @@ def test_edit_inventory_entry_with_all_available_fields():
     p_profiles.set_profile_name(profile_1)
     p_profiles.add_varbind("IP-MIB", "ifDescr")
     p_profiles.click_submit_button()
-    time.sleep(1)  # wait for profile to be shown on the list
 
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_2)
     p_profiles.add_varbind("IP-MIB", "ifError")
     p_profiles.click_submit_button()
-    time.sleep(1)  # wait for profile to be shown on the list
 
     p_header.switch_to_inventory()
     p_inventory.click_add_new_device_group_button()
@@ -349,7 +342,7 @@ def test_edit_inventory_entry_with_all_available_fields():
     p_inventory.select_profiles([profile_1])
     p_inventory.set_smart_profiles(smart_profiles)
     p_inventory.click_submit_button_for_add_entry()
-    is_on_list = p_inventory.check_if_entry_is_on_list(host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host, expected=True)
     assert is_on_list is True
 
     # edit
@@ -382,9 +375,9 @@ def test_edit_inventory_entry_with_all_available_fields():
     p_inventory.close_edit_inventory_entry()
 
     # check
-    is_on_list = p_inventory.check_if_entry_is_on_list(host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host, expected=False)
     assert is_on_list is False
-    is_on_list = p_inventory.check_if_entry_is_on_list(new_host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(new_host, expected=True)
     assert is_on_list is True
     received_port = p_inventory.get_port_for_entry(new_host)
     assert new_port == received_port
@@ -407,7 +400,7 @@ def test_edit_inventory_entry_with_all_available_fields():
 
     # delete
     p_inventory.delete_entry_from_list(new_host)
-    is_on_list = p_inventory.check_if_entry_is_on_list(new_host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(new_host, expected=False)
     assert is_on_list is False
 
     p_header.switch_to_profiles()

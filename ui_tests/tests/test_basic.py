@@ -36,6 +36,7 @@ def test_check_selected_tab_behaviour():
     assert "/?tab=Profiles" in url
     assert p_profiles.check_if_profiles_table_is_displayed()
     driver.refresh()
+    p_header.wait_for_page("profiles")
     url = driver.current_url
     assert "/?tab=Profiles" in url
 
@@ -44,6 +45,7 @@ def test_check_selected_tab_behaviour():
     assert "/?tab=Groups" in url
     assert p_groups.check_if_groups_table_is_displayed()
     driver.refresh()
+    p_header.wait_for_page("groups")
     url = driver.current_url
     assert "/?tab=Groups" in url
 
@@ -52,5 +54,6 @@ def test_check_selected_tab_behaviour():
     assert "/?tab=Inventory" in url
     assert p_inventory.check_if_inventory_table_is_displayed()
     driver.refresh()
+    p_header.wait_for_page("inventory")
     url = driver.current_url
     assert "/?tab=Inventory" in url

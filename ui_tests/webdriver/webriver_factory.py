@@ -1,7 +1,6 @@
-import time
+import os
 
 import config.config as config
-import pytest
 from logger.logger import Logger
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -20,6 +19,8 @@ class WebDriverFactory:
             logger.info(f"Execution type: {config.EXECUTION_TYPE}")
             logger.info(f"UI URL: {config.UI_URL}")
             chrome_options = Options()
+            if os.environ.get("SC4SNMP_CHROME_BINARY"):
+                chrome_options.binary_location = os.environ["SC4SNMP_CHROME_BINARY"]
             if config.EXECUTION_TYPE != "local":
                 logger.info("Enable headless execution")
                 chrome_options.add_argument("--headless")
@@ -27,7 +28,10 @@ class WebDriverFactory:
                 chrome_options.add_argument("--window-size=1920x1080")
 
             cls._driver = webdriver.Chrome(
-                service=ChromeService(ChromeDriverManager().install()),
+                service=ChromeService(
+                    os.environ.get("SC4SNMP_CHROMEDRIVER")
+                    or ChromeDriverManager().install()
+                ),
                 options=chrome_options,
             )
 
