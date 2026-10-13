@@ -31,7 +31,7 @@ spec:
         fsGroup: 999
       initContainers:
       - name: fix-permissions
-        image: redis:8.8.0
+        image: redis:8.10.1
         imagePullPolicy: IfNotPresent
         command:
         - sh
@@ -58,7 +58,7 @@ spec:
               - ALL
           readOnlyRootFilesystem: true
           runAsNonRoot: true
-        image: redis:8.8.0
+        image: redis:8.10.1
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 6379

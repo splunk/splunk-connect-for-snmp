@@ -22,13 +22,15 @@ EXECUTION_TYPE = get_execution_type()
 
 UI_HOST_FOR_LOCAL_EXECUTION = "PUT_HERE_IP_ADDRESS_OF_SC4SNMP_VM"
 UI_HOST = get_ui_host_ip_address()
-UI_URL = f"http://{UI_HOST}:30001/"
+UI_URL = os.environ.get("SC4SNMP_UI_URL", f"http://{UI_HOST}:30001/")
 EVENT_INDEX = "netops"
 LOGS_INDEX = "em_logs"
 
 # timers
-IMPLICIT_WAIT_TIMER = 10
+IMPLICIT_WAIT_TIMER = 0
 
 # yaml file
-YAML_FILE_PATH = "./../integration_tests/values.yaml"
+YAML_FILE_PATH = os.environ.get(
+    "SC4SNMP_UI_VALUES_FILE", "./../integration_tests/values.yaml"
+)
 DEFAULT_PORT = 161

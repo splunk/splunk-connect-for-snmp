@@ -19,6 +19,7 @@ from contextlib import suppress
 from pymongo import UpdateOne
 
 from splunk_connect_for_snmp import customtaskmanager
+from splunk_connect_for_snmp.common.common import get_mongo_client
 
 with suppress(ImportError, OSError):
     from dotenv import load_dotenv
@@ -27,13 +28,11 @@ with suppress(ImportError, OSError):
 
 import os
 
-import pymongo
 from celery import Task, shared_task
 from celery.utils.log import get_task_logger
 
 logger = get_task_logger(__name__)
 
-MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 
 TRACKED_F = [
@@ -56,28 +55,41 @@ def check_restart(current_target, result, targets_collection, address):
             sysuptime = group_dict["metrics"][SYS_UP_TIME]
             new_value = sysuptime["value"]
 
-            logger.debug(f"current target = {current_target}")
-            if "sysUpTime" in current_target:
-                old_value = current_target["sysUpTime"]["value"]
-                logger.debug(f"new_value = {new_value}  old_value = {old_value}")
-                if int(new_value) < int(old_value):
-                    task_config = {
-                        "name": f"sc4snmp;{address};walk",
-                        "run_immediately": True,
-                    }
-                    logger.info(f"Detected restart of {address}, triggering walk")
-                    periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
-                    periodic_obj.manage_task(**task_config)
-
             state = {
                 "value": sysuptime["value"],
                 "type": sysuptime["type"],
                 "oid": sysuptime["oid"],
             }
-
             targets_collection.update_one(
                 {"address": address}, {"$set": {"sysUpTime": state}}, upsert=True
             )
+
+            logger.debug(f"current target = {current_target}")
+            if "sysUpTime" in current_target:
+                old_value = current_target["sysUpTime"]["value"]
+                logger.debug(f"new_value = {new_value}  old_value = {old_value}")
+                if int(new_value) < int(old_value):
+                    trigger_walk_after_restart(address)
+
+
+def trigger_walk_after_restart(address):
+    walk_task_name = f"sc4snmp;{address};walk"
+    try:
+        periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
+        if not periodic_obj.walk_task_exists(address):
+            logger.warning(
+                f"Detected restart of {address}, but its walk schedule "
+                f"{walk_task_name} is missing, so no walk was triggered. "
+                f"It is recreated the next time the inventory job runs."
+            )
+            return
+        logger.info(f"Detected restart of {address}, triggering walk")
+        periodic_obj.manage_task(name=walk_task_name, run_immediately=True)
+    except Exception:
+        logger.exception(
+            f"Detected restart of {address}, but triggering walk "
+            f"{walk_task_name} failed"
+        )
 
 
 class EnrichTask(Task):
@@ -89,7 +101,7 @@ class EnrichTask(Task):
 @shared_task(bind=True, base=EnrichTask)
 def enrich(self, result):
     address = result["address"]
-    mongo_client = pymongo.MongoClient(MONGO_URI)
+    mongo_client = get_mongo_client()
     targets_collection = mongo_client.sc4snmp.targets
     attributes_collection = mongo_client.sc4snmp.attributes
     attributes_bulk_write_operations = []

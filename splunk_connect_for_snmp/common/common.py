@@ -20,8 +20,35 @@ import time
 import typing
 from typing import Union
 
+import pymongo
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
+
+from splunk_connect_for_snmp.common.customised_json_formatter import (
+    CustomisedJSONFormatter,
+)
+
+_mongo_client: MongoClient | None = None
+_mongo_client_pid: int | None = None
+
+
+def get_mongo_client() -> MongoClient:
+    """Return this process's shared MongoClient, creating a new one after fork."""
+    global _mongo_client, _mongo_client_pid
+    pid = os.getpid()
+    if _mongo_client is None or _mongo_client_pid != pid:
+        # A client inherited via fork belongs to the parent: replace, don't close.
+        _mongo_client = pymongo.MongoClient(os.getenv("MONGO_URI"), connect=False)
+        _mongo_client_pid = pid
+    return _mongo_client
+
+
+def close_mongo_client() -> None:
+    global _mongo_client, _mongo_client_pid
+    if _mongo_client is not None and _mongo_client_pid == os.getpid():
+        _mongo_client.close()
+    _mongo_client = None
+    _mongo_client_pid = None
 
 
 def human_bool(flag: Union[str, bool], default: bool = False) -> bool:
@@ -70,26 +97,33 @@ def disable_mongo_logging():
     logging.getLogger("pymongo").setLevel(logging.CRITICAL)
 
 
+def get_startup_logger(name: str) -> logging.Logger:
+    """
+    Return a logger usable before Celery configures task logging.
+
+    :param name: Name of the logger used for startup messages
+
+    :return: Logger configured to emit startup messages independently of Celery
+    """
+    logger = logging.getLogger(name)
+    logger.setLevel(os.getenv("LOG_LEVEL", "INFO").upper())
+    if not logger.handlers:
+        handler = logging.StreamHandler()
+        handler.setFormatter(CustomisedJSONFormatter())
+        logger.addHandler(handler)
+        logger.propagate = False
+    return logger
+
+
 def wait_for_mongodb_replicaset(logger=None, max_retries=120, retry_interval=5):
     """
     Wait for MongoDB to be ready before starting the application.
     For replica sets, waits for PRIMARY to be elected.
     """
     if logger is None:
-        logger = logging.getLogger(
+        logger = get_startup_logger(
             "splunk_connect_for_snmp.wait_for_mongodb_replicaset"
         )
-        logger.setLevel(os.getenv("LOG_LEVEL", "INFO").upper())
-        if not logger.handlers:
-            handler = logging.StreamHandler()
-            handler.setFormatter(
-                logging.Formatter(
-                    "[%(asctime)s: %(levelname)s] %(message)s",
-                    "%Y-%m-%d %H:%M:%S",
-                )
-            )
-            logger.addHandler(handler)
-            logger.propagate = False
 
     mongo_mode = os.getenv("MONGODB_MODE", "standalone").lower()
     if mongo_mode == "standalone":
@@ -109,20 +143,19 @@ def wait_for_mongodb_replicaset(logger=None, max_retries=120, retry_interval=5):
             time.sleep(retry_interval)
         try:
             # Try to connect
-            client = MongoClient(
+            with MongoClient(
                 mongo_uri, serverSelectionTimeoutMS=5000, connectTimeoutMS=5000
-            )
+            ) as client:
 
-            # Execute a simple operation to verify PRIMARY exists
-            client.admin.command("ping")
+                # Execute a simple operation to verify PRIMARY exists
+                client.admin.command("ping")
 
-            # For replica sets, verify PRIMARY exists
-            if "replicaSet=" in mongo_uri:
-                if client.primary is None:
-                    continue
-                logger.info(f"PRIMARY found: {client.primary}")
+                # For replica sets, verify PRIMARY exists
+                if "replicaSet=" in mongo_uri:
+                    if client.primary is None:
+                        continue
+                    logger.info(f"PRIMARY found: {client.primary}")
 
-            client.close()
             logger.info("MongoDB is ready")
             return
 

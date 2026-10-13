@@ -35,7 +35,7 @@ spec:
               - ALL
           readOnlyRootFilesystem: true
           runAsNonRoot: true
-        image: redis:8.8.0
+        image: redis:8.10.1
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 26379

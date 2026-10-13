@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import pytest
-from pysnmp.hlapi import (
+from pysnmp.hlapi.v3arch.asyncio import (
     CommunityData,
     ContextData,
     NotificationType,
@@ -19,7 +19,7 @@ from pysnmp.hlapi import (
     OctetString,
     SnmpEngine,
     UdpTransportTarget,
-    sendNotification,
+    send_notification,
 )
 
 from integration_tests.utils.splunk_test_utils import wait_for_splunk_search
@@ -169,6 +169,8 @@ def _mongodb_eval(namespace, release, script, *, authenticated=True, check=True)
 
 def _write_override_file(poll_target):
     override = f"""\
+discovery:
+  enabled: false
 scheduler:
   groups: |
     {{}}
@@ -518,22 +520,22 @@ def test_poller_works_after_authentication_transition(
     )
 
 
-def test_traps_work_after_authentication_transition(
+@pytest.mark.asyncio
+async def test_traps_work_after_authentication_transition(
     authenticated_replica_set, setup_splunk
 ):
     deployment = authenticated_replica_set
     marker = f"mongodb-auth-transition-{time.time_ns()}"
-    iterator = sendNotification(
+    error_indication, error_status, _, _ = await send_notification(
         SnmpEngine(),
         CommunityData("public", mpModel=1),
-        UdpTransportTarget((deployment.trap_host, deployment.trap_port)),
+        await UdpTransportTarget.create((deployment.trap_host, deployment.trap_port)),
         ContextData(),
         "trap",
-        NotificationType(ObjectIdentity("1.3.6.1.6.3.1.1.5.1")).addVarBinds(
+        NotificationType(ObjectIdentity("1.3.6.1.6.3.1.1.5.1")).add_varbinds(
             ("1.3.6.1.2.1.1.1.0", OctetString(marker))
         ),
     )
-    error_indication, error_status, _, _ = next(iterator)
     assert error_indication is None
     assert not error_status
 

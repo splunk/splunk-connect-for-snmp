@@ -1,6 +1,8 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
+import pymongo
+
 from splunk_connect_for_snmp.enrich.tasks import (
     enrich,
     enrich_metric_with_fields_from_db,
@@ -229,6 +231,19 @@ input_enrich = {
 
 @patch("splunk_connect_for_snmp.enrich.tasks.MONGO_UPDATE_BATCH_THRESHOLD", 2)
 class TestEnrich(TestCase):
+    @patch("pymongo.collection.Collection.find_one", return_value=None)
+    @patch("pymongo.collection.Collection.update_one")
+    @patch("pymongo.collection.Collection.bulk_write")
+    @patch("splunk_connect_for_snmp.enrich.tasks.check_restart")
+    def test_enrich_reuses_mongo_client(
+        self, m_check_restart, m_bulk_write, m_update_one, m_find_one
+    ):
+        with patch("pymongo.MongoClient", wraps=pymongo.MongoClient) as m_client:
+            enrich({"address": "192.168.0.1:161", "result": {}})
+            enrich({"address": "192.168.0.1:161", "result": {}})
+
+        m_client.assert_called_once()
+
     @patch("pymongo.collection.Collection.find_one")
     @patch("pymongo.collection.Collection.update_one")
     @patch("pymongo.collection.Collection.bulk_write")

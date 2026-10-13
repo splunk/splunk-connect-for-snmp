@@ -323,6 +323,8 @@ worker:
     # maximum resident memory used by one Celery prefork child before it is
     # recycled, in Celery kilobytes (1 unit = 1024 bytes). 0 disables memory recycling.
     maxMemoryPerChild: 0
+    # task timeout in seconds (usually necessary when walk process takes a long time)
+    taskTimeout: 2400
     autoscaling:
       # enabling autoscaling for poller worker pods
       enabled: false
@@ -428,6 +430,9 @@ worker:
     # maximum resident memory used by one Celery prefork child before it is
     # recycled, in Celery kilobytes (1 unit = 1024 bytes). 0 disables memory recycling.
     maxMemoryPerChild: 0
+    # task timeout in seconds for a single discovery task; increase for large subnets to
+    # accommodate the nmap scan and SNMP checks across all IPs
+    taskTimeout: 2400
     autoscaling:
       # enabling autoscaling for discovery worker pods
       enabled: false
@@ -478,8 +483,6 @@ worker:
     periodSeconds: 5
 
 
-  # task timeout in seconds (usually necessary when walk process takes a long time)
-  taskTimeout: 2400
   # maximum time interval between walk attempts
   walkRetryMaxInterval: 180
   # maximum number of walk retries
@@ -612,6 +615,9 @@ serviceAccount:
 # This parameter allows to use SC4SNMP for older version of Kubernetes that doesn't support autoscaling/v2
 useDeprecatedAPI: false
 
+# A user name to set in the deployment environment.
+deploymentUser: "sc4snmp"
+
 #############################################################################
 ### Please do not modify below values, unless you know what you're doing! ###
 #############################################################################
@@ -634,12 +640,12 @@ mongodb:
   replicaInitJob:
     image:
       repository: "alpine/kubectl"
-      tag: "1.37.0"
+      tag: "1.37.1"
     # MongoDB replicas pod initialisation timeout in seconds
     timeout: 600
   image:
     repository: mongo
-    tag: "8.3.9"
+    tag: "8.3.11"
     pullPolicy: IfNotPresent
 
   # Container-level security context for the mongod container. runAsNonRoot/
@@ -720,7 +726,7 @@ redis:
   # Image
   image:
     repository: redis
-    tag: "8.10.1"
+    tag: "8.10.2"
     pullPolicy: IfNotPresent
 
   # Resources
@@ -762,6 +768,8 @@ commonAnnotations: {}
 discovery:
   # Enables discovering SNMP enabled device and create CSV file.
   enabled: false
+  # Number of subnet IPs checked concurrently inside one discovery task.
+  subnetDiscoveryConcurrency: 10
   # list of kubernetes secrets name that will be used for discovery
   # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/discovery-configuration/#define-usernamesecrets
   usernameSecrets: []

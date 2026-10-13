@@ -17,7 +17,10 @@ class TestMibMapStartupRefresh(TestCase):
     @patch("pymongo.MongoClient", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.ProfilesManager", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.SnmpEngine", MagicMock())
-    @patch("splunk_connect_for_snmp.snmp.manager.compiler.addMibCompiler", MagicMock())
+    @patch("splunk_connect_for_snmp.snmp.manager.builder.MibBuilder", MagicMock())
+    @patch(
+        "splunk_connect_for_snmp.snmp.manager.compiler.add_mib_compiler", MagicMock()
+    )
     @patch("splunk_connect_for_snmp.snmp.manager.view.MibViewController", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.MongoCache", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.CachedLimiterSession")
@@ -27,6 +30,8 @@ class TestMibMapStartupRefresh(TestCase):
 
         Poller()
 
+        self.assertIs(False, mock_session_cls.call_args.kwargs["autoclose"])
+        mock_session.close.assert_called_once_with()
         mock_session.get.assert_called_once()
         args, kwargs = mock_session.get.call_args
         self.assertTrue(
@@ -40,7 +45,10 @@ class TestMibMapStartupRefresh(TestCase):
     @patch("pymongo.MongoClient", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.ProfilesManager", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.SnmpEngine", MagicMock())
-    @patch("splunk_connect_for_snmp.snmp.manager.compiler.addMibCompiler", MagicMock())
+    @patch("splunk_connect_for_snmp.snmp.manager.builder.MibBuilder", MagicMock())
+    @patch(
+        "splunk_connect_for_snmp.snmp.manager.compiler.add_mib_compiler", MagicMock()
+    )
     @patch("splunk_connect_for_snmp.snmp.manager.view.MibViewController", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.Session")
     def test_no_mongo_startup_fetch_omits_refresh(self, mock_session_cls):
@@ -51,6 +59,7 @@ class TestMibMapStartupRefresh(TestCase):
 
         Poller(no_mongo=True)
 
+        mock_session.close.assert_called_once_with()
         mock_session.get.assert_called_once()
         args, kwargs = mock_session.get.call_args
         self.assertNotIn("refresh", kwargs)

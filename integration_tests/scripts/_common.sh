@@ -36,8 +36,8 @@ CLEAN=false
 TEST_FILTER="tests/"
 SPLUNK_HOST_PROVIDED=false
 
-REQUIRED_PYTHON_MINOR="10"
-REQUIRED_PYTHON_MAX_MINOR="12"
+REQUIRED_PYTHON_MINOR="13"
+REQUIRED_PYTHON_MAX_MINOR="14"
 
 # ===== ARG PARSING =====
 parse_common_args() {
@@ -60,15 +60,16 @@ parse_common_args() {
         ;;
       --test)
         if [[ -z "${2:-}" ]]; then
-          error "--test requires argument: traps | poller | all"
+          error "--test requires argument: traps | poller | discovery | all"
           exit 1
         fi
         case "$2" in
           traps)  TEST_FILTER="tests/test_trap_integration.py" ;;
           poller) TEST_FILTER="tests/test_poller_integration.py" ;;
+          discovery) TEST_FILTER="tests/test_autodiscovery_integration.py" ;;
           all)    TEST_FILTER="tests/" ;;
           *)
-            error "Invalid test type: $2 (allowed: traps | poller | all)"
+            error "Invalid test type: $2 (allowed: traps | poller | discovery | all)"
             exit 1
             ;;
         esac
@@ -346,4 +347,66 @@ deploy_poetry() {
   poetry env use "$PYTHON" || true
   poetry install
 
+}
+
+dump_docker_diagnostics() {
+  local container
+
+  info "Docker containers at failure:"
+  timeout 20s sudo docker ps -a || true
+
+  while IFS= read -r container; do
+    [[ -n "$container" ]] || continue
+    info "Recent logs for Docker container ${container}:"
+    timeout 30s sudo docker logs --tail=50 "$container" || true
+  done < <(timeout 20s sudo docker ps -a --format '{{.Names}}' 2>/dev/null || true)
+}
+
+dump_microk8s_diagnostics() {
+  local namespace
+  local pod
+  local -a namespaces=("$@")
+
+  if (( ${#namespaces[@]} == 0 )); then
+    namespaces=(sc4snmp)
+  fi
+
+  info "MicroK8s status at failure:"
+  timeout 20s sudo microk8s status || true
+  info "Kubernetes nodes and pods at failure:"
+  timeout 20s sudo microk8s kubectl get nodes -o wide || true
+  timeout 20s sudo microk8s kubectl get pods -A -o wide || true
+  info "Recent Kubernetes events:"
+  timeout 20s sudo microk8s kubectl get events -A \
+    --sort-by=.lastTimestamp || true
+
+  for namespace in "${namespaces[@]}"; do
+    if ! timeout 15s sudo microk8s kubectl get namespace \
+        "$namespace" >/dev/null 2>&1; then
+      info "Namespace ${namespace} is not available; skipping it"
+      continue
+    fi
+
+    info "Resources in namespace ${namespace}:"
+    timeout 20s sudo microk8s kubectl get all \
+      -n "$namespace" -o wide || true
+    info "Recent events in namespace ${namespace}:"
+    timeout 20s sudo microk8s kubectl get events \
+      -n "$namespace" --sort-by=.lastTimestamp || true
+
+    while IFS= read -r pod; do
+      [[ -n "$pod" ]] || continue
+      info "Recent logs for ${namespace}/${pod}:"
+      timeout 30s sudo microk8s kubectl logs \
+        -n "$namespace" "$pod" --all-containers=true --prefix=true \
+        --tail=50 --ignore-errors=true || true
+    done < <(timeout 20s sudo microk8s kubectl get pods \
+      -n "$namespace" -o name 2>/dev/null || true)
+  done
+
+  info "Kubelite status and recent log entries:"
+  timeout 20s sudo systemctl status snap.microk8s.daemon-kubelite \
+    --no-pager --full || true
+  timeout 20s sudo journalctl -u snap.microk8s.daemon-kubelite \
+    --no-pager -n 150 || true
 }

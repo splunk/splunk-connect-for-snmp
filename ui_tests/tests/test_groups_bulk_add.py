@@ -20,12 +20,12 @@ def test_bulk_add_manual_grid_multiple_devices():
     group_name = "test-bulk-manual"
     device_ips = ["10.10.10.1", "10.10.10.2", "10.10.10.3"]
     p_header.switch_to_groups()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
     p_groups.click_add_new_group_button()
     p_groups.set_group_name(group_name)
     p_groups.click_submit_button_for_add_group()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=True)
     assert is_on_list is True
 
     p_groups.click_bulk_add_to_group(group_name)
@@ -36,14 +36,16 @@ def test_bulk_add_manual_grid_multiple_devices():
         p_groups.set_bulk_row_address(index, device_ip)
     p_groups.click_bulk_submit()
 
-    number_of_devices = p_groups.get_number_of_devices_for_group(group_name)
+    number_of_devices = p_groups.get_number_of_devices_for_group(
+        group_name, expected=len(device_ips)
+    )
     assert len(device_ips) == number_of_devices
     for device_ip in device_ips:
         is_configured = p_groups.check_if_device_is_configured(device_ip)
         assert is_configured is True
 
     p_groups.delete_group_from_list(group_name)
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
 
 
@@ -58,12 +60,12 @@ def test_bulk_add_paste_address_list_with_shared_config():
     """
     group_name = "test-bulk-paste"
     p_header.switch_to_groups()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
     p_groups.click_add_new_group_button()
     p_groups.set_group_name(group_name)
     p_groups.click_submit_button_for_add_group()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=True)
     assert is_on_list is True
 
     p_groups.click_bulk_add_to_group(group_name)
@@ -76,13 +78,13 @@ def test_bulk_add_paste_address_list_with_shared_config():
     assert 2 == number_of_rows
 
     p_groups.click_bulk_submit()
-    number_of_devices = p_groups.get_number_of_devices_for_group(group_name)
+    number_of_devices = p_groups.get_number_of_devices_for_group(group_name, expected=2)
     assert 2 == number_of_devices
-    assert p_groups.check_if_device_is_configured("10.20.20.1") is True
-    assert p_groups.check_if_device_is_configured("10.20.20.2") is True
+    assert p_groups.check_if_device_is_configured("10.20.20.1", expected=True) is True
+    assert p_groups.check_if_device_is_configured("10.20.20.2", expected=True) is True
 
     p_groups.delete_group_from_list(group_name)
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
 
 
@@ -95,12 +97,12 @@ def test_bulk_add_invalid_row_flagged_inline():
     """
     group_name = "test-bulk-invalid"
     p_header.switch_to_groups()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
     p_groups.click_add_new_group_button()
     p_groups.set_group_name(group_name)
     p_groups.click_submit_button_for_add_group()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=True)
     assert is_on_list is True
 
     p_groups.click_bulk_add_to_group(group_name)
@@ -109,12 +111,12 @@ def test_bulk_add_invalid_row_flagged_inline():
     p_groups.click_bulk_submit()
     error_messages = p_groups.get_bulk_row_error_messages()
     assert len(error_messages) > 0
-    number_of_devices = p_groups.get_number_of_devices_for_group(group_name)
+    number_of_devices = p_groups.get_number_of_devices_for_group(group_name, expected=0)
     assert 0 == number_of_devices
     p_groups.click_bulk_cancel()
 
     p_groups.delete_group_from_list(group_name)
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
 
 
@@ -127,12 +129,12 @@ def test_bulk_add_empty_grid_hint_and_disabled_submit():
     """
     group_name = "test-bulk-empty"
     p_header.switch_to_groups()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
     p_groups.click_add_new_group_button()
     p_groups.set_group_name(group_name)
     p_groups.click_submit_button_for_add_group()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=True)
     assert is_on_list is True
 
     p_groups.click_bulk_add_to_group(group_name)
@@ -146,5 +148,5 @@ def test_bulk_add_empty_grid_hint_and_disabled_submit():
     p_groups.click_bulk_cancel()
 
     p_groups.delete_group_from_list(group_name)
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False

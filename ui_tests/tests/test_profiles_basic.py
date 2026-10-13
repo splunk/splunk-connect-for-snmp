@@ -1,5 +1,3 @@
-import time
-
 import pytest
 from logger.logger import Logger
 from pages.groups_page import GroupsPage
@@ -26,7 +24,7 @@ def test_add_profile(profile_type):
     """
     profile_name = f"test-profile-{profile_type}"
     p_header.switch_to_profiles()
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=False)
     assert exist is False
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name)
@@ -34,15 +32,14 @@ def test_add_profile(profile_type):
     p_profiles.select_profile_type(profile_type)
     p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
-    time.sleep(5)  # wait for profile to be shown on the list
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=True)
     assert exist is True
     profile_type_of_profile = p_profiles.get_profile_type_for_profile_entry(
         profile_name
     )
     assert profile_type == profile_type_of_profile
     p_profiles.delete_profile_from_list(profile_name)
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=False)
     assert exist is False
 
 
@@ -56,8 +53,7 @@ def test_add_smart_profile():
     profile_type = "smart"
     profile_name = f"test-profile-{profile_type}"
     p_header.switch_to_profiles()
-    time.sleep(5)
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=False)
     assert exist is False
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name)
@@ -67,15 +63,14 @@ def test_add_smart_profile():
     p_profiles.add_smart_profile_pattern(".*linux.*")
     p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
-    time.sleep(5)  # wait for profile to be shown on the list
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=True)
     assert exist is True
     profile_type_of_profile = p_profiles.get_profile_type_for_profile_entry(
         profile_name
     )
     assert profile_type == profile_type_of_profile
     p_profiles.delete_profile_from_list(profile_name)
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=False)
     assert exist is False
 
 
@@ -89,8 +84,7 @@ def test_add_walk_profile():
     profile_type = "walk"
     profile_name = f"test-profile-{profile_type}"
     p_header.switch_to_profiles()
-    time.sleep(5)
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=False)
     assert exist is False
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name)
@@ -99,15 +93,14 @@ def test_add_walk_profile():
     assert visible is False
     p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
-    time.sleep(5)  # wait for profile to be shown on the list
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=True)
     assert exist is True
     profile_type_of_profile = p_profiles.get_profile_type_for_profile_entry(
         profile_name
     )
     assert profile_type == profile_type_of_profile
     p_profiles.delete_profile_from_list(profile_name)
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=False)
     assert exist is False
 
 
@@ -121,8 +114,7 @@ def test_add_conditional_profile():
     profile_type = "conditional"
     profile_name = f"test-profile-{profile_type}"
     p_header.switch_to_profiles()
-    time.sleep(5)
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=False)
     assert exist is False
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name)
@@ -130,14 +122,14 @@ def test_add_conditional_profile():
     p_profiles.add_condition("IF-MIB.ifAdminStatus", "equals", "up")
     p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=True)
     assert exist is True
     profile_type_of_profile = p_profiles.get_profile_type_for_profile_entry(
         profile_name
     )
     assert profile_type == profile_type_of_profile
     p_profiles.delete_profile_from_list(profile_name)
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=False)
     assert exist is False
 
 
@@ -152,8 +144,7 @@ def test_edit_profile():
     profile_type = "standard"
     profile_name = f"test-profile-{profile_type}"
     p_header.switch_to_profiles()
-    time.sleep(5)
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=False)
     assert exist is False
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name)
@@ -161,7 +152,7 @@ def test_edit_profile():
     p_profiles.select_profile_type(profile_type)
     p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=True)
     assert exist is True
     # edit profile
     new_freq = 45
@@ -183,9 +174,9 @@ def test_edit_profile():
     p_profiles.close_edited_profile_popup()
     # check edited fields
     # name
-    exist = p_profiles.check_if_profile_is_configured(profile_name)
+    exist = p_profiles.check_if_profile_is_configured(profile_name, expected=False)
     assert exist is False
-    exist = p_profiles.check_if_profile_is_configured(new_profile_name)
+    exist = p_profiles.check_if_profile_is_configured(new_profile_name, expected=True)
     assert exist is True
     # freq
     received_freq = p_profiles.get_profile_freq(new_profile_name)
@@ -195,5 +186,5 @@ def test_edit_profile():
     varbind = p_profiles.get_profile_varbind(new_profile_name)
     assert new_varbind == varbind
     p_profiles.delete_profile_from_list(new_profile_name)
-    exist = p_profiles.check_if_profile_is_configured(new_profile_name)
+    exist = p_profiles.check_if_profile_is_configured(new_profile_name, expected=False)
     assert exist is False

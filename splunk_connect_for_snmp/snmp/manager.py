@@ -39,18 +39,23 @@ from typing import Any, Dict, List, Set, Tuple, Union
 import pymongo
 from celery import Task
 from celery.utils.log import get_task_logger
-from pysnmp.hlapi import SnmpEngine, bulkCmd, getCmd
-from pysnmp.smi import compiler, view
+from pysnmp.hlapi.v3arch.asyncio import SnmpEngine, get_cmd
+from pysnmp.smi import builder, compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from requests_cache import MongoCache
 
-from splunk_connect_for_snmp.common.common import human_bool
+from splunk_connect_for_snmp.common.common import (
+    get_mongo_client,
+    get_startup_logger,
+    human_bool,
+)
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.auth import get_auth, setup_transport_target
 from splunk_connect_for_snmp.snmp.context import get_context_data
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 from splunk_connect_for_snmp.snmp.mib_index_validator import MibIndexResponseValidator
+from splunk_connect_for_snmp.snmp.multi_bulk_walk_cmd import multi_bulk_walk_cmd
 
 MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@")
 MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index.csv")
@@ -58,7 +63,6 @@ MIB_STANDARD = os.getenv("MIB_STANDARD", "https://pysnmp.github.io/mibs/standard
 HOSTS_TO_IGNORE_NOT_INCREASING_OIDS = os.getenv("IGNORE_NOT_INCREASING_OIDS", "").split(
     ","
 )
-MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 IGNORE_EMPTY_VARBINDS = human_bool(os.getenv("IGNORE_EMPTY_VARBINDS", False))
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
@@ -77,7 +81,16 @@ DEFAULT_STANDARD_MIBS = [
     "UDP-MIB",
 ]
 
+PYSNMP_PROTOCOL_MIBS = (
+    "SNMPv2-MIB",
+    "SNMP-MPD-MIB",
+    "SNMP-COMMUNITY-MIB",
+    "SNMP-TARGET-MIB",
+    "SNMP-USER-BASED-SM-MIB",
+)
+
 logger = get_task_logger(__name__)
+startup_logger = get_startup_logger(f"{__name__}.startup")
 
 
 if PYSNMP_DEBUG:
@@ -88,7 +101,7 @@ if PYSNMP_DEBUG:
 
     from pysnmp import debug
 
-    debug_flags = list(debug.flagMap.keys())
+    debug_flags = list(debug.FLAG_MAP.keys())
     enabled_debug_flags = [
         debug_flag.strip()
         for debug_flag in PYSNMP_DEBUG.split(",")
@@ -96,7 +109,7 @@ if PYSNMP_DEBUG:
     ]
 
     if enabled_debug_flags:
-        debug.setLogger(
+        debug.set_logger(
             debug.Debug(*enabled_debug_flags, options={"loggerName": logger})
         )
 
@@ -129,21 +142,23 @@ def get_inventory(mongo_inventory, address):
 
 
 def _any_failure_happened(
-    error_indication, error_status, error_index, varbinds: list, address, walk
+    error_indication, error_status, error_index, varbinds: tuple, address, is_walk
 ) -> bool:
     """
     This function checks if any failure happened during GET or BULK operation.
-    @param error_indication:
-    @param error_status:
-    @param error_index: index of varbind where error appeared
-    @param varbinds: list of varbinds
-    @return: if any failure happened
+    :param error_indication: True value indicates SNMP engine error.
+    :param error_status: True value indicates SNMP PDU error.
+    :param error_index: Non-zero value refers to varBinds[errorIndex-1].
+    :param varbinds: a sequential tuple of varbinds
+    :param address: IP address.
+    :param is_walk: A bool indicating whether walk is True or False
+    :return: if any failure happened
     """
     if error_indication:
         if isinstance(error_indication, EmptyResponse) and IGNORE_EMPTY_VARBINDS:
             return False
         raise SnmpActionError(
-            f"An error of SNMP isWalk={walk} for a host {address} occurred: {error_indication}"
+            f"An error of SNMP isWalk={is_walk} for a host {address} occurred: {error_indication}"
         )
     elif error_status:
         result = "{} at {}".format(
@@ -151,7 +166,7 @@ def _any_failure_happened(
             error_index and varbinds[int(error_index) - 1][0] or "?",
         )
         raise SnmpActionError(
-            f"An error of SNMP isWalk={walk} for a host {address} occurred: {result}"
+            f"An error of SNMP isWalk={is_walk} for a host {address} occurred: {result}"
         )
     return False
 
@@ -188,10 +203,27 @@ def get_group_key(mib, oid, index) -> str:
 
 
 MTYPES_CC = tuple(
-    ["Counter32", "Counter64", "TimeTicks", "CounterBasedGauge64", "ZeroBasedCounter64"]
+    [
+        "Counter32",
+        "Counter64",
+        "TimeTicks",
+        "CounterBasedGauge64",
+        "ZeroBasedCounter64",
+        "TimeStamp",
+    ]
 )
 MTYPES_G = tuple(
-    ["Gauge32", "Gauge64", "Integer", "Integer32", "Unsigned32", "Unsigned64"]
+    [
+        "Gauge32",
+        "Gauge64",
+        "Integer",
+        "Integer32",
+        "Unsigned32",
+        "Unsigned64",
+        "TimeInterval",
+        "TestAndIncr",
+        "ZeroBasedCounter32",
+    ]
 )
 MTYPES_R = tuple(["ObjectIdentifier", "ObjectIdentity"])
 MTYPES = tuple(["cc", "c", "g"])
@@ -317,7 +349,7 @@ def extract_indexes(index):
 class Poller(Task):
     def __init__(self, **kwargs):
         self.standard_mibs = []
-        self.mongo_client = pymongo.MongoClient(MONGO_URI)
+        self.mongo_client = get_mongo_client()
 
         if kwargs.get("no_mongo"):
             self.session = Session()
@@ -325,12 +357,12 @@ class Poller(Task):
         else:
             self.session = CachedLimiterSession(
                 per_second=120,
-                cache_name="cache_http",
                 backend=MongoCache(connection=self.mongo_client, db_name=MONGO_DB),
                 expire_after=1800,
                 match_headers=False,
                 stale_if_error=True,
                 allowable_codes=[200],
+                autoclose=False,  # don't close the shared process-wide client
             )
             self._uses_cached_mib_index_session = True
 
@@ -339,22 +371,33 @@ class Poller(Task):
         self.profiles_collection = ProfileCollection(self.profiles)
         self.profiles_collection.process_profiles()
         self.last_modified = time.time()
-        self.snmp_engine = SnmpEngine()
         self.already_loaded_mibs = set()
         # MIBs we have tried to load (loaded or failed); prevents retrying a
         # persistently-missing MIB on every trap (and the warning spam).
         self.already_attempted_mibs = set()
-        self.builder = self.snmp_engine.getMibBuilder()
+        # Reusing the MIB data across task runs while creating each network engine
+        # inside the event loop used by its poll or walk.
+        self.builder = builder.MibBuilder()
         self.mib_view_controller = view.MibViewController(self.builder)
-        compiler.addMibCompiler(self.builder, sources=[MIB_SOURCES])
+        # Loading the protocol MIBs that SnmpEngine normally adds to its own builder.
+        self.builder.load_modules(*PYSNMP_PROTOCOL_MIBS)
+        compiler.add_mib_compiler(self.builder, sources=[MIB_SOURCES])
 
         for mib in DEFAULT_STANDARD_MIBS:
             self.standard_mibs.append(mib)
-            self.builder.loadModules(mib)
+            self.builder.load_modules(mib)
 
         self.mib_map: Dict[str, str] = {}
         if not self._refresh_mib_map(reason="startup"):
             raise RuntimeError("Unable to initialize the MIB index")
+        # Drop the MIB server connection so forked children don't inherit its socket.
+        self.session.close()
+
+    def rebind_mongo_client(self):
+        """Use this process's MongoClient; called in each forked child."""
+        # self.session keeps the parent's (closed) client; only startup uses it.
+        self.mongo_client = get_mongo_client()
+        self.profiles_manager = ProfilesManager(self.mongo_client)
 
     def _refresh_mib_map(self, reason: str) -> bool:
         """
@@ -376,8 +419,8 @@ class Poller(Task):
         response_validator: MibIndexResponseValidator = MibIndexResponseValidator()
         response_hooks = {"response": response_validator}
 
-        logger.info(
-            f"MIB index refresh requested reason={reason} "
+        startup_logger.info(
+            f"MIB index refresh requested reason={reason} task={self.name} "
             f"conditional_refresh={conditional_refresh}"
         )
         try:
@@ -393,9 +436,9 @@ class Poller(Task):
             failed_response = getattr(exc, "response", None)
             status_code = getattr(failed_response, "status_code", "unavailable")
             from_cache = getattr(failed_response, "from_cache", "unknown")
-            logger.exception(
-                f"MIB index refresh failed reason={reason} status={status_code} "
-                f"from_cache={from_cache} "
+            startup_logger.exception(
+                f"MIB index refresh failed reason={reason} task={self.name} "
+                f"status={status_code} from_cache={from_cache} "
                 "valid_mappings=0 previous_map_preserved=True "
                 f"previous_mappings={previous_mapping_count}"
             )
@@ -405,23 +448,24 @@ class Poller(Task):
         from_cache = bool(getattr(response, "from_cache", False))
         # requests-cache sets revalidated=True after a successful 304 response.
         revalidated = bool(getattr(response, "revalidated", False))
-        logger.info(
-            f"MIB index refresh response reason={reason} status={status_code} "
-            f"from_cache={from_cache} revalidated={revalidated}"
+        startup_logger.info(
+            f"MIB index refresh response reason={reason} task={self.name} "
+            f"status={status_code} from_cache={from_cache} revalidated={revalidated}"
         )
 
         if conditional_refresh and from_cache and not revalidated:
-            logger.warning(
-                f"Live MIB index could not be confirmed during the {reason} refresh; "
-                "stale cached MIB metadata may be in use, and newly compiled MIBs "
-                "may not be available until a successful worker restart or later "
-                "refresh"
+            startup_logger.warning(
+                f"Live MIB index could not be confirmed during the {reason} refresh "
+                f"task={self.name}; stale cached MIB metadata may be in use, and "
+                "newly compiled MIBs may not be available until a successful worker "
+                "restart or later refresh"
             )
 
         if status_code != 200:
-            logger.error(
-                f"MIB index refresh failed reason={reason} status={status_code} "
-                f"from_cache={from_cache} revalidated={revalidated} "
+            startup_logger.error(
+                f"MIB index refresh failed reason={reason} task={self.name} "
+                f"status={status_code} from_cache={from_cache} "
+                f"revalidated={revalidated} "
                 "valid_mappings=0 previous_map_preserved=True "
                 f"previous_mappings={previous_mapping_count}"
             )
@@ -430,16 +474,17 @@ class Poller(Task):
         new_mib_map, malformed_rows = response_validator.parse_response(response)
 
         if malformed_rows:
-            logger.warning(
+            startup_logger.warning(
                 f"MIB index refresh ignored malformed rows reason={reason} "
-                f"status={status_code} from_cache={from_cache} "
+                f"task={self.name} status={status_code} from_cache={from_cache} "
                 f"revalidated={revalidated} malformed_rows={malformed_rows}"
             )
 
         if not new_mib_map:
-            logger.error(
-                f"MIB index refresh failed reason={reason} status={status_code} "
-                f"from_cache={from_cache} revalidated={revalidated} "
+            startup_logger.error(
+                f"MIB index refresh failed reason={reason} task={self.name} "
+                f"status={status_code} from_cache={from_cache} "
+                f"revalidated={revalidated} "
                 f"valid_mappings=0 malformed_rows={malformed_rows} "
                 "previous_map_preserved=True "
                 f"previous_mappings={previous_mapping_count}"
@@ -447,84 +492,96 @@ class Poller(Task):
             return False
 
         self.mib_map = new_mib_map
-        logger.info(
-            f"MIB index refresh completed reason={reason} status={status_code} "
-            f"from_cache={from_cache} revalidated={revalidated} "
+        startup_logger.info(
+            f"MIB index refresh completed reason={reason} task={self.name} "
+            f"status={status_code} from_cache={from_cache} revalidated={revalidated} "
             f"valid_mappings={len(new_mib_map)} malformed_rows={malformed_rows}"
         )
         return True
 
-    def get_snmp_engine(self, version="", create_new=False) -> SnmpEngine:
-        """
-        :returns: The new SnmpEngine with mibViewController cache attached if snmp version is 3,
-        else it reuses already defined snmp poller.
-        """
-        if version == "3" or create_new:
-            snmp_engine = SnmpEngine()
-            snmp_engine.setUserContext(mibViewController=self.mib_view_controller)
-            return snmp_engine
-        else:
-            return self.snmp_engine
-
-    def do_work(
+    async def do_work(
         self,
         ir: InventoryRecord,
-        walk: bool = False,
+        is_walk: bool = False,
         profiles: Union[List[str], None] = None,
     ):
+        """Running one poll or walk with one event-loop-owned SNMP engine.
+
+        Celery reuses the Poller task instance, while the poll and walk entry
+        points run their coroutines with asyncio.run(). A network-active
+        SnmpEngine keeps the event loop used by its transport dispatcher, so it
+        should not be kept across those task runs. Creating the engine here lets
+        authentication, GET, and bulk walk share the current loop. Its context
+        manager closes the transports on success, error, or cancellation before
+        the entry point closes that loop. MIB data remains on the Poller because
+        the standalone builder does not own network or event-loop resources.
+
+        :param ir: Inventory record
+        :param is_walk: Whether to run in walk mode.
+        :param profiles: Profile names used to select GET and bulk-walk varbinds.
+        :return: A tuple containing the retry flag and collected metrics.
+        """
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
         logger.info(f"Preparing task for {ir.address}")
 
-        if time.time() - self.last_modified > PROFILES_RELOAD_DELAY or walk:
+        if time.time() - self.last_modified > PROFILES_RELOAD_DELAY or is_walk:
             self.profiles = self.profiles_manager.return_collection()
             self.profiles_collection.update(self.profiles)
             self.last_modified = time.time()
             logger.debug("Profiles reloaded")
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_varbinds(
-            address, walk=walk, profiles=profiles
+            address, is_walk=is_walk, profiles=profiles
         )
-
-        auth_data = get_auth(logger, ir, self.get_snmp_engine(ir.version))
-        context_data = get_context_data()
-
-        transport = setup_transport_target(ir)
 
         metrics: Dict[str, Any] = {}
         if not varbinds_get and not varbinds_bulk:
             logger.info(f"No work to do for {address}")
             return False, {}
 
-        max_oid = ir.max_oid_to_process if ir.max_oid_to_process else MAX_OID_TO_PROCESS
+        # Keeping the engine in this scope closes its transports before the poll or
+        # walk leaves the event loop pysnmp bound them to.
+        with SnmpEngine() as snmp_engine:
+            snmp_engine.cache["mibViewController"] = self.mib_view_controller
+            auth_data = await get_auth(logger, ir, snmp_engine)
+            context_data = get_context_data()
 
-        if varbinds_bulk:
-            self.run_bulk_request(
-                address,
-                auth_data,
-                bulk_mapping,
-                context_data,
-                ir,
-                metrics,
-                transport,
-                varbinds_bulk,
-                walk,
-                max_oid,
+            transport = await setup_transport_target(ir)
+
+            max_oid = (
+                ir.max_oid_to_process if ir.max_oid_to_process else MAX_OID_TO_PROCESS
             )
 
-        if varbinds_get:
-            self.run_get_request(
-                address,
-                auth_data,
-                context_data,
-                get_mapping,
-                ir,
-                metrics,
-                transport,
-                varbinds_get,
-                walk,
-                max_oid,
-            )
+            if varbinds_bulk:
+                await self.run_bulk_request(
+                    snmp_engine,
+                    address,
+                    auth_data,
+                    bulk_mapping,
+                    context_data,
+                    ir,
+                    metrics,
+                    transport,
+                    varbinds_bulk,
+                    is_walk,
+                    max_oid,
+                )
+
+            if varbinds_get:
+                await self.run_get_request(
+                    snmp_engine,
+                    address,
+                    auth_data,
+                    context_data,
+                    get_mapping,
+                    ir,
+                    metrics,
+                    transport,
+                    varbinds_get,
+                    is_walk,
+                    max_oid,
+                )
 
         for group_key, metric in metrics.items():
             if "profiles" in metrics[group_key]:
@@ -534,65 +591,99 @@ class Poller(Task):
 
         return retry, metrics
 
-    def run_get_request(
+    async def run_get_request(
         self,
+        snmp_engine,
         address,
         auth_data,
         context_data,
         get_mapping,
-        ir,
-        metrics,
+        ir: InventoryRecord,
+        metrics: dict,
         transport,
         varbinds_get,
-        walk,
+        is_walk,
         max_oid_to_process,
     ):
+        # some devices cannot process more OID than X, so it is necessary to divide it on chunks
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, max_oid_to_process):
-            for (
+            try:
+                error_indication, error_status, error_index, varbind_table = (
+                    await get_cmd(
+                        snmp_engine,
+                        auth_data,
+                        transport,
+                        context_data,
+                        *varbind_chunk,
+                        lookupMib=True,
+                    )
+                )
+            except Exception as e:
+                logger.exception(f"Error while performing get_cmd: {e}")
+                continue
+
+            if not _any_failure_happened(
                 error_indication,
                 error_status,
                 error_index,
                 varbind_table,
-            ) in getCmd(
-                self.get_snmp_engine(create_new=True),
-                auth_data,
-                transport,
-                context_data,
-                *varbind_chunk,
+                ir.address,
+                is_walk,
             ):
-                if not _any_failure_happened(
-                    error_indication,
-                    error_status,
-                    error_index,
-                    varbind_table,
-                    ir.address,
-                    walk,
-                ):
-                    self.process_snmp_data(varbind_table, metrics, address, get_mapping)
+                self.process_snmp_data(varbind_table, metrics, address, get_mapping)
 
-    def run_bulk_request(
+    async def run_bulk_request(
         self,
+        snmp_engine,
         address,
         auth_data,
         bulk_mapping,
         context_data,
-        ir,
-        metrics,
+        ir: InventoryRecord,
+        metrics: dict,
         transport,
         varbinds_bulk,
-        walk,
+        is_walk,
         max_oid_to_process,
     ):
+        """
+        Perform asynchronous SNMP BULK requests on multiple varbinds simultaneously.
+
+        This function uses multi_bulk_walk_cmd to walk multiple SNMP varbinds in parallel
+        within a single SNMP session, reducing network roundtrips and improving performance.
+
+        :param address: IP address of the SNMP device to query
+        :param auth_data: SNMP authentication data
+        :param bulk_mapping: mapping dictionary to process SNMP metrics
+        :param context_data: SNMP ContextData object
+        :param ir: object containing SNMP device info
+        :param metrics: dictionary to store metrics collected from SNMP responses
+        :param transport: SNMP transport target
+        :param varbinds_bulk: set of SNMP varbinds to query in parallel
+        :param is_walk: boolean flag indicating if it is a walk operation
+
+        :return: None
+
+        ## NOTE
+        - The current `bulkCmd` of PySNMP does not support the `lexicographicMode` option.
+          As a result, the walk is not strictly confined to the requested varBind subtree and may go beyond the requested OID subtree,
+          with a high chance of duplicate OIDs.
+        - Uses custom `multi_bulk_walk_cmd` which walks multiple varbinds simultaneously
+        - Each varbind respects `lexicographicMode=False` independently
+        - Each varbind walks only its own OID subtree and stops at its boundary
+        - Prevents walking beyond requested subtrees and eliminates duplicate OIDs
+        """
+
         for varbind_chunk in self.get_varbind_chunk(
             list(varbinds_bulk), max_oid_to_process
         ):
-            for (
+            async for (
                 error_indication,
                 error_status,
                 error_index,
                 varbind_table,
-            ) in bulkCmd(
-                self.get_snmp_engine(create_new=True),
+            ) in multi_bulk_walk_cmd(
+                snmp_engine,
                 auth_data,
                 transport,
                 context_data,
@@ -600,6 +691,7 @@ class Poller(Task):
                 MAX_REPETITIONS,
                 *varbind_chunk,
                 lexicographicMode=False,
+                lookupMib=True,
                 ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
             ):
                 if not _any_failure_happened(
@@ -608,14 +700,16 @@ class Poller(Task):
                     error_index,
                     varbind_table,
                     ir.address,
-                    walk,
+                    is_walk,
                 ):
                     _, tmp_mibs, _ = self.process_snmp_data(
                         varbind_table, metrics, address, bulk_mapping
                     )
+
                     if tmp_mibs:
                         loaded = self.load_mibs(tmp_mibs)
                         self.already_loaded_mibs.update(loaded)
+
                         self.process_snmp_data(
                             varbind_table, metrics, address, bulk_mapping
                         )
@@ -630,7 +724,7 @@ class Poller(Task):
         for mib in mibs:
             if mib:
                 try:
-                    self.builder.loadModules(mib)
+                    self.builder.load_modules(mib)
                     loaded.add(mib)
                 except Exception as e:
                     logger.warning(f"Error loading mib for {mib}, {e}")
@@ -650,17 +744,18 @@ class Poller(Task):
         logger.warning(f"no mib found {id} based on {oid} from {target}")
         return False, ""
 
-    def get_varbinds(self, address, walk=False, profiles=[]):
+    def get_varbinds(self, address, is_walk=False, profiles=[]):
         varbinds_bulk = set()
         varbinds_get = set()
         get_mapping = {}
         bulk_mapping = {}
-        if walk and not profiles:
+
+        if is_walk and not profiles:
             varbinds_bulk.add(ObjectType(ObjectIdentity("1.3.6")))
             return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
         joined_profile_object = self.profiles_collection.get_polling_info_from_profiles(
-            profiles, walk
+            profiles, is_walk
         )
         if joined_profile_object:
             mib_families = joined_profile_object.get_mib_families()
@@ -800,7 +895,13 @@ class Poller(Task):
                 metrics[group_key]["profiles"] = []
 
     def init_snmp_data(self, varbind):
-        mib, metric, index = varbind[0].getMibSymbol()
+        """
+        Extract SNMP varbind information.
+        :param varbind: ObjectType
+
+        :return: A index, metric, mib, oid, varbind_id
+        """
+        oid = str(varbind[0].get_oid())
         varbind_id = varbind[0].prettyPrint()
-        oid = str(varbind[0].getOid())
+        mib, metric, index = varbind[0].get_mib_symbol()
         return index, metric, mib, oid, varbind_id

@@ -31,12 +31,16 @@ class HeaderPage:
         }
         xpath_button = page_button_xpath[page_name]
         helper.safe_click(driver, xpath_button)
+        self.wait_for_page(page_name)
+
+    def wait_for_page(self, page_name):
+        WebDriverWait(driver, 30).until(EC.url_contains(f"tab={page_name.title()}"))
         page_table_xpath = {
             "profiles": "//div[@data-test='sc4snmp:profiles-table']",
             "groups": "//div[@data-test='sc4snmp:group-table']",
             "inventory": "//div[@data-test='sc4snmp:inventory-table']",
         }
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 30).until(
             EC.visibility_of_element_located((By.XPATH, page_table_xpath[page_name]))
         )
 
@@ -45,9 +49,11 @@ class HeaderPage:
         apply_changes_button_xpath = (
             "//button[@data-test='sc4snmp:apply-changes-button']"
         )
-        apply_btn = driver.find_element(By.XPATH, apply_changes_button_xpath)
-        apply_btn.click()
-        time.sleep(3)
+        helper.safe_click(driver, apply_changes_button_xpath)
+        helper.get_visible_text(
+            driver,
+            "//div[@data-test='modal']//div//p",
+        )
 
     def close_configuration_applied_notification_popup(self):
         logger.info("Close configuration applied popup")
@@ -69,8 +75,7 @@ class HeaderPage:
     def get_popup_error_message(self):
         logger.info("Get popup error message")
         popup_text_xpath = "//div[@data-test='modal']//div[@data-test='content']"
-        popup_txt_element = driver.find_element(By.XPATH, popup_text_xpath)
-        return popup_txt_element.text
+        return helper.get_visible_text(driver, popup_text_xpath)
 
     def close_error_popup(self):
         logger.info("Close popup error message")

@@ -17,11 +17,12 @@ import csv
 from io import StringIO
 from typing import Any, Dict, Optional, Tuple
 
-from celery.utils.log import get_task_logger
 from requests import Response
 from requests.exceptions import RequestException
 
-logger = get_task_logger(__name__)
+from splunk_connect_for_snmp.common.common import get_startup_logger
+
+logger = get_startup_logger(f"{__name__}.startup")
 
 
 class MibIndexResponseValidator:

@@ -7,6 +7,7 @@ from pymongo.results import UpdateResult
 
 from splunk_connect_for_snmp.common.inventory_processor import gen_walk_task
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
+from splunk_connect_for_snmp.customtaskmanager import POLL_TASK, WALK_TASK
 from splunk_connect_for_snmp.inventory.loader import load, transform_address_to_key
 
 mock_inventory = """address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
@@ -408,6 +409,9 @@ class TestLoader(TestCase):
         m_load_profiles.return_value = default_profiles
         self.assertFalse(load())
 
+        periodic_obj_mock.did_expiry_time_change.assert_called_once_with(
+            180, [WALK_TASK, POLL_TASK]
+        )
         periodic_obj_mock.manage_task.assert_not_called()
 
     @mock.patch(
@@ -517,6 +521,9 @@ class TestLoader(TestCase):
         m_load_profiles.return_value = default_profiles
         self.assertFalse(load())
 
+        periodic_obj_mock.did_expiry_time_change.assert_called_once_with(
+            180, [WALK_TASK, POLL_TASK]
+        )
         periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
 
     @mock.patch(
@@ -559,7 +566,6 @@ class TestLoader(TestCase):
 
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
-        m_taskManager.get_chain_of_task_expiry.return_value = 180
         m_load_profiles.return_value = default_profiles
         self.assertFalse(load())
 

@@ -35,6 +35,9 @@
         }
       }
     },
+    "deploymentUser" : {
+      "type": "string"
+    },
     "imagePullSecrets": {
       "type": "array"
     },
@@ -456,6 +459,9 @@
               "type": "integer",
               "minimum": 0
             },
+            "taskTimeout": {
+              "type": "integer"
+            },
             "autoscaling": {
               "type": "object",
               "additionalProperties": false,
@@ -693,6 +699,9 @@
             "maxMemoryPerChild": {
               "type": "integer"
             },
+            "taskTimeout": {
+              "type": "integer"
+            },
             "autoscaling": {
               "type": "object",
               "additionalProperties": false,
@@ -788,9 +797,6 @@
               "type": "integer"
             }
           }
-        },
-        "taskTimeout": {
-          "type": "integer"
         },
         "walkRetryMaxInterval": {
           "type": "integer"
@@ -1098,6 +1104,10 @@
       "properties": {
         "enabled": {
           "type": "boolean"
+        },
+        "subnetDiscoveryConcurrency": {
+          "type": "integer",
+          "minimum": 1
         },
         "ipv6Enabled": {
           "type": "boolean"

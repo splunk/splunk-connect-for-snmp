@@ -11,7 +11,7 @@ This file gives AI agents and contributors enough context to work effectively in
 
 ## Tech stack
 
-- **Language:** Python 3.10–3.11 (see `pyproject.toml`)
+- **Language:** Python 3.13–3.14 (see `pyproject.toml`)
 - **Package manager:** Poetry
 - **Runtime:** Celery workers, Redis, MongoDB
 - **SNMP:** pysnmp python library (from Git: `pysnmp/pysnmp`, branch `main`)

@@ -49,7 +49,6 @@ nav:
           - Configuration reference:
               - Deployment: "microk8s/configuration/deployment-configuration.md"
               - Scheduler: "microk8s/configuration/scheduler-configuration.md"
-              - Discovery: "configuration/discovery-configuration.md"
               - MongoDB: "microk8s/configuration/mongo-configuration.md"
               - Redis: "microk8s/configuration/redis-configuration.md"
               - Splunk Infrastructure Monitoring: "microk8s/configuration/sim-configuration.md"
@@ -76,8 +75,6 @@ nav:
               - Inventory configuration: "dockercompose/3-inventory-configuration.md"
               - Scheduler configuration: "dockercompose/4-scheduler-configuration.md"
               - Traps configuration: "dockercompose/5-traps-configuration.md"
-              - Discovery configuration: "configuration/discovery-configuration.md"
-              - SNMPv3 secrets: "configuration/snmpv3.md"
               - .env file: "dockercompose/6-env-file-configuration.md"
           - Additional configuration:
               - Docker logging: "dockercompose/7-docker-logging.md"
