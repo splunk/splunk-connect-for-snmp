@@ -21,8 +21,6 @@ class WebDriverFactory:
             chrome_options = Options()
             if os.environ.get("SC4SNMP_CHROME_BINARY"):
                 chrome_options.binary_location = os.environ["SC4SNMP_CHROME_BINARY"]
-            if hasattr(os, "geteuid") and os.geteuid() == 0:
-                chrome_options.add_argument("--no-sandbox")
             if config.EXECUTION_TYPE != "local":
                 logger.info("Enable headless execution")
                 chrome_options.add_argument("--headless")

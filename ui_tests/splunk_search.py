@@ -25,8 +25,7 @@ from exceptions_tests import UiTestsException
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-SEARCH_TIMEOUT = 60
-REQUEST_TIMEOUT = (5, 15)
+TIMEROUT = 500
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -66,16 +65,6 @@ def _collect_events(query, start_time, end_time, url="", user="", password=""):
     returns events
     """
 
-    if end_time == "now":
-        try:
-            float(start_time)
-        except (TypeError, ValueError):
-            pass
-        else:
-            # Splunk resolves "now" to a whole second. A phase timestamp
-            # captured in that second can otherwise be later than "now".
-            end_time = str(int(time.time()) + 1)
-
     search_url = "{}/services/search/jobs?output_mode=json".format(url)
     logger.debug(f"requesting: {search_url}")
     data = {
@@ -85,11 +74,7 @@ def _collect_events(query, start_time, end_time, url="", user="", password=""):
     }
     logger.debug("SEARCH DATA: {}".format(data))
     create_job = _requests_retry_session().post(
-        search_url,
-        auth=(user, password),
-        verify=False,
-        data=data,
-        timeout=REQUEST_TIMEOUT,
+        search_url, auth=(user, password), verify=False, data=data
     )
     _check_request_status(create_job)
 
@@ -126,7 +111,7 @@ def _collect_metrics(
     logger.debug(f"requesting: {api_url}")
 
     create_job = _requests_retry_session().get(
-        api_url, auth=(user, password), verify=False, timeout=REQUEST_TIMEOUT
+        api_url, auth=(user, password), verify=False
     )
 
     _check_request_status(create_job)
@@ -149,10 +134,9 @@ def _wait_for_job_and_get_events(job_id, url="", user="", password=""):
     job_url = "{}/services/search/jobs/{}?output_mode=json".format(url, str(job_id))
     logger.debug(f"requesting: {job_url}")
 
-    deadline = time.monotonic() + SEARCH_TIMEOUT
-    while time.monotonic() < deadline:
+    for _ in range(TIMEROUT):
         res = _requests_retry_session().get(
-            job_url, auth=(user, password), verify=False, timeout=REQUEST_TIMEOUT
+            job_url, auth=(user, password), verify=False
         )
         _check_request_status(res)
 
@@ -161,14 +145,12 @@ def _wait_for_job_and_get_events(job_id, url="", user="", password=""):
 
         if dispatch_state == "DONE":
             events = _get_events(job_id, url, user, password)
-            return events
+            break
         if dispatch_state == "FAILED":
             raise UiTestsException("Search job: {} failed".format(job_url))
         time.sleep(1)
 
-    raise UiTestsException(
-        f"Search job did not finish within {SEARCH_TIMEOUT}s: {job_url}"
-    )
+    return events
 
 
 def _get_events(job_id, url="", user="", password=""):
@@ -183,7 +165,7 @@ def _get_events(job_id, url="", user="", password=""):
     logger.debug(f"requesting: {event_url}")
 
     event_job = _requests_retry_session().get(
-        event_url, auth=(user, password), verify=False, timeout=REQUEST_TIMEOUT
+        event_url, auth=(user, password), verify=False
     )
     _check_request_status(event_job)
 
@@ -209,7 +191,7 @@ def _check_request_status(req_obj):
 
 
 def _requests_retry_session(
-    retries=2, backoff_factor=0.1, status_forcelist=(500, 502, 504)
+    retries=10, backoff_factor=0.1, status_forcelist=(500, 502, 504)
 ):
     """
     create a retry session for HTTP/HTTPS requests
@@ -230,51 +212,3 @@ def _requests_retry_session(
     session.mount("https://", adapter)
 
     return session
-
-
-def wait_for_events_from_splunk(min_count=1, timeout=420, interval=5, **search):
-    """
-    Poll indexing with a fixed test start time; a completed job may be empty.
-
-    :param min_count: min count
-    :param timeout: timeout in seconds
-    :param interval: periodic waittime in seconds
-    :param search: search query to send in splunk
-
-    :return: search results
-    """
-    deadline = time.monotonic() + timeout
-    events = []
-    while time.monotonic() < deadline:
-        events = check_events_from_splunk(**search)
-        if len(events) >= min_count:
-            return events
-        time.sleep(min(interval, max(0, deadline - time.monotonic())))
-    raise AssertionError(
-        f"Expected at least {min_count} events, got {len(events)} within {timeout}s: {search['query']}"
-    )
-
-
-def observe_no_events_from_splunk(indexing_grace=30, interval=5, **search):
-    """
-    Check the entire fixed observation window and allow indexing to catch up.
-
-    :param indexing_grace: variable window time to allow indexing to catch up.
-    :param interval: periodic waittime in seconds
-    :param search: search query to send in splunk
-
-    :return: search results
-    """
-    observation_end = float(search["end_time"])
-    remaining = observation_end - time.time()
-    if remaining > 0:
-        time.sleep(remaining)
-    while True:
-        events = check_events_from_splunk(**search)
-        assert (
-            not events
-        ), f"Unexpected events in observation window: {search['query']}: {events}"
-        remaining = observation_end + indexing_grace - time.time()
-        if remaining <= 0:
-            return events
-        time.sleep(min(interval, remaining))

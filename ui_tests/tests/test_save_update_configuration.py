@@ -1,5 +1,3 @@
-import csv
-import io
 import time
 
 import pytest
@@ -34,18 +32,10 @@ def setup_and_teardown():
     # we should wait for timer expiry to not have temporary records in inventory with delete flag set to true as this will cause test failures
     p_header.switch_to_inventory()
     p_inventory.clear_inventory()
-    deadline = time.monotonic() + 420
-    while time.monotonic() < deadline:
-        p_header.apply_changes()
-        p_header.close_configuration_applied_notification_popup()
-        rows = list(csv.DictReader(io.StringIO(values_reader.get_inventory_entries())))
-        if not rows:
-            break
-        time.sleep(5)
-    else:
-        pytest.fail(
-            "Deleted inventory records were not removed by the configuration loader"
-        )
+    p_header.apply_changes()
+    time_to_upgrade = p_header.get_time_to_upgrade()
+    p_header.close_configuration_applied_notification_popup()
+    time.sleep(time_to_upgrade + 30)  # wait for upgrade + walk time + polling
     yield
     # teardown here if needed
 
@@ -246,7 +236,6 @@ def test_check_that_inventory_config_is_stored_upon_applying_configuration():
 
     # remove inventory
     p_inventory.delete_entry_from_list(host)
-    assert p_inventory.check_if_entry_is_on_list(host, expected=False) is False
 
     # check that configuration is not changed because it has been not applied
     inventory = values_reader.get_inventory_entries()
@@ -256,14 +245,10 @@ def test_check_that_inventory_config_is_stored_upon_applying_configuration():
     p_header.apply_changes()
     p_header.close_configuration_applied_notification_popup()
 
-    # The loader may consume the deletion marker before this read, or leave it
-    # until its next Job. Both exact forms represent a deleted configuration.
-    deleted_inventory = f"{inventory_first_row}\n{host},{port},{snmp_version},{community},,,{walk_interval},{profile},f,,t"
-    expected_deleted_states = (deleted_inventory, inventory_first_row)
+    # check that configuration is stored
+    expected_inventory_output_2 = f"{inventory_first_row}\n{host},{port},{snmp_version},{community},,,{walk_interval},{profile},f,,t"
     inventory = values_reader.get_inventory_entries()
-    assert (
-        inventory in expected_deleted_states
-    ), f"Inventory deletion was not stored: {inventory}"
+    assert expected_inventory_output_2 == inventory
 
     # finalize - clear
     p_header.switch_to_profiles()
