@@ -25,15 +25,15 @@ def test_add_and_remove_group():
     """
     group_name = "test-group"
     p_header.switch_to_groups()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
     p_groups.click_add_new_group_button()
     p_groups.set_group_name(group_name)
     p_groups.click_submit_button_for_add_group()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=True)
     assert is_on_list is True
     p_groups.delete_group_from_list(group_name)
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
 
 
@@ -46,14 +46,14 @@ def test_change_group_name():
     group_name = "change-name"
     new_group_name = "new-group-name"
     p_header.switch_to_groups()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
     p_groups.click_add_new_group_button()
     p_groups.set_group_name(group_name)
     p_groups.click_submit_button_for_add_group()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=True)
     assert is_on_list is True
-    is_on_list_new = p_groups.check_if_groups_is_on_list(new_group_name)
+    is_on_list_new = p_groups.check_if_groups_is_on_list(new_group_name, expected=False)
     assert is_on_list_new is False
     # edit name
     p_groups.edit_group_name(group_name, new_group_name)
@@ -63,13 +63,13 @@ def test_change_group_name():
     )
     assert expected_message == message
     p_groups.close_edited_profile_popup()  # common method?
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
-    is_on_list_new = p_groups.check_if_groups_is_on_list(new_group_name)
+    is_on_list_new = p_groups.check_if_groups_is_on_list(new_group_name, expected=True)
     assert is_on_list_new is True
 
     p_groups.delete_group_from_list(new_group_name)
-    is_on_list = p_groups.check_if_groups_is_on_list(new_group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(new_group_name, expected=False)
     assert is_on_list is False
 
 
@@ -83,7 +83,7 @@ def test_try_adding_device_to_group_with_no_data():
     """
     group_name = "device-with-no-data"
     p_header.switch_to_groups()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
     p_groups.click_add_new_group_button()
     p_groups.set_group_name(group_name)
@@ -93,10 +93,10 @@ def test_try_adding_device_to_group_with_no_data():
     message = p_groups.get_error_message_while_adding_device_with_no_data()
     assert message == "Address or host name is required"
     p_groups.click_cancel_button_for_add_device()
-    number_of_devices = p_groups.get_number_of_devices_for_group(group_name)
+    number_of_devices = p_groups.get_number_of_devices_for_group(group_name, expected=0)
     assert 0 == number_of_devices
     p_groups.delete_group_from_list(group_name)
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
 
 
@@ -111,29 +111,29 @@ def test_add_and_remove_device_into_group():
     group_name = "test-add-one-device"
     device_ip = "1.2.3.4"
     p_header.switch_to_groups()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
     p_groups.click_add_new_group_button()
     p_groups.set_group_name(group_name)
     p_groups.click_submit_button_for_add_group()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=True)
     assert is_on_list is True
 
     p_groups.click_add_device_to_group(group_name)
     p_groups.set_device_ip(device_ip)
     p_groups.click_submit_button_for_add_device()
-    number_of_devices = p_groups.get_number_of_devices_for_group(group_name)
+    number_of_devices = p_groups.get_number_of_devices_for_group(group_name, expected=1)
     assert 1 == number_of_devices
-    is_configured = p_groups.check_if_device_is_configured(device_ip)
+    is_configured = p_groups.check_if_device_is_configured(device_ip, expected=True)
     assert is_configured is True
     p_groups.delete_device_from_group(device_ip)
-    number_of_devices = p_groups.get_number_of_devices_for_group(group_name)
+    number_of_devices = p_groups.get_number_of_devices_for_group(group_name, expected=0)
     assert 0 == number_of_devices
-    is_configured = p_groups.check_if_device_is_configured(device_ip)
+    is_configured = p_groups.check_if_device_is_configured(device_ip, expected=False)
     assert is_configured is False
 
     p_groups.delete_group_from_list(group_name)
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
 
 
@@ -154,12 +154,12 @@ def test_add_device_with_all_fields():
     security_engine = "8000000903000AAAEF536715"
 
     p_header.switch_to_groups()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
     p_groups.click_add_new_group_button()
     p_groups.set_group_name(group_name)
     p_groups.click_submit_button_for_add_group()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=True)
     assert is_on_list is True
     # add device to grp
     p_groups.click_add_device_to_group(group_name)
@@ -171,11 +171,11 @@ def test_add_device_with_all_fields():
     p_groups.set_security_engine(security_engine)
 
     p_groups.click_submit_button_for_add_device()
-    is_configured = p_groups.check_if_device_is_configured(device_ip)
+    is_configured = p_groups.check_if_device_is_configured(device_ip, expected=True)
     assert is_configured is True
 
     p_groups.delete_group_from_list(group_name)
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
 
 
@@ -195,12 +195,12 @@ def test_edit_device_with_all_fields():
     security_engine = "8000000903000AAAEF536715"
 
     p_header.switch_to_groups()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False
     p_groups.click_add_new_group_button()
     p_groups.set_group_name(group_name)
     p_groups.click_submit_button_for_add_group()
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=True)
     assert is_on_list is True
     # add device to grp
     p_groups.click_add_device_to_group(group_name)
@@ -229,9 +229,9 @@ def test_edit_device_with_all_fields():
     p_groups.set_security_engine(new_security_engine, True)
     p_groups.click_submit_button_for_add_device()
     # verify
-    is_configured = p_groups.check_if_device_is_configured(device_ip)
+    is_configured = p_groups.check_if_device_is_configured(device_ip, expected=False)
     assert is_configured is False
-    is_configured = p_groups.check_if_device_is_configured(new_device_ip)
+    is_configured = p_groups.check_if_device_is_configured(new_device_ip, expected=True)
     assert is_configured is True
     port = p_groups.get_device_port(new_device_ip)
     assert int(port) == new_port
@@ -245,5 +245,5 @@ def test_edit_device_with_all_fields():
     assert security_engine_received == new_security_engine
 
     p_groups.delete_group_from_list(group_name)
-    is_on_list = p_groups.check_if_groups_is_on_list(group_name)
+    is_on_list = p_groups.check_if_groups_is_on_list(group_name, expected=False)
     assert is_on_list is False

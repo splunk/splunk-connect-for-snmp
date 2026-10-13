@@ -4,6 +4,7 @@ import pages.helper as helper
 from logger.logger import Logger
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
 from webdriver.webriver_factory import WebDriverFactory
 
 logger = Logger().get_logger()
@@ -25,8 +26,7 @@ class ProfilesPage:
     def click_submit_button(self):
         logger.info("Click Submit button")
         xpath = "//button[@data-test='sc4snmp:form:submit-form-button']"
-        helper.safe_click(driver, xpath)
-        time.sleep(5)  # wait for profile to be shown on the list
+        helper.submit_form(driver, xpath)
 
     def select_profile_type(self, profile_type):
         logger.info(f"Set profile type: {profile_type}")
@@ -40,15 +40,15 @@ class ProfilesPage:
         profile_type_expander_xpath = (
             "//button[@data-test='sc4snmp:form:select-condition']"
         )
-        expander = driver.find_element(By.XPATH, profile_type_expander_xpath)
+        expander = helper.wait_for_visible(driver, profile_type_expander_xpath)
         expander.click()
-        option = driver.find_element(By.XPATH, profiles[profile_type])
+        option = helper.wait_for_visible(driver, profiles[profile_type])
         option.click()
 
     def set_frequency(self, freq_value):
         logger.info(f"Setting profile frequency: {freq_value}")
         xpath = "//div[@data-test='sc4snmp:form:frequency-input']//input"
-        freq_field = driver.find_element(By.XPATH, xpath)
+        freq_field = helper.wait_for_visible(driver, xpath)
         helper.clear_input(freq_field)
         # freq_field.send_keys(Keys.BACKSPACE)  # clear() is not working here
         freq_field.send_keys(freq_value)
@@ -56,17 +56,26 @@ class ProfilesPage:
     def set_profile_name(self, name):
         logger.info(f"Setting profile name: {name}")
         xpath = "//div[@data-test='sc4snmp:form:profile-name-input']//input"
-        name_input = driver.find_element(By.XPATH, xpath)
+        name_input = helper.wait_for_visible(driver, xpath)
         helper.clear_input(name_input)  # this is useful when editing profile name
         name_input.send_keys(name)
 
     def add_varbind(self, mcomponent, mobject=None, mindex=None):
         logger.info(f"Adding varBind: {mcomponent, mobject, mindex}")
         add_varbind_button_xpath = "//div[@data-test='sc4snmp:form:add-varbinds']//span[contains(text(),'Add varBind')]"
-        add_varbind_btn = driver.find_element(By.XPATH, add_varbind_button_xpath)
-        add_varbind_btn.click()
         varbind_row_xpath = "//div[@data-test='sc4snmp:form:varbind-row']"
-        varbinds_rows = driver.find_elements(By.XPATH, varbind_row_xpath)
+        previous_count = len(driver.find_elements(By.XPATH, varbind_row_xpath))
+        helper.safe_click(driver, add_varbind_button_xpath)
+        varbinds_rows = WebDriverWait(driver, 30).until(
+            lambda current_driver: (
+                rows
+                if len(
+                    rows := current_driver.find_elements(By.XPATH, varbind_row_xpath)
+                )
+                == previous_count + 1
+                else False
+            )
+        )
         component_xpath = (
             "//div[@data-test='sc4snmp:form:varbind-mib-component-input']/input"
         )
@@ -90,7 +99,7 @@ class ProfilesPage:
             f"Editing varBind new values: {new_mcomponent}, {new_mobject}, {new_mindex}"
         )
         varbind_row_xpath = "//div[@data-test='sc4snmp:form:varbind-row']"
-        varbinds_row = driver.find_element(By.XPATH, varbind_row_xpath)
+        varbinds_row = helper.wait_for_visible(driver, varbind_row_xpath)
         component_xpath = (
             "//div[@data-test='sc4snmp:form:varbind-mib-component-input']/input"
         )
@@ -108,16 +117,12 @@ class ProfilesPage:
         helper.clear_input(index_input)
         index_input.send_keys(new_mindex)
 
-    def check_if_profile_is_configured(self, profile_name):
+    def check_if_profile_is_configured(self, profile_name, expected=None):
         logger.info(f"Checking if profile is on profiles list: {profile_name}")
         profiles_name_xpath = "//td[@data-test='sc4snmp:profile-name']"
-        profile_names = driver.find_elements(By.XPATH, profiles_name_xpath)
-        for element in profile_names:
-            # logger.info(f"profile name >  |{element.text}|") # debug
-            if profile_name == element.text:
-                return True
-        logger.info("Profile has not been found on list")
-        return False
+        return helper.entry_is_listed(
+            driver, profiles_name_xpath, profile_name, expected
+        )
 
     def delete_profile_from_list(self, profile_name):
         logger.info(f"Removing profile from profiles list: {profile_name}")
@@ -158,13 +163,13 @@ class ProfilesPage:
         smart_profile_field_xpath = (
             "//div[@data-test='sc4snmp:form:condition-field-input']//input"
         )
-        field = driver.find_element(By.XPATH, smart_profile_field_xpath)
+        field = helper.wait_for_visible(driver, smart_profile_field_xpath)
         field.send_keys(field_value)
 
     def add_smart_profile_pattern(self, pattern):
         logger.info(f"Add smart profile pattern {pattern}")
         add_pattern_button_xpath = "//span[contains(text(),'Add pattern')]"
-        add_pattern_button = driver.find_element(By.XPATH, add_pattern_button_xpath)
+        add_pattern_button = helper.wait_for_visible(driver, add_pattern_button_xpath)
         add_pattern_button.click()
         time.sleep(1)
         pattern_row_xpath = "//div[@data-test='sc4snmp:form:field-pattern']//input"
@@ -185,29 +190,29 @@ class ProfilesPage:
         add_condition_button_xpath = (
             "//div[@data-test='sc4snmp:form:add-conditional-profile']//button"
         )
-        add_condition_btn = driver.find_element(By.XPATH, add_condition_button_xpath)
+        add_condition_btn = helper.wait_for_visible(driver, add_condition_button_xpath)
         add_condition_btn.click()
         time.sleep(1)
         # set field
         set_field_xpath = "//div[@data-test='sc4snmp:form:conditional-field']//input"
-        field = driver.find_element(By.XPATH, set_field_xpath)
+        field = helper.wait_for_visible(driver, set_field_xpath)
         field.send_keys(field_value)
         # select operation
         operation_expander_xpath = (
             "//button[@data-test='sc4snmp:form:conditional-select-operation']"
         )
-        operation_expander = driver.find_element(By.XPATH, operation_expander_xpath)
+        operation_expander = helper.wait_for_visible(driver, operation_expander_xpath)
         operation_expander.click()
         operation_option_xpath = (
             f"//button[@data-test='sc4snmp:form:conditional-{operation}']"
         )
-        operation_option = driver.find_element(By.XPATH, operation_option_xpath)
+        operation_option = helper.wait_for_visible(driver, operation_option_xpath)
         operation_option.click()
         # set value
         value_field_xpath = (
             "//div[@data-test='sc4snmp:form:conditional-condition']//input"
         )
-        value_field = driver.find_element(By.XPATH, value_field_xpath)
+        value_field = helper.wait_for_visible(driver, value_field_xpath)
         value_field.send_keys(value)
 
     def click_edit_profile(self, profile_name):
@@ -227,8 +232,8 @@ class ProfilesPage:
     def get_submit_edited_profile_text(self):
         logger.info("Get submit edited profile popup text")
         edited_profile_popup_text_xpath = "//div[@data-test='modal']//div//p"
-        edited_profile_popup_text = driver.find_element(
-            By.XPATH, edited_profile_popup_text_xpath
+        edited_profile_popup_text = helper.wait_for_visible(
+            driver, edited_profile_popup_text_xpath
         )
         return edited_profile_popup_text.text
 
@@ -272,9 +277,15 @@ class ProfilesPage:
         delete_btns = driver.find_elements(By.XPATH, profile_delete_btn_xpath)
         logger.info(f"Need to remove {len(delete_btns)} items")
         while len(delete_btns) > 0:
-            delete_btns[0].click()
-            time.sleep(1)
+            previous_count = len(delete_btns)
+            helper.safe_click(driver, profile_delete_btn_xpath)
             self._confirm_delete_profile()
             self.close_profile_delete_popup()
+            WebDriverWait(driver, 30).until(
+                lambda current_driver: len(
+                    current_driver.find_elements(By.XPATH, profile_delete_btn_xpath)
+                )
+                < previous_count
+            )
             delete_btns = driver.find_elements(By.XPATH, profile_delete_btn_xpath)
             logger.info(f" {len(delete_btns)} more items for removal")

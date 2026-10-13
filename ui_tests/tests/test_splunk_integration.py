@@ -1,3 +1,5 @@
+import os
+import subprocess
 import time
 
 import pytest
@@ -7,10 +9,14 @@ from pages.groups_page import GroupsPage
 from pages.header_page import HeaderPage
 from pages.inventory_page import InventoryPage
 from pages.profiles_page import ProfilesPage
-from splunk_search import check_events_from_splunk
+from splunk_search import observe_no_events_from_splunk, wait_for_events_from_splunk
 from webdriver.webriver_factory import WebDriverFactory
 
 DEFAULT_PORT = 161
+INVENTORY_JOB_NAME = "snmp-splunk-connect-for-snmp-inventory"
+INVENTORY_JOB_WAIT_SECONDS = 420
+INVENTORY_JOB_POLL_SECONDS = 5
+INVENTORY_JOB_LOG_SECONDS = 30
 
 logger = Logger().get_logger()
 driver = WebDriverFactory().get_driver()
@@ -18,6 +24,48 @@ p_header = HeaderPage()
 p_profiles = ProfilesPage()
 p_groups = GroupsPage()
 p_inventory = InventoryPage()
+
+
+def apply_changes_when_inventory_job_available():
+    """Apply after the previous Job expires so the UI can create a new one.
+
+    The chart retains a completed inventory Job for 300 seconds, while the UI
+    backend stops trying to create a replacement after about 90 seconds.
+    """
+    kubectl = ("microk8s", "kubectl")
+    if os.geteuid() != 0:
+        kubectl = ("sudo", "-n", *kubectl)
+    command = (
+        *kubectl,
+        "get",
+        "job",
+        INVENTORY_JOB_NAME,
+        "-n",
+        "sc4snmp",
+        "--ignore-not-found",
+        "-o",
+        "name",
+    )
+    deadline = time.monotonic() + INVENTORY_JOB_WAIT_SECONDS
+    last_log = 0
+    while time.monotonic() < deadline:
+        result = subprocess.run(command, capture_output=True, text=True, timeout=15)
+        if result.returncode != 0:
+            raise AssertionError(f"Could not check inventory Job: {result.stderr}")
+        if not result.stdout.strip():
+            p_header.apply_changes()
+            p_header.close_configuration_applied_notification_popup()
+            return
+        if time.monotonic() - last_log >= INVENTORY_JOB_LOG_SECONDS:
+            logger.info(
+                "Waiting for prior inventory Job to expire: %s", result.stdout.strip()
+            )
+            last_log = time.monotonic()
+        time.sleep(min(INVENTORY_JOB_POLL_SECONDS, max(0, deadline - time.monotonic())))
+    raise AssertionError(
+        f"Inventory Job {INVENTORY_JOB_NAME} still exists after "
+        f"{INVENTORY_JOB_WAIT_SECONDS} seconds"
+    )
 
 
 @pytest.fixture(autouse=True, scope="module")
@@ -33,8 +81,8 @@ def setup_and_teardown():
     # clear inventory
     p_header.switch_to_inventory()
     p_inventory.clear_inventory()
-    p_header.apply_changes()
-    p_header.close_configuration_applied_notification_popup()
+    # The first scenario applies this cleared state with its own inventory.
+    # Applying here would create a Job that blocks that scenario's next apply.
     yield
     # teardown here if needed
 
@@ -60,67 +108,69 @@ def test_applying_changes_for_device_that_does_not_exists(setup):
     p_profiles.set_frequency(profile_freq)
     p_profiles.add_varbind("IF-MIB", "ifInErrors")
     p_profiles.click_submit_button()
-    time.sleep(1)  # wait for profile to be shown on the list
 
     p_header.switch_to_inventory()
     p_inventory.click_add_new_device_group_button()
     p_inventory.set_host_or_group_name(host)
     p_inventory.select_profiles([profile_name])
     p_inventory.set_community_string(community)
+    configured_at = time.time()
     p_inventory.click_submit_button_for_add_entry()
-    is_on_list = p_inventory.check_if_entry_is_on_list(host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host, expected=True)
     assert is_on_list is True
 
     # apply changes
-    p_header.apply_changes()
-    time_to_upgrade = p_header.get_time_to_upgrade()
-    p_header.close_configuration_applied_notification_popup()
-    time.sleep(time_to_upgrade + 120)  # wait for upgrade
+    apply_changes_when_inventory_job_available()
 
     # check data in Splunk
     # check walk scheduled
     search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host}:{DEFAULT_PORT};walk"'
-    events = check_events_from_splunk(
-        start_time="-3m@m",
+    events = wait_for_events_from_splunk(
+        start_time=str(configured_at),
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
+        min_count=1,
     )
-    logger.info("Splunk received %s events in the last minute", len(events))
+    logger.info("Splunk returned %s events for this configuration", len(events))
     assert len(events) == 1
+    polling_started_at = time.time()
 
     # check no profiles polling
     search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host}:{DEFAULT_PORT};*;poll"'
-    events = check_events_from_splunk(
-        start_time="-3m@m",
+    observation_start = time.time()
+    observation_end = observation_start + 60
+    events = observe_no_events_from_splunk(
+        start_time=str(observation_start),
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
+        end_time=str(observation_end),
     )
-    logger.info("Splunk received %s events in the last minute", len(events))
+    logger.info("Splunk returned %s events for this configuration", len(events))
     assert len(events) == 0
 
     # check no events
-    search_query = f"index={config.EVENT_INDEX} *"
-    events = check_events_from_splunk(
-        start_time="-1m@m",
+    search_query = f'index={config.EVENT_INDEX} host="{host}:{DEFAULT_PORT}"'
+    events = observe_no_events_from_splunk(
+        start_time=str(observation_start),
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
+        end_time=str(observation_end),
     )
-    logger.info("Splunk received %s events in the last minute", len(events))
+    logger.info("Splunk returned %s events for this configuration", len(events))
     assert len(events) == 0
 
     # delete
     p_inventory.delete_entry_from_list(host)
-    is_on_list = p_inventory.check_if_entry_is_on_list(host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host, expected=False)
     assert is_on_list is False
     # clear inventory
-    p_header.apply_changes()
-    p_header.close_configuration_applied_notification_popup()
+    apply_changes_when_inventory_job_available()
 
     # clear profiles
     p_header.switch_to_profiles()
@@ -139,6 +189,7 @@ def test_setting_group_in_inventory(setup):
     """
     group_name = "splk-interaction-grp"
     host = setup["device_simulator"]
+    device_endpoint = f"{host}:{DEFAULT_PORT}"
     community = "public"
     profile_name = "standard_profile_12s"
     profile_freq = 12
@@ -149,7 +200,6 @@ def test_setting_group_in_inventory(setup):
     p_profiles.set_frequency(profile_freq)
     p_profiles.add_varbind("IF-MIB", "ifDescr")
     p_profiles.click_submit_button()
-    time.sleep(1)  # wait for profile to be shown on the list
 
     p_header.switch_to_groups()
     p_groups.click_add_new_group_button()
@@ -165,84 +215,92 @@ def test_setting_group_in_inventory(setup):
     p_inventory.set_host_or_group_name(group_name)
     p_inventory.select_profiles([profile_name])
     p_inventory.set_community_string(community)
+    # Saving can schedule an inventory Job before the Apply button is clicked.
+    configured_at = time.time()
     p_inventory.click_submit_button_for_add_entry()
-    is_on_list = p_inventory.check_if_entry_is_on_list(group_name)
+    is_on_list = p_inventory.check_if_entry_is_on_list(group_name, expected=True)
     assert is_on_list is True
 
     # apply changes
-    p_header.apply_changes()
-    time_to_upgrade = p_header.get_time_to_upgrade()
-    p_header.close_configuration_applied_notification_popup()
-    time.sleep(time_to_upgrade + 60)  # wait for upgrade + walk time + polling
+    apply_changes_when_inventory_job_available()
 
     # check data in Splunk
     # check walk scheduled
-    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host}:{DEFAULT_PORT};walk"'
-    events = check_events_from_splunk(
-        start_time="-2m@m",
+    search_query = (
+        f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{device_endpoint};walk"'
+    )
+    events = wait_for_events_from_splunk(
+        start_time=str(configured_at),
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
+        min_count=1,
     )
-    logger.info("Splunk received %s events in the last minute", len(events))
+    logger.info("Splunk returned %s events for this configuration", len(events))
     assert len(events) == 1
+    polling_started_at = time.time()
 
     # check profiles polling
-    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host}:{DEFAULT_PORT};12;poll"'
-    events = check_events_from_splunk(
-        start_time="-1m@m",
+    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{device_endpoint};12;poll"'
+    events = wait_for_events_from_splunk(
+        start_time=str(polling_started_at),
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
+        min_count=2,
     )
-    logger.info("Splunk received %s events in the last minute", len(events))
+    logger.info("Splunk returned %s events for this configuration", len(events))
     assert len(events) > 1
 
     # checking smart profiles not working
-    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host}:{DEFAULT_PORT};600;poll"'
-    events = check_events_from_splunk(
-        start_time="-2m@m",
+    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{device_endpoint};600;poll"'
+    observation_start = time.time()
+    observation_end = observation_start + 60
+    events = observe_no_events_from_splunk(
+        start_time=str(observation_start),
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
+        end_time=str(observation_end),
     )
-    logger.info("Splunk received %s events in the last minute", len(events))
+    logger.info("Splunk returned %s events for this configuration", len(events))
     assert len(events) == 0
 
     # checking polling for mandatory profile - 1200 - this should be visible even when smart profiles are disabled
-    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host}:{DEFAULT_PORT};1200;poll"'
-    events = check_events_from_splunk(
-        start_time="-2m@m",
+    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{device_endpoint};1200;poll"'
+    events = wait_for_events_from_splunk(
+        start_time=str(configured_at),
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
+        min_count=1,
     )
-    logger.info("Splunk received %s events in the last minute", len(events))
+    logger.info("Splunk returned %s events for this configuration", len(events))
     assert len(events) == 1
 
     # check events received
-    search_query = f"index={config.EVENT_INDEX} *"
-    events = check_events_from_splunk(
-        start_time="-2m@m",
+    search_query = f'index={config.EVENT_INDEX} host="{device_endpoint}"'
+    events = wait_for_events_from_splunk(
+        start_time=str(polling_started_at),
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
+        min_count=2,
     )
-    logger.info("Splunk received %s events in the last minute", len(events))
+    logger.info("Splunk returned %s events for this configuration", len(events))
     assert len(events) > 1
 
     # delete
     p_inventory.delete_entry_from_list(group_name)
-    is_on_list = p_inventory.check_if_entry_is_on_list(group_name)
+    is_on_list = p_inventory.check_if_entry_is_on_list(group_name, expected=False)
     assert is_on_list is False
     # clear inventory
-    p_header.apply_changes()
-    p_header.close_configuration_applied_notification_popup()
+    apply_changes_when_inventory_job_available()
 
     # clear groups
     p_header.switch_to_groups()
@@ -265,6 +323,7 @@ def test_setting_host_in_inventory(setup):
     """
 
     host = setup["device_simulator"]
+    device_endpoint = f"{host}:{DEFAULT_PORT}"
     community = "public"
     profile_1_name = "standard_profile_10s"
     profile_1_freq = 10
@@ -300,75 +359,84 @@ def test_setting_host_in_inventory(setup):
     p_inventory.select_profiles([profile_1_name, profile_2_name])
     p_inventory.set_community_string(community)
     p_inventory.set_smart_profiles("true")
+    configured_at = time.time()
     p_inventory.click_submit_button_for_add_entry()
-    is_on_list = p_inventory.check_if_entry_is_on_list(host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host, expected=True)
     assert is_on_list is True
 
     # apply changes
-    p_header.apply_changes()
-    time_to_upgrade = p_header.get_time_to_upgrade()
-    p_header.close_configuration_applied_notification_popup()
-    time.sleep(time_to_upgrade + 90)  # wait for upgrade + walk time + polling
+    apply_changes_when_inventory_job_available()
 
     # check data in Splunk
     # check walk scheduled
-    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host}:{DEFAULT_PORT};walk"'
-    events = check_events_from_splunk(
-        start_time="-3m@m",
+    search_query = (
+        f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{device_endpoint};walk"'
+    )
+    events = wait_for_events_from_splunk(
+        start_time=str(configured_at),
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
+        min_count=1,
     )
-    logger.info("Splunk received %s events in the last minute", len(events))
+    logger.info("Splunk returned %s events for this configuration", len(events))
     assert len(events) == 1
+    polling_started_at = time.time()
 
     # check profiles polling
-    time.sleep(60)  # wait to be sure that profile are being polled
-    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host}:{DEFAULT_PORT};10;poll"'
-    events = check_events_from_splunk(
-        start_time="-1m@m",
+    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{device_endpoint};10;poll"'
+    events = wait_for_events_from_splunk(
+        start_time=str(polling_started_at),
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
+        min_count=2,
     )
-    logger.info("Splunk received %s events in the last minute", len(events))
+    logger.info("Splunk returned %s events for this configuration", len(events))
     assert len(events) > 1
 
-    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host}:{DEFAULT_PORT};7;poll"'
-    events = check_events_from_splunk(
-        start_time="-1m@m",
+    search_query = (
+        f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{device_endpoint};7;poll"'
+    )
+    events = wait_for_events_from_splunk(
+        start_time=str(polling_started_at),
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
+        min_count=2,
     )
-    logger.info("Splunk received %s events in the last minute", len(events))
+    logger.info("Splunk returned %s events for this configuration", len(events))
     assert len(events) > 1
 
     # checking smart/base profiles
-    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host}:{DEFAULT_PORT};5;poll"'
-    events = check_events_from_splunk(
-        start_time="-1m@m",
+    search_query = (
+        f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{device_endpoint};5;poll"'
+    )
+    events = wait_for_events_from_splunk(
+        start_time=str(polling_started_at),
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
+        min_count=2,
     )
-    logger.info("Splunk received %s events in the last minute", len(events))
+    logger.info("Splunk returned %s events for this configuration", len(events))
     assert len(events) > 1
 
     # check events received
-    search_query = f"index={config.EVENT_INDEX} *"
-    events = check_events_from_splunk(
-        start_time="-1m@m",
+    search_query = f'index={config.EVENT_INDEX} host="{device_endpoint}"'
+    events = wait_for_events_from_splunk(
+        start_time=str(polling_started_at),
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
+        min_count=2,
     )
-    logger.info("Splunk received %s events in the last minute", len(events))
+    logger.info("Splunk returned %s events for this configuration", len(events))
     assert len(events) > 1
 
     # remove profiles
@@ -376,80 +444,90 @@ def test_setting_host_in_inventory(setup):
     p_inventory.select_profiles([profile_2_name], True)
     p_inventory.set_smart_profiles("false")
     # p_inventory.set_community_string(new_community, True)
+    configured_at = time.time()
     p_inventory.click_submit_button_for_add_entry()
     # apply changes
-    p_header.apply_changes()
-    time_to_upgrade = p_header.get_time_to_upgrade()
-    p_header.close_configuration_applied_notification_popup()
-    time.sleep(time_to_upgrade + 90)  # wait for upgrade + walk time + polling
+    apply_changes_when_inventory_job_available()
 
     # check walk scheduled
-    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host}:{DEFAULT_PORT};walk"'
-    events = check_events_from_splunk(
-        start_time="-3m@m",
+    search_query = (
+        f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{device_endpoint};walk"'
+    )
+    events = wait_for_events_from_splunk(
+        start_time=str(configured_at),
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
+        min_count=1,
     )
-    logger.info("Splunk received %s events in the last minute", len(events))
+    logger.info("Splunk returned %s events for this configuration", len(events))
     assert len(events) == 1
+    polling_started_at = time.time()
 
     # check profiles polling
-    time.sleep(60)  # wait to be sure that disabled profile is no more polled
-    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host}:{DEFAULT_PORT};10;poll"'
-    events = check_events_from_splunk(
-        start_time="-1m@m",
+    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{device_endpoint};10;poll"'
+    observation_start = time.time()
+    observation_end = observation_start + 60
+    events = observe_no_events_from_splunk(
+        start_time=str(observation_start),
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
+        end_time=str(observation_end),
     )
-    logger.info("Splunk received %s events in the last minute", len(events))
+    logger.info("Splunk returned %s events for this configuration", len(events))
     assert len(events) == 0
 
-    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host}:{DEFAULT_PORT};7;poll"'
-    events = check_events_from_splunk(
-        start_time="-1m@m",
+    search_query = (
+        f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{device_endpoint};7;poll"'
+    )
+    events = wait_for_events_from_splunk(
+        start_time=str(polling_started_at),
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
+        min_count=2,
     )
-    logger.info("Splunk received %s events in the last minute", len(events))
+    logger.info("Splunk returned %s events for this configuration", len(events))
     assert len(events) > 1
 
     # checking smart/base profiles - no polling
-    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host}:{DEFAULT_PORT};5;poll"'
-    events = check_events_from_splunk(
-        start_time="-1m@m",
+    search_query = (
+        f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{device_endpoint};5;poll"'
+    )
+    events = observe_no_events_from_splunk(
+        start_time=str(observation_start),
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
+        end_time=str(observation_end),
     )
-    logger.info("Splunk received %s events in the last minute", len(events))
+    logger.info("Splunk returned %s events for this configuration", len(events))
     assert len(events) == 0
 
     # check events received
-    search_query = f"index={config.EVENT_INDEX} *"
-    events = check_events_from_splunk(
-        start_time="-1m@m",
+    search_query = f'index={config.EVENT_INDEX} host="{device_endpoint}"'
+    events = wait_for_events_from_splunk(
+        start_time=str(polling_started_at),
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
+        min_count=2,
     )
-    logger.info("Splunk received %s events in the last minute", len(events))
+    logger.info("Splunk returned %s events for this configuration", len(events))
     assert len(events) > 1
 
     # delete
     p_inventory.delete_entry_from_list(host)
-    is_on_list = p_inventory.check_if_entry_is_on_list(host)
+    is_on_list = p_inventory.check_if_entry_is_on_list(host, expected=False)
     assert is_on_list is False
     # clear inventory
-    p_header.apply_changes()
-    p_header.close_configuration_applied_notification_popup()
+    apply_changes_when_inventory_job_available()
 
     # clear profiles
     p_header.switch_to_profiles()

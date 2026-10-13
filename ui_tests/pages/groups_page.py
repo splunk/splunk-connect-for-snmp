@@ -3,6 +3,7 @@ import time
 import pages.helper as helper
 from logger.logger import Logger
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
 from webdriver.webriver_factory import WebDriverFactory
 
 logger = Logger().get_logger()
@@ -31,7 +32,7 @@ class GroupsPage:
         add_group_input_xpath = (
             "//div[@data-test='sc4snmp:form:group-name-input']//input"
         )
-        add_grp_input = driver.find_element(By.XPATH, add_group_input_xpath)
+        add_grp_input = helper.wait_for_visible(driver, add_group_input_xpath)
         return add_grp_input
 
     def click_submit_button_for_add_group(self):
@@ -39,9 +40,7 @@ class GroupsPage:
         add_group_button_xpath = (
             "//button[@data-test='sc4snmp:form:submit-form-button']"
         )
-        helper.safe_click(driver, add_group_button_xpath)
-        # wait for group to be shown on the list
-        time.sleep(5)
+        helper.submit_form(driver, add_group_button_xpath)
 
     def click_submit_button_for_add_device(self):
         self.click_submit_button_for_add_group()
@@ -52,16 +51,12 @@ class GroupsPage:
         helper.safe_click(driver, cancel_button_xpath)
         helper.wait_for_modal_overlay_to_close(driver)
 
-    def check_if_groups_is_on_list(self, group_name):
+    def check_if_groups_is_on_list(self, group_name, expected=None):
         logger.info("Checking if group is configured (is on list)")
         group_entry_on_list_xpath = "//div[@data-test='sc4snmp:group']//p"
-        groups_entries = driver.find_elements(By.XPATH, group_entry_on_list_xpath)
-        for el in groups_entries:
-            # logger.info(f"group name >  |{el.text}|")  # debug
-            if group_name == el.text:
-                return True
-        logger.info("Group has not been found on list")
-        return False
+        return helper.entry_is_listed(
+            driver, group_entry_on_list_xpath, group_name, expected
+        )
 
     def delete_group_from_list(self, group_name):
         logger.info(f"Removing group from groups list: {group_name}")
@@ -95,30 +90,33 @@ class GroupsPage:
         err_msg = driver.find_element(By.XPATH, error_msg_xpath)
         return err_msg.text
 
-    def get_number_of_devices_for_group(self, group_name):
+    def get_number_of_devices_for_group(self, group_name, expected=None):
         logger.info(f"getting number of devices for group: {group_name}")
         device_row_xpath = "//tr[@data-test='sc4snmp:group-row']"
-        rows = driver.find_elements(By.XPATH, device_row_xpath)
-        return len(rows)
+        if expected is not None:
+            WebDriverWait(driver, 30).until(
+                lambda current_driver: len(
+                    current_driver.find_elements(By.XPATH, device_row_xpath)
+                )
+                == expected,
+                message=f"Expected {expected} devices for {group_name}",
+            )
+        return len(driver.find_elements(By.XPATH, device_row_xpath))
 
     def set_device_ip(self, device_ip, edit=False):
         logger.info(f"set device ip: {device_ip}")
         device_ip_field_xpath = "//div[@data-test='sc4snmp:form:ip-input']//input"
-        ip_field = driver.find_element(By.XPATH, device_ip_field_xpath)
+        ip_field = helper.wait_for_visible(driver, device_ip_field_xpath)
         if edit:
             helper.clear_input(ip_field)
         ip_field.send_keys(device_ip)
 
-    def check_if_device_is_configured(self, device_ip):
+    def check_if_device_is_configured(self, device_ip, expected=None):
         logger.info("Checking if device is configured (is on group list)")
         device_entry_on_list_xpath = "//td[@data-test='sc4snmp:host-address']"
-        devices_entries = driver.find_elements(By.XPATH, device_entry_on_list_xpath)
-        for el in devices_entries:
-            # logger.info(f"device name >  |{el.text}|")  # debug
-            if device_ip == el.text:
-                return True
-        logger.info("Device has not been found on list")
-        return False
+        return helper.entry_is_listed(
+            driver, device_entry_on_list_xpath, device_ip, expected
+        )
 
     def edit_group_name(self, group_name, new_group_name):
         logger.info(f"change group name: {group_name} -> {new_group_name}")
@@ -132,8 +130,8 @@ class GroupsPage:
     def get_submit_edited_group_name_popup_message(self):
         logger.info("Get submit edited group name popup text")
         edited_group_popup_text_xpath = "//div[@data-test='modal']//div//p"
-        edited_group_popup_text = driver.find_element(
-            By.XPATH, edited_group_popup_text_xpath
+        edited_group_popup_text = helper.wait_for_visible(
+            driver, edited_group_popup_text_xpath
         )
         return edited_group_popup_text.text
 
@@ -189,7 +187,7 @@ class GroupsPage:
             "secret": "//div[@data-test='sc4snmp:form:secret-input']//input",
             "security_engine": "//div[@data-test='sc4snmp:form:security-engine-input']//input",
         }
-        field_input = driver.find_element(By.XPATH, xpath[field_name])
+        field_input = helper.wait_for_visible(driver, xpath[field_name])
         if edit:
             helper.clear_input(field_input)
         field_input.send_keys(value)
@@ -205,10 +203,10 @@ class GroupsPage:
         snmp_version_expander_xpath = (
             "//button[@data-test='sc4snmp:form:select-version']"
         )
-        expander = driver.find_element(By.XPATH, snmp_version_expander_xpath)
+        expander = helper.wait_for_visible(driver, snmp_version_expander_xpath)
         expander.click()
         time.sleep(1)
-        option = driver.find_element(By.XPATH, options[snmp_version])
+        option = helper.wait_for_visible(driver, options[snmp_version])
         option.click()
 
     def get_device_port(self, device_ip):
@@ -319,7 +317,7 @@ class GroupsPage:
     def set_bulk_paste_text(self, text):
         logger.info(f"set bulk paste text: {text}")
         paste_input_xpath = "//div[@data-test='sc4snmp:bulk:paste-input']//textarea[@data-test='textbox']"
-        paste_input = driver.find_element(By.XPATH, paste_input_xpath)
+        paste_input = helper.wait_for_visible(driver, paste_input_xpath)
         paste_input.send_keys(text)
 
     def set_bulk_shared_field(self, field_name, value):
@@ -327,7 +325,7 @@ class GroupsPage:
         field_input_xpath = (
             f"//div[@data-test='sc4snmp:bulk:shared-{field_name}-input']//input"
         )
-        field_input = driver.find_element(By.XPATH, field_input_xpath)
+        field_input = helper.wait_for_visible(driver, field_input_xpath)
         field_input.send_keys(value)
 
     def set_bulk_shared_port(self, port):
@@ -351,10 +349,10 @@ class GroupsPage:
             "3": "//button[@data-test='sc4snmp:bulk:shared-version-3']",
         }
         expander_xpath = "//button[@data-test='sc4snmp:bulk:shared-select-version']"
-        expander = driver.find_element(By.XPATH, expander_xpath)
+        expander = helper.wait_for_visible(driver, expander_xpath)
         expander.click()
         time.sleep(1)
-        option = driver.find_element(By.XPATH, options[snmp_version])
+        option = helper.wait_for_visible(driver, options[snmp_version])
         option.click()
 
     def click_bulk_expand_addresses(self):
@@ -367,8 +365,7 @@ class GroupsPage:
     def click_bulk_submit(self):
         logger.info("Click submit button in bulk-add modal")
         submit_btn_xpath = "//button[@data-test='sc4snmp:bulk:submit-button']"
-        helper.safe_click(driver, submit_btn_xpath)
-        time.sleep(5)
+        helper.submit_form(driver, submit_btn_xpath)
 
     def click_bulk_cancel(self):
         logger.info("Click cancel button in bulk-add modal")
