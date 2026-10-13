@@ -640,12 +640,12 @@ mongodb:
   replicaInitJob:
     image:
       repository: "alpine/kubectl"
-      tag: "1.37.0"
+      tag: "1.37.1"
     # MongoDB replicas pod initialisation timeout in seconds
     timeout: 600
   image:
     repository: mongo
-    tag: "8.3.9"
+    tag: "8.3.11"
     pullPolicy: IfNotPresent
 
   # Container-level security context for the mongod container. runAsNonRoot/
@@ -726,7 +726,7 @@ redis:
   # Image
   image:
     repository: redis
-    tag: "8.10.1"
+    tag: "8.10.2"
     pullPolicy: IfNotPresent
 
   # Resources

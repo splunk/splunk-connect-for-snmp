@@ -3,6 +3,12 @@
 ## Unreleased
 
 ### Changed
+
+### Fixed
+
+## [1.18.0]
+
+### Changed
 - **Python and PySNMP modernization**
   - Require Python 3.13 across the application, containers, CI, and development tooling, and replace the legacy `pysnmplib` stack with Lextudio `pysnmp` 7.1.29, `pyasn1` 0.6, `pysmi` 2.0, and `pysnmpcrypto`.
   - Migrate polling, walking, discovery, authentication, MIB resolution, and trap reception to the asyncio with SNMP engines scoped and cleaned up per event loop.
@@ -18,6 +24,8 @@
 - Fix MongoDB client leaks in Celery workers that made worker memory and MongoDB connection counts grow over time.
 - Fix devices with a missing walk schedule getting stuck in a permanent restart-detection loop. Missing or failing walk is logged instead of crashing enrichment.
 - Fix the inventory job launched by the UI's "Apply changes" using a different `CHAIN_OF_TASKS_EXPIRY_TIME` than the one launched by `helm upgrade`.
+- Fix the inventory loader crashing entirely when a single RedBeat schedule is missing its definition in Redis. The malformed entry is now skipped and logged, so inventory, profile, and group changes are no longer blocked by it, and the existing self-heal recreates the skipped schedule on the next loader run.
+- Fix `worker.x.maxMemoryPerChild` rendering in scientific notation (e.g. `1.5e+06` instead of `1500000`) when set to a large value, which silently disabled `--max-memory-per-child` for that worker.
 
 ## [1.17.1]
 
