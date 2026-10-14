@@ -2927,8 +2927,8 @@
 <h2 id="check-when-snmp-walk-was-executed-last-time-for-the-device">Check when SNMP WALK was executed last time for the device<a class="headerlink" href="#check-when-snmp-walk-was-executed-last-time-for-the-device" title="Permanent link">&para;</a></h2>
 <ol>
 <li><a href="../../microk8s/sck-installation/">Configure Splunk OpenTelemetry Collector for Kubernetes</a> or <a href="../../dockercompose/9-splunk-logging/">Configure Docker Logs for Splunk</a>.</li>
-<li>Go to your Splunk and execute search: <code>index="em_logs"   "Sending due task" "sc4snmp;&lt;IP_ADDRESS&gt;;walk"</code> 
-and replace <IP_ADDRESS> with the pertinent IP Address. </li>
+<li>Go to your Splunk and execute search: <code>index="em_logs"   "Sending due task" "sc4snmp;&lt;IP_ADDRESS&gt;:&lt;PORT&gt;;walk"</code> 
+and replace <IP_ADDRESS> and <PORT> with the pertinent IP Address and port. </li>
 </ol>
 <h2 id="empty-snmp-response-message">Empty SNMP response message<a class="headerlink" href="#empty-snmp-response-message" title="Permanent link">&para;</a></h2>
 <p>If you see the following line in the worker&rsquo;s logs:</p>
