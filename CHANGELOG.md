@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Changed
+- Inventory job now takes its log level from `poller.logLevel` instead of `scheduler.logLevel`, defaulting to `INFO`.
 
 ### Fixed
 
