@@ -44,7 +44,7 @@ spec:
           - name: MIB_STANDARD
             value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/standard.txt"
           - name: LOG_LEVEL
-            value: {{ .Values.scheduler.logLevel | default "INFO" }}
+            value: {{ .Values.poller.logLevel | default "INFO" }}
           - name: CHAIN_OF_TASKS_EXPIRY_TIME
             value: {{ .Values.scheduler.tasksExpiryTime | quote }}
           - name: CONFIG_FROM_MONGO

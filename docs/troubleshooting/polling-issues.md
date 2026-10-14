@@ -2,8 +2,8 @@
 
 ## Check when SNMP WALK was executed last time for the device
 1. [Configure Splunk OpenTelemetry Collector for Kubernetes](../microk8s/sck-installation.md) or [Configure Docker Logs for Splunk](../dockercompose/9-splunk-logging.md).
-2. Go to your Splunk and execute search: `index="em_logs"   "Sending due task" "sc4snmp;<IP_ADDRESS>;walk"` 
-and replace <IP_ADDRESS> with the pertinent IP Address. 
+2. Go to your Splunk and execute search: `index="em_logs"   "Sending due task" "sc4snmp;<IP_ADDRESS>:<PORT>;walk"` 
+and replace <IP_ADDRESS> and <PORT> with the pertinent IP Address and port. 
 
 ## Empty SNMP response message
 If you see the following line in the worker's logs:
