@@ -36,7 +36,7 @@ pyrate-limiter = "^4.0.0"
 requests-cache = "^1.0.0"
 requests-ratelimiter = "^0.10.0"
 mongoengine = "^0.29.0"
-celery-redbeat = {git = "https://github.com/splunk/redbeat", branch = "main"}
+celery-redbeat = {git = "https://github.com/splunk/redbeat", branch = "upgrade/redbeat-2.4.2"}
 PyYAML = "^6.0"
 #Note this is temporary PR to upstream project is issued
 wait-for-dep = {extras = ["redis"], git="https://github.com/omrozowicz-splunk/wait-for-dep.git"}

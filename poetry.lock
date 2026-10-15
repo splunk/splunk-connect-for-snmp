@@ -127,16 +127,16 @@ zstd = ["zstandard (==0.23.0)"]
 
 [[package]]
 name = "celery-redbeat"
-version = "2.0.0"
+version = "2.4.3.dev4"
 description = "A Celery Beat Scheduler using Redis for persistent storage"
 optional = false
-python-versions = "*"
+python-versions = ">=3.9"
 groups = ["main"]
 files = []
 develop = false
 
 [package.dependencies]
-celery = ">=4.2"
+celery = ">=5.0"
 python-dateutil = "*"
 redis = ">=3.2"
 tenacity = "*"
@@ -144,8 +144,8 @@ tenacity = "*"
 [package.source]
 type = "git"
 url = "https://github.com/splunk/redbeat"
-reference = "main"
-resolved_reference = "be62fd921d8c0ff548a482c2b112687de4167938"
+reference = "upgrade/redbeat-2.4.2"
+resolved_reference = "ff0486c6ffbf1b1189af7de64552e6d8957c493d"
 
 [[package]]
 name = "certifi"
@@ -2690,4 +2690,4 @@ tomli = ">=2.4.0"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<3.15"
-content-hash = "b559a87354e1e6c014c8555120c41038612bcdf0f61cc31a1c6ec163de7d3f24"
+content-hash = "3139488eb872a38857fdf49842e237afa95b443f22027a3af6b5a93aacc3631b"
