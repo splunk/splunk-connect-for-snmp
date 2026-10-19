@@ -1,0 +1,4 @@
+interface:
+  display_name: "Troubleshoot SC4SNMP"
+  short_description: "Diagnose SC4SNMP with focused checks and clear commands"
+  default_prompt: "Use $troubleshoot-sc4snmp to diagnose my SNMP collector issue, keep checks within SC4SNMP, and give concise commands with expected results."
