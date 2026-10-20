@@ -21,14 +21,24 @@ imagePullSecrets: []
 UI:
   enable: false
   frontEnd:
+    # Port the UI is served on (container port and Service port). It is also the nodePort when serviceType is NodePort.
     NodePort: 30001
-    repository: ghcr.io/splunk/sc4snmp-ui/frontend/container
-    tag: "1.3.1"
+    # NodePort (default) exposes the UI on every node. Use ClusterIP when a reverse proxy or Ingress in the cluster
+    # exposes the UI instead.
+    serviceType: NodePort
+    # Comma-separated IPs/CIDRs of reverse proxies in front of the UI whose X-Forwarded-For header is trusted, so that
+    # login rate limiting sees real client IPs. Leave empty when users connect directly to the NodePort.
+    trustedProxyCIDRs: ""
+    repository: ajasnosz558/ui-frontend
+    tag: "new3"
     pullPolicy: "Always"
   backEnd:
+    # Used only when serviceType is NodePort. The browser reaches the backend through the frontend, so the backend is
+    # not exposed outside the cluster by default.
     NodePort: 30002
-    repository: ghcr.io/splunk/sc4snmp-ui/backend/container
-    tag: "1.3.1"
+    serviceType: ClusterIP
+    repository: ajasnosz558/ui-backend
+    tag: "new3"
     pullPolicy: "Always"
   # Base container that sets permissions for folders mounted to UI containers
   init:

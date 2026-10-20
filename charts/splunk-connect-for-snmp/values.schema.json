@@ -89,6 +89,13 @@
             },
             "pullPolicy": {
               "type": "string"
+            },
+            "serviceType": {
+              "type": "string",
+              "enum": ["NodePort", "ClusterIP"]
+            },
+            "trustedProxyCIDRs": {
+              "type": "string"
             }
           }
         },
@@ -115,6 +122,10 @@
             },
             "pullPolicy": {
               "type": "string"
+            },
+            "serviceType": {
+              "type": "string",
+              "enum": ["NodePort", "ClusterIP"]
             }
           }
         },
