@@ -23,7 +23,11 @@ UI:
   keepSectionFiles: true
 ```
 
-- `NodePort`: port number on which GUI will be accessible. It has to be from a range `30000-32767`.
+- `NodePort`: port number on which GUI will be accessible. It has to be from a range `30000-32767`. The browser talks only to the
+frontEnd: it forwards API calls to the backEnd inside the cluster, so by default the backEnd is not exposed outside the cluster
+(`backEnd.serviceType` is `ClusterIP`). `backEnd.NodePort` is used only if you set `backEnd.serviceType: NodePort`.
+- `serviceType`: `NodePort` (default for `frontEnd`) or `ClusterIP` (default for `backEnd`). See
+[Running the GUI behind a reverse proxy](#running-the-gui-behind-a-reverse-proxy).
 - `pullPolicy`: [kubernetes pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy).
 - `valuesFileDirectory`: this is an obligatory field if UI is used. It is an absolute directory path on the host machine 
 where configuration files from the GUI will be generated. It is used to keep all the changes from the GUI so that users can 
@@ -56,6 +60,75 @@ was NOT provided, then those files are created regardless of this variable.
 
 To access the GUI, in the browser type the IP address of your Microk8s cluster followed by the NodePort number from the 
 frontEnd section, e.g. `192.168.123.13:30001`.
+
+## Running the GUI behind a reverse proxy
+
+To serve the GUI over HTTPS, or under a hostname, put a reverse proxy (for example nginx or an Ingress controller) in front
+of it. The browser only talks to the GUI frontend: the frontend forwards API calls (`/api/...`) to the backend inside the
+cluster. The proxy therefore needs a single route to the frontend Service and no special handling of API paths or websockets.
+
+```yaml
+UI:
+  enable: true
+  frontEnd:
+    NodePort: 30001
+    serviceType: ClusterIP
+    trustedProxyCIDRs: "10.1.0.0/16"
+  allowedOrigins: "https://snmp-ui.example.com"
+  auth:
+    enabled: true
+    existingSecret: "sc4snmp-ui-auth"
+    secureCookies: true
+```
+
+- `frontEnd.serviceType`: set to `ClusterIP` when only the proxy should reach the GUI. The proxy must run inside the cluster
+(or be an Ingress controller), because a `ClusterIP` Service is not reachable from outside it. `frontEnd.NodePort` still sets the
+port the frontend listens on, which is the port the proxy connects to.
+- `frontEnd.trustedProxyCIDRs`: comma-separated IPs or CIDRs of the proxy pods. When a request comes from one of them, the
+client address is taken from `X-Forwarded-For`. This keeps the login rate limit (5 attempts per minute) per client. Without
+it, every user behind the proxy shares one limit. Only list addresses you control, because anyone in this range can set the
+client address.
+- `auth.secureCookies`: set to `true` so that the session cookie is only sent over HTTPS (see
+[Enabling authentication and authorisation](#enabling-authentication-and-authorisation)).
+- `allowedOrigins`: the GUI calls the API on its own address, so CORS is not involved when using the GUI. Set it only if another
+origin needs to call the API.
+
+Example nginx server block that terminates TLS and forwards everything to the GUI frontend (replace `<namespace>` and, if
+changed, `30001` with `frontEnd.NodePort`):
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name snmp-ui.example.com;
+    # ssl_certificate and ssl_certificate_key go here
+
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    client_max_body_size 10m;
+
+    location / {
+        proxy_pass http://ui-frontend-entrypoint.<namespace>.svc.cluster.local:30001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $remote_addr;
+    }
+}
+```
+
+!!!note
+    The frontend resolves the backend Service name when it starts. If you delete and recreate the `ui-backend-entrypoint` Service,
+    restart the frontend pod. Anyone who can reach the backend Service from inside the cluster can call the API directly, so
+    consider a Kubernetes NetworkPolicy that only allows the frontend pods to connect to the backend.
+
+If you connect straight to the NodePort without a proxy, Kubernetes usually replaces the client address with the node address
+(`externalTrafficPolicy: Cluster`). All users then share one login rate limit. Use a reverse proxy with `trustedProxyCIDRs`,
+or set `externalTrafficPolicy: Local` on the Service, if you need a limit per client.
+
+### Upgrading from a manually patched installation
+
+Earlier versions served the GUI with a development server, and some installations worked around it with scripts that patch
+the running pods or Services (changing the container command, editing files in the pod, or recreating the Services as
+`ClusterIP`). Remove those scripts when upgrading: the frontend no longer contains the files or tools they modify, and the
+chart now provides the same result through `frontEnd.serviceType`, `backEnd.serviceType` and `trustedProxyCIDRs`. If you proxy
+to the backend NodePort directly, point the proxy at the frontend as shown above instead.
 
 ## Enabling authentication and authorisation
 
@@ -124,7 +197,7 @@ Add the `auth` section under `UI` and point `existingSecret` at the Secret creat
 UI:
   enable: true
   # CORS allow-list for the backend (comma-separated scheme+host[+port]).
-  # REQUIRED in production when authentication is enabled.
+  # Set it to the exact URL(s) of any other origin that must call the API directly.
   allowedOrigins: "https://snmp-ui.example.com"
 
   auth:
@@ -143,8 +216,8 @@ Configuration reference:
 | `UI.auth.existingSecret`     | Name of the Secret created in Step 2. If omitted while auth is enabled, the Helm chart refuses to render (`helm template`/`helm install` will fail with an explanatory error). Prevents credentials from flowing through `values.yaml`.                                                                                       | `""`    | **yes**, when `auth.enabled=true` |
 | `UI.auth.jwtExpiryHours`     | Absolute lifetime of a session JWT. After this period the user must log in again regardless of activity.                                                                                                                                                                                                                      | `2`     | no                                |
 | `UI.auth.idleTimeoutMinutes` | Idle timeout. If no authenticated request is made for this many minutes, the session is invalidated.                                                                                                                                                                                                                          | `30`    | no                                |
-| `UI.auth.secureCookies`      | When `true`, the session cookie is issued with the `Secure` flag and is only transmitted over HTTPS. Requires an HTTPS-terminating reverse proxy (e.g. nginx) in front of the NodePorts - the Helm chart serves plain HTTP only. Set to `false` for plain HTTP deployments; browsers will silently drop the cookie otherwise. | `false` | no                                |
-| `UI.allowedOrigins`          | Comma-separated list of origins allowed to call the UI backend (e.g. `http://localhost:30001`). If empty and `auth.enabled=true`, the backend defaults to `http://localhost:8080`. Set explicitly in production to the exact URL(s) a browser will use to reach the UI - otherwise login requests will be rejected by CORS.   | `""`    | recommended in production         |
+| `UI.auth.secureCookies`      | When `true`, the session cookie is issued with the `Secure` flag and is only transmitted over HTTPS. Requires an HTTPS-terminating reverse proxy (e.g. nginx) in front of the GUI - the Helm chart serves plain HTTP only (see [Running the GUI behind a reverse proxy](#running-the-gui-behind-a-reverse-proxy)). Set to `false` for plain HTTP deployments; browsers will silently drop the cookie otherwise. | `false` | no                                |
+| `UI.allowedOrigins`          | Comma-separated list of origins allowed to call the UI backend directly (e.g. `https://snmp-ui.example.com`). The GUI itself calls the API on its own address, so this matters only for other origins that call the API. If empty and `auth.enabled=true`, the backend defaults to `http://localhost:8080`.   | `""`    | recommended in production         |
 
 ### Step 4 - Apply and verify
 
@@ -155,13 +228,13 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/spl
   --namespace sc4snmp --create-namespace
 ```
 
-Open the UI in a browser (`https://<ui-host>:<frontEnd.NodePort>`). You will be redirected to a login screen; authenticate 
+Open the UI in a browser (`http://<node-ip>:<frontEnd.NodePort>`, or the HTTPS address of your reverse proxy). You will be redirected to a login screen; authenticate 
 with the username and password used when generating the Secret. Inactivity beyond `idleTimeoutMinutes` or sessions older 
 than `jwtExpiryHours` will require a fresh login.
 
 ### Operational guidance
 
-- Serve the UI over HTTPS (TLS 1.2+). Because the JWT cookie is `HttpOnly` and `Secure`, authenticated access over plain 
+- Serve the UI over HTTPS (TLS 1.2+) through a reverse proxy (see [Running the GUI behind a reverse proxy](#running-the-gui-behind-a-reverse-proxy)). Because the JWT cookie is `HttpOnly` and `Secure`, authenticated access over plain 
   HTTP is intentionally broken outside `localhost`.
 - Keep `UI.allowedOrigins` as tight as possible - ideally a single production URL. Wildcards are not supported when 
   authentication is enabled.

@@ -1,0 +1,42 @@
+---
+# Source: splunk-connect-for-snmp/templates/ui/deployment-frontend.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui-frontend-deployment
+  labels:
+    app: ui-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui-frontend
+  template:
+    metadata:
+      labels:
+        app: ui-frontend
+    spec:
+      # nosemgrep: splunk.run-as-non-root-security-context-pod-level
+      securityContext:
+        runAsUser: 10000
+        runAsGroup: 10000
+        runAsNonRoot: true
+        fsGroup: 10000
+      containers:
+      - name: ui-frontend
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+        image: "ghcr.io/splunk/sc4snmp-ui/frontend/container:main"
+        imagePullPolicy: Always
+        env:
+          - name: DEMO_PORT
+            value: "30001"
+        ports:
+        - containerPort: 30001
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}

@@ -1,0 +1,92 @@
+---
+# Source: splunk-connect-for-snmp/templates/ui/deployment-backend-worker.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui-backend-worker-deployment
+  labels:
+    app: ui-backend-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui-backend-worker
+  template:
+    metadata:
+      labels:
+        app: ui-backend-worker
+      annotations:
+        checksum/redis-config: e82c09fa615350d9c147a0884485f953308babd6b8842d0cbe695ed5595eb530
+    spec:
+      # nosemgrep: splunk.run-as-non-root-security-context-pod-level
+      securityContext:
+        runAsUser: 10000
+        runAsGroup: 10000
+        runAsNonRoot: true
+        fsGroup: 10000
+      containers:
+      - name: ui-backend-worker
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+        image: "ghcr.io/splunk/sc4snmp-ui/backend/container:main"
+        imagePullPolicy: Always
+        command: ["sh","-c","/celery_start.sh"]
+        env:
+        
+        - name: REDIS_MODE
+          value: "standalone"
+        - name: REDIS_HOST
+          value: release-name-redis
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_DB
+          value: "1"
+        - name: CELERY_DB
+          value: "0"
+        
+        - name: MONGODB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: release-name-mongodb-secret
+              key: root-user
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: release-name-mongodb-secret
+              key: root-password
+        - name: MONGODB_MODE
+          value: "standalone"
+        - name: MONGODB_AUTH_SOURCE
+          value: "admin"
+        - name: MONGODB_DATABASE
+          value: "sc4snmp"
+        - name: MONGODB_HOST
+          value: release-name-mongodb-0.release-name-mongodb
+        - name: MONGODB_PORT
+          value: "27017"
+        - name: JOB_CONFIG_PATH
+          value: /config/job_config.yaml
+        - name: JOB_NAMESPACE
+          value: "default"
+        - name: VALUES_DIRECTORY
+          value: /var/values_dir
+        - name: AUTH_ENABLED
+          value: "false"
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: backend-configmap
+          mountPath: /config
+        - name: tmp
+          mountPath: /tmp
+      serviceAccountName: job-robot
+      volumes:
+        - name: backend-configmap
+          configMap:
+            name: splunk-connect-for-snmp-job-configmap
+            items:
+              - key: job_config
+                path: job_config.yaml
+        - name: tmp
+          emptyDir: {}

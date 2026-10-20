@@ -101,6 +101,9 @@ spec:
         - name: ALLOWED_ORIGINS
           value: {{ .Values.UI.allowedOrigins | quote }}
         {{- end }}
+        {{- /* Only the frontend nginx can reach a ClusterIP backend, so its X-Forwarded-For is trusted. On a NodePort any client can reach the backend directly and could spoof the header. */}}
+        - name: TRUSTED_PROXY_COUNT
+          value: {{ if eq (.Values.UI.backEnd.serviceType | default "ClusterIP") "NodePort" }}"0"{{ else }}"1"{{ end }}
         ports:
         - containerPort: 5000
         volumeMounts:
