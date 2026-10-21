@@ -124,6 +124,10 @@ spec:
               value: "false"
             - name: CELERY_TASK_TIMEOUT
               value: "2400"
+            - name: POLLING_JITTER_ENABLED
+              value: "false"
+            - name: POLLING_JITTER_WINDOW_SECONDS
+              value: "60"
             - name: USER
               value: "sc4snmp"
           livenessProbe:

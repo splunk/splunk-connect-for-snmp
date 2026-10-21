@@ -335,6 +335,23 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "pollingJitter": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["enabled", "windowSeconds"],
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "windowSeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 86400,
+              "default": 60
+            }
+          }
+        },
         "groups": {
           "type": "string"
         },
