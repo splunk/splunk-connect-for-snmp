@@ -122,14 +122,6 @@ If you connect straight to the NodePort without a proxy, Kubernetes usually repl
 (`externalTrafficPolicy: Cluster`). All users then share one login rate limit. Use a reverse proxy with `trustedProxyCIDRs`,
 or set `externalTrafficPolicy: Local` on the Service, if you need a limit per client.
 
-### Upgrading from a manually patched installation
-
-Earlier versions served the GUI with a development server, and some installations worked around it with scripts that patch
-the running pods or Services (changing the container command, editing files in the pod, or recreating the Services as
-`ClusterIP`). Remove those scripts when upgrading: the frontend no longer contains the files or tools they modify, and the
-chart now provides the same result through `frontEnd.serviceType`, `backEnd.serviceType` and `trustedProxyCIDRs`. If you proxy
-to the backend NodePort directly, point the proxy at the frontend as shown above instead.
-
 ## Enabling authentication and authorisation
 
 Starting with the UI authentication feature, SC4SNMP-UI can require users to log in with a username and password before 
