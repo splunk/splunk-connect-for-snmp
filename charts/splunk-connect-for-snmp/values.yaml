@@ -185,6 +185,7 @@ sim:
 ################################################################################
 
 scheduler:
+
   ### Group definitions ###
   # Create the group definition in case you want to configure polling from multiple hosts
   # at once, more on this: https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/configuring-groups/
@@ -243,6 +244,15 @@ scheduler:
   #      - ['IF-MIB', 'ifInErrors']
   #      - ['IF-MIB', 'ifOutDiscards']
   profiles: ""
+
+  # Spread new-device WALK and initial POLL schedules over time using
+  # a repeatable offset. Normal recurring polling intervals stay unchanged.
+  pollingJitter:
+    enabled: false
+    # Window for selecting the offset, in whole seconds. Valid range: 1–86400.
+    # Each schedule receives an offset from 1 through the smaller of this
+    # window and its polling interval, including the upper bound.
+    windowSeconds: 60
 
   # mapping MIB fields to custom names
   # more: https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/configuring-profiles/#custom-translations

@@ -88,6 +88,10 @@ spec:
             value: "false"
           - name: ENABLE_FULL_WALK
             value: "false"
+          - name: POLLING_JITTER_ENABLED
+            value: "false"
+          - name: POLLING_JITTER_WINDOW_SECONDS
+            value: "60"
           volumeMounts:
             - name: config
               mountPath: "/app/config"

@@ -213,6 +213,10 @@ Common labels
   value: {{ .Values.poller.ipv6Enabled | default "false" | quote }}
 - name: CELERY_TASK_TIMEOUT
   value: {{ .Values.worker.poller.taskTimeout | quote}}
+- name: POLLING_JITTER_ENABLED
+  value: {{ .Values.scheduler.pollingJitter.enabled | default false | quote }}
+- name: POLLING_JITTER_WINDOW_SECONDS
+  value: {{ .Values.scheduler.pollingJitter.windowSeconds | default 60 | quote }}
 {{- end }}
 
 {{- define "environmental-variables-sender" -}}

@@ -1,0 +1,15 @@
+# Rendering fixture only. Phase 1 wires settings but does not change poll timing.
+scheduler:
+  pollingJitter:
+    enabled: true
+    windowSeconds: 10
+  profiles: |
+    system_profile:
+      frequency: 60
+      varBinds:
+        - ["SNMPv2-MIB", "sysUpTime", "0"]
+
+poller:
+  inventory: |
+    address,port,version,community,walk_interval,profiles,smart_profiles
+    192.0.2.1,161,2c,public,1800,system_profile,false
