@@ -253,16 +253,12 @@ class ProfilesPage:
     def get_profile_varbind(self, profile_name):
         logger.info(f"Get profile varBind {profile_name}")
         profile_mcomponent_xpath = (
-            "//td[@data-test='sc4snmp:profile-mib-component-expanded']//p"
+            "//td[@data-test='sc4snmp:profile-mib-component-expanded']"
         )
         mcomponent = driver.find_element(By.XPATH, profile_mcomponent_xpath)
-        profile_mobject_xpath = (
-            "//td[@data-test='sc4snmp:profile-mib-object_expanded']//p"
-        )
+        profile_mobject_xpath = "//td[@data-test='sc4snmp:profile-mib-object_expanded']"
         mobject = driver.find_element(By.XPATH, profile_mobject_xpath)
-        profile_mindex_xpath = (
-            "//td[@data-test='sc4snmp:profile-mib-index-expanded']//p"
-        )
+        profile_mindex_xpath = "//td[@data-test='sc4snmp:profile-mib-index-expanded']"
         mindex = driver.find_element(By.XPATH, profile_mindex_xpath)
         varbind = {
             "mcomponent": mcomponent.text,
