@@ -98,6 +98,9 @@ async def walk_async_wrapper(self: Poller, **kwargs):
     if group:
         work["group"] = group
 
+    if kwargs.get("_schedule_context") == "initial_registration":
+        work["_schedule_context"] = "initial_registration"
+
     return work
 
 
