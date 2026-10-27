@@ -18,7 +18,12 @@ from contextlib import suppress
 
 from splunk_connect_for_snmp.snmp.manager import get_inventory
 
+from ..common import polling_jitter
 from ..common.collection_manager import ProfilesManager
+from ..common.polling_jitter import (
+    INITIAL_REGISTRATION,
+    SCHEDULE_CONTEXT,
+)
 from ..common.task_generator import PollTaskGenerator
 from .loader import transform_address_to_key
 
@@ -56,6 +61,10 @@ POLL_BASE_PROFILES = human_bool(os.getenv("POLL_BASE_PROFILES", "true"))
 
 @shared_task
 def inventory_setup_poller(work):
+    initial_registration = (
+        polling_jitter.JITTER_SETTINGS.enabled
+        and work.get(SCHEDULE_CONTEXT) == INITIAL_REGISTRATION
+    )
     address = work["address"]
     group = work.get("group")
     chain_of_tasks_expiry_time = work.get("chain_of_tasks_expiry_time")
@@ -110,7 +119,10 @@ def inventory_setup_poller(work):
             chain_of_tasks_expiry_time,
             group,
         )
-        periodic_obj.manage_task(**task_config)
+        if initial_registration:
+            periodic_obj.manage_task(initial_registration=True, **task_config)
+        else:
+            periodic_obj.manage_task(**task_config)
 
     periodic_obj.delete_unused_poll_tasks(f"{address}", active_schedules)
 

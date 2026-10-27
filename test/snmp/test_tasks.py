@@ -19,7 +19,7 @@ class TestTasks(TestCase):
         resolved_identity.get_mib_node = MagicMock(return_value=mib_node)
         self.mock_identity_resolve.return_value = resolved_identity
 
-    @patch("splunk_connect_for_snmp.snmp.manager.get_inventory")
+    @patch("splunk_connect_for_snmp.snmp.tasks.get_inventory")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
     @patch("time.time")
@@ -53,7 +53,7 @@ class TestTasks(TestCase):
             result,
         )
 
-    @patch("splunk_connect_for_snmp.snmp.manager.get_inventory")
+    @patch("splunk_connect_for_snmp.snmp.tasks.get_inventory")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
     def test_poll_and_walk_reuse_mongo_client(
@@ -75,7 +75,7 @@ class TestTasks(TestCase):
 
         m_mongo_client.assert_called_once()
 
-    @patch("splunk_connect_for_snmp.snmp.manager.get_inventory")
+    @patch("splunk_connect_for_snmp.snmp.tasks.get_inventory")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
     @patch("time.time")
@@ -114,7 +114,7 @@ class TestTasks(TestCase):
             result,
         )
 
-    @patch("splunk_connect_for_snmp.snmp.manager.get_inventory")
+    @patch("splunk_connect_for_snmp.snmp.tasks.get_inventory")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
     @patch("time.time")
