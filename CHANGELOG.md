@@ -5,6 +5,7 @@
 ### Added
 - `UI.frontEnd.serviceType` and `UI.backEnd.serviceType` to choose the Kubernetes Service type of the UI, and `UI.frontEnd.trustedProxyCIDRs` to run the UI behind a reverse proxy while keeping per-client login rate limiting. See [Running the GUI behind a reverse 
   proxy](docs/microk8s/gui/enable-gui.md#running-the-gui-behind-a-reverse-proxy).
+- `UI.backEnd.trustedProxyCIDRs`: the backend trusts `X-Forwarded-For` only from callers inside these ranges (the frontend pods), so login rate limiting stays per client for any backend Service type and cannot be spoofed by callers outside them.
 - Optional `UI.backEnd.networkPolicy.enabled` creates a NetworkPolicy that allows ingress to the UI backend only from the UI frontend pods (requires a network plugin that enforces NetworkPolicy and `UI.backEnd.serviceType: ClusterIP`).
 
 ### Changed

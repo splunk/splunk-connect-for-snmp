@@ -127,6 +127,9 @@
               "type": "string",
               "enum": ["NodePort", "ClusterIP"]
             },
+            "trustedProxyCIDRs": {
+              "type": "string"
+            },
             "networkPolicy": {
               "type": "object",
               "additionalProperties": false,

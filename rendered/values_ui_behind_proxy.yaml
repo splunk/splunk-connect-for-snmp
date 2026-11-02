@@ -11,6 +11,7 @@ UI:
     NodePort: 30002
     networkPolicy:
       enabled: true
+    trustedProxyCIDRs: "10.1.0.0/16"
     repository: ghcr.io/splunk/sc4snmp-ui/backend/container
     tag: "main"
     pullPolicy: "Always"

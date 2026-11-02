@@ -120,6 +120,11 @@ server {
     connect to the backend on port 5000. It applies only when `UI.backEnd.serviceType` is `ClusterIP`, and it has an effect only 
     if the cluster's network plugin enforces NetworkPolicy.
 
+    Set `UI.backEnd.trustedProxyCIDRs` (for example the pod network CIDR, `10.1.0.0/16` on microk8s) so the backend trusts
+    `X-Forwarded-For` only from callers inside those ranges and rate limits everyone else by their real address. This keeps
+    per-client login limits correct for a `NodePort` backend too. A pod network CIDR still includes every pod, so combine it
+    with the NetworkPolicy to exclude other pods.
+
 If you connect straight to the NodePort without a proxy, Kubernetes usually replaces the client address with the node address
 (`externalTrafficPolicy: Cluster`). All users then share one login rate limit. Use a reverse proxy with `trustedProxyCIDRs`,
 or set `externalTrafficPolicy: Local` on the Service, if you need a limit per client.

@@ -41,6 +41,11 @@ UI:
     # NetworkPolicy (e.g. Calico); other plugins ignore it silently. Ignored when serviceType is NodePort.
     networkPolicy:
       enabled: false
+    # Comma-separated IPs/CIDRs of the UI frontend pods (usually the pod network CIDR, e.g. 10.1.0.0/16 on microk8s).
+    # When set, the backend trusts X-Forwarded-For only from callers inside these ranges and uses the real address of
+    # everyone else, which keeps login rate limiting per client even if the backend is a NodePort. Empty keeps the
+    # default: trust the header only when serviceType is ClusterIP. Combine with networkPolicy to also exclude other pods.
+    trustedProxyCIDRs: ""
     repository: ajasnosz558/ui-backend
     tag: "new3"
     pullPolicy: "Always"
