@@ -37,6 +37,10 @@ UI:
     # not exposed outside the cluster by default.
     NodePort: 30002
     serviceType: ClusterIP
+    # Restrict ingress to the backend (port 5000) to the ui-frontend pods only. Needs a network plugin that enforces
+    # NetworkPolicy (e.g. Calico); other plugins ignore it silently. Ignored when serviceType is NodePort.
+    networkPolicy:
+      enabled: false
     repository: ajasnosz558/ui-backend
     tag: "new3"
     pullPolicy: "Always"

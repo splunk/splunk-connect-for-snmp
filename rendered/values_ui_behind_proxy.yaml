@@ -9,6 +9,8 @@ UI:
     pullPolicy: "Always"
   backEnd:
     NodePort: 30002
+    networkPolicy:
+      enabled: true
     repository: ghcr.io/splunk/sc4snmp-ui/backend/container
     tag: "main"
     pullPolicy: "Always"

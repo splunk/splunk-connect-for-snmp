@@ -126,6 +126,15 @@
             "serviceType": {
               "type": "string",
               "enum": ["NodePort", "ClusterIP"]
+            },
+            "networkPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                }
+              }
             }
           }
         },

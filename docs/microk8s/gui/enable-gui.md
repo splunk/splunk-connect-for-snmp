@@ -115,8 +115,10 @@ server {
 
 !!!note
     The frontend resolves the backend Service name when it starts. If you delete and recreate the `ui-backend-entrypoint` Service,
-    restart the frontend pod. Anyone who can reach the backend Service from inside the cluster can call the API directly, so
-    consider a Kubernetes NetworkPolicy that only allows the frontend pods to connect to the backend.
+    restart the frontend pod. Anyone who can reach the backend Service from inside the cluster can call the API directly. 
+    Set `UI.backEnd.networkPolicy.enabled: true` to have the chart create a NetworkPolicy that only allows the frontend pods to 
+    connect to the backend on port 5000. It applies only when `UI.backEnd.serviceType` is `ClusterIP`, and it has an effect only 
+    if the cluster's network plugin enforces NetworkPolicy.
 
 If you connect straight to the NodePort without a proxy, Kubernetes usually replaces the client address with the node address
 (`externalTrafficPolicy: Cluster`). All users then share one login rate limit. Use a reverse proxy with `trustedProxyCIDRs`,
