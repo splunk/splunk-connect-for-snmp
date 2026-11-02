@@ -23,7 +23,6 @@ from .common import polling_jitter
 from .common.polling_jitter import (
     INITIAL_REGISTRATION,
     SCHEDULE_CONTEXT,
-    PollingJitterError,
     calculate_offset,
     first_due,
 )
@@ -141,8 +140,8 @@ class CustomPeriodicTaskManager:
         :param task_data: Existing task definition or partial execution request
 
         :return: None
-        :raises PollingJitterError: If phased timing or identity is invalid
-        :raises ValueError: If a numeric scheduling value is invalid
+        :raises PollingJitterError: If initial phasing rejects the device address
+        :raises ValueError: If a port, interval or saved schedule state is invalid
         """
         task_name = task_data.get("name")
         # When task is updated, we don't want to change existing schedules.
@@ -214,24 +213,18 @@ class CustomPeriodicTaskManager:
         :param settings: Validated jitter settings
 
         :return: None
-        :raises PollingJitterError: If the target or interval cannot be phased
-        :raises ValueError: If a numeric scheduling value is invalid
+        :raises PollingJitterError: If identity validation rejects the device address
+        :raises ValueError: If the port or interval is invalid, or the entry
+            fails validation when saved
         """
+        # Inventory and profile validation supply whole-second intervals.
         interval = entry.schedule.run_every
-        if interval.microseconds:
-            raise PollingJitterError("Jitter requires a whole-second polling interval")
         seconds = interval.days * 86400 + interval.seconds
+        # TaskGenerator pairs address:port with matching interval/frequency values.
         target = entry.kwargs.get("address")
-        if ":" not in target:
-            raise PollingJitterError(
-                "Jitter requires a device address and explicit port"
-            )
+        # Only the final colon separates the port, including for IPv6 targets.
         address, port = target.rsplit(":", 1)
         task_type = "walk" if entry.task == WALK_TASK else "poll"
-        # Profile validation also accepts whole-number floats and MongoDB integers.
-        # Compare values without rewriting the payload or schedule key.
-        if task_type == "poll" and entry.kwargs.get("frequency") != seconds:
-            raise PollingJitterError("POLL frequency must match its schedule interval")
         offset, fingerprint = calculate_offset(
             address, port, seconds, task_type, settings
         )

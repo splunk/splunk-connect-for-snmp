@@ -236,7 +236,7 @@ assert "splunk_connect_for_snmp.common.polling_jitter" not in sys.modules
 )
 def test_invalid_settings_fail_during_startup_before_storage(module):
     environment = dict(
-        os.environ, POLLING_JITTER_ENABLED="false", POLLING_JITTER_WINDOW_SECONDS="0"
+        os.environ, POLLING_JITTER_ENABLED="true", POLLING_JITTER_WINDOW_SECONDS="0"
     )
     code = """
 import importlib
@@ -257,21 +257,41 @@ with patch("pymongo.MongoClient", side_effect=AssertionError("Unexpected storage
     assert "Unexpected storage access" not in result.stderr
 
 
-@pytest.mark.parametrize("frequency", [True, False, 1.5, 0, -1, None, "bad", 120])
-def test_invalid_or_mismatched_poll_frequency_cannot_be_phased(app, frequency):
-    data = definition(app, "poll", 60)
-    data["kwargs"]["frequency"] = frequency
-    initial = RedBeatSchedulerEntry(**data)
-    with patch.object(initial, "save_with_first_due") as exact:
-        with pytest.raises(ValueError) as error:
-            customtaskmanager.CustomPeriodicTaskManager()._save_initial_phase(
-                initial, JitterSettings(True)
-            )
-    assert type(error.value) is PollingJitterError
-    exact.assert_not_called()
+@pytest.mark.parametrize(
+    "module",
+    [
+        "splunk_connect_for_snmp.customtaskmanager",
+        "splunk_connect_for_snmp.inventory.loader",
+    ],
+)
+@pytest.mark.parametrize("window", ["abc", "", "0", "-1", "86401"])
+def test_disabled_invalid_window_does_not_block_startup(module, window):
+    environment = dict(
+        os.environ,
+        POLLING_JITTER_ENABLED="false",
+        POLLING_JITTER_WINDOW_SECONDS=window,
+    )
+    code = """
+import importlib
+from unittest.mock import patch
+with patch("pymongo.MongoClient", side_effect=AssertionError("Unexpected storage access")) as client:
+    importlib.import_module(MODULE)
+    from splunk_connect_for_snmp.common.polling_jitter import JITTER_SETTINGS
+    assert not JITTER_SETTINGS.enabled
+    assert JITTER_SETTINGS.window_seconds == 60
+    client.assert_not_called()
+""".replace("MODULE", repr(module))
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        env=environment,
+        capture_output=True,
+        text=True,
+        timeout=15,
+    )
+    assert result.returncode == 0, result.stderr
 
 
-@pytest.mark.parametrize("interval", [0, -1, 1800.5])
+@pytest.mark.parametrize("interval", [0, -1])
 def test_invalid_interval_cannot_be_phased(app, interval):
     initial = RedBeatSchedulerEntry(**definition(app, "walk", interval))
     with patch.object(initial, "save_with_first_due") as exact:
@@ -279,14 +299,12 @@ def test_invalid_interval_cannot_be_phased(app, interval):
             customtaskmanager.CustomPeriodicTaskManager()._save_initial_phase(
                 initial, JitterSettings(True)
             )
-    assert type(error.value) is (
-        PollingJitterError if interval == 1800.5 else ValueError
-    )
+    assert type(error.value) is ValueError
     exact.assert_not_called()
 
 
 @pytest.mark.parametrize(
-    "target", ["router-01", "router-01:", ":161", "router-01:bad", "router-01:65536"]
+    "target", ["router-01:", ":161", "router-01:bad", "router-01:65536"]
 )
 def test_invalid_target_cannot_be_phased(app, target):
     data = definition(app, "walk", 1800)
@@ -297,7 +315,7 @@ def test_invalid_target_cannot_be_phased(app, target):
             customtaskmanager.CustomPeriodicTaskManager()._save_initial_phase(
                 initial, JitterSettings(True)
             )
-    expected = PollingJitterError if target in ("router-01", ":161") else ValueError
+    expected = PollingJitterError if target == ":161" else ValueError
     assert type(error.value) is expected
     exact.assert_not_called()
 

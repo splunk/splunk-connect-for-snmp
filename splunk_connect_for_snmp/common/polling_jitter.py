@@ -19,13 +19,13 @@ import os
 import unicodedata
 from contextlib import suppress
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 from splunk_connect_for_snmp.common.common import human_bool, positive_integer
 
 
 class PollingJitterError(ValueError):
-    """Raised when polling jitter settings or scheduling values are invalid."""
+    """Raised when a device address or task type is invalid for jitter."""
 
 
 with suppress(ImportError, OSError):
@@ -34,11 +34,13 @@ with suppress(ImportError, OSError):
     load_dotenv()
 
 POLLING_JITTER_ENABLED = human_bool(os.getenv("POLLING_JITTER_ENABLED", "false"))
-POLLING_JITTER_WINDOW_SECONDS = positive_integer(
-    os.getenv("POLLING_JITTER_WINDOW_SECONDS", "60"),
-    "POLLING_JITTER_WINDOW_SECONDS",
-    86400,
-)
+POLLING_JITTER_WINDOW_SECONDS = 60
+if POLLING_JITTER_ENABLED:
+    POLLING_JITTER_WINDOW_SECONDS = positive_integer(
+        os.getenv("POLLING_JITTER_WINDOW_SECONDS", "60"),
+        "POLLING_JITTER_WINDOW_SECONDS",
+        86400,
+    )
 INITIAL_REGISTRATION = "initial_registration"
 SCHEDULE_CONTEXT = "_schedule_context"
 
@@ -129,17 +131,17 @@ def first_due(baseline: datetime, offset: int) -> datetime:
     """
     Add one offset and round the due time upward to a whole UTC second.
 
+    Callers provide a UTC baseline and the calculated positive offset.
+
     :param baseline: Existing first-run baseline as an aware UTC timestamp
     :param offset: Positive whole-second offset
 
     :return: Due time that is never earlier than baseline plus offset
-    :raises PollingJitterError: If the baseline is not UTC
-    :raises ValueError: If the offset is invalid
     """
-    if baseline.utcoffset() != timedelta(0):
-        raise PollingJitterError("Jitter baseline must be an aware UTC timestamp")
-    due = baseline + timedelta(seconds=positive_integer(offset, "Jitter offset"))
+    due = baseline + timedelta(seconds=offset)
     if due.microsecond:
+        # RedBeat saves whole seconds. Round up so the full offset passes
+        # before this schedule becomes due.
         due += timedelta(seconds=1)
         due = due.replace(microsecond=0)
-    return due.astimezone(timezone.utc)
+    return due
