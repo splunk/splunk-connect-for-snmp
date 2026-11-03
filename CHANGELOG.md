@@ -6,6 +6,14 @@
 
 ### Fixed
 
+## [1.18.1]
+
+### Changed
+- Inventory job now takes its log level from `poller.logLevel` instead of `scheduler.logLevel`, defaulting to `INFO`.
+
+### Fixed
+- Downgrade and pin PySMI to 1.6.3 to restore compatibility with MIBs containing enumeration labels with underscores, which PySMI 2.0.0 fails to parse.
+
 ## [1.18.0]
 
 ### Changed

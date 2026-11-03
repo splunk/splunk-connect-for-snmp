@@ -11,7 +11,7 @@ worker:
 
 And redeploy SC4SNMP. 
 
-Log level configuration can be set for `worker`, `poller`, `scheduler` and `traps`.
+Log level configuration can be set for `worker`, `poller`, `scheduler`, `traps` and `discovery`.
 
 ## Accessing SC4SNMP logs 
 

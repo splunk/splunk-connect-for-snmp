@@ -14,7 +14,7 @@ on:
 jobs:
   ui-tests-check:
     name: Check if run ui tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Project
         uses: actions/checkout@v7
@@ -40,7 +40,7 @@ jobs:
     name: run UI e2e tests
     needs:
       - ui-tests-check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: "contains(needs.ui-tests-check.outputs.commit_message, '[run-ui-tests]') || github.ref_name == 'develop'"
     timeout-minutes: 120
     env:
