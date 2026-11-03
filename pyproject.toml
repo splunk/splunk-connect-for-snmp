@@ -50,7 +50,7 @@ flower = "^2.0.1"
 filelock = "^4.0.0"
 pyasn1 = "^0.6.4"
 pysnmp = "^7.1.29"
-pysmi = "^2.0.0"
+pysmi = "1.6.3"
 pysnmpcrypto = "^0.1.0"
 
 [tool.poetry.group.dev.dependencies]
