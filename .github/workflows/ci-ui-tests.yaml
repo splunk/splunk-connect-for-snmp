@@ -103,6 +103,10 @@ jobs:
         working-directory: ui_tests
         run: |
           sudo microk8s kubectl get pod -n sc4snmp
+          # The install-time inventory job copies the chart's profiles/inventory into the UI database on its first run.
+          # Wait for it, otherwise that import can land after the tests have cleared the UI and re-add the base config.
+          sudo microk8s kubectl -n sc4snmp wait --for=condition=complete job/snmp-splunk-connect-for-snmp-inventory --timeout=600s \
+            || echo "inventory job already removed or not found, continuing"
           echo "check if UI is available - curl"
           curl http://localhost:30001
           echo "run tests"

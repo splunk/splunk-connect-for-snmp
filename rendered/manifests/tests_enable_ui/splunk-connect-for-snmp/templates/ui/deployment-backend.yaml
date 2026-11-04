@@ -102,6 +102,8 @@ spec:
           value: "30"
         - name: SECURE_COOKIES
           value: "false"
+        - name: TRUSTED_PROXY_COUNT
+          value: "1"
         ports:
         - containerPort: 5000
         volumeMounts:

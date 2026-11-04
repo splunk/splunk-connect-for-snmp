@@ -101,6 +101,12 @@ spec:
         - name: ALLOWED_ORIGINS
           value: {{ .Values.UI.allowedOrigins | quote }}
         {{- end }}
+        {{- with .Values.UI.backEnd.trustedProxyCIDRs }}
+        - name: TRUSTED_PROXY_CIDRS
+          value: {{ . | quote }}
+        {{- end }}
+        - name: TRUSTED_PROXY_COUNT
+          value: {{ if and (eq (.Values.UI.backEnd.serviceType | default "ClusterIP") "NodePort") (not .Values.UI.backEnd.trustedProxyCIDRs) }}"0"{{ else }}"1"{{ end }}
         ports:
         - containerPort: 5000
         volumeMounts:

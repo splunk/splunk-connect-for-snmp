@@ -1,0 +1,20 @@
+{{- if and .Values.UI.enable .Values.UI.backEnd.networkPolicy.enabled (eq (.Values.UI.backEnd.serviceType | default "ClusterIP") "ClusterIP") }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ui-backend-ingress
+spec:
+  podSelector:
+    matchLabels:
+      app: ui-backend
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: ui-frontend
+    ports:
+    - protocol: TCP
+      port: 5000
+{{- end }}

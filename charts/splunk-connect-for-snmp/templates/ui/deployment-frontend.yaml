@@ -29,10 +29,12 @@ spec:
         image: {{ include "splunk-connect-for-snmp.uiFrontImage" . | quote }}
         imagePullPolicy: {{ .Values.UI.frontEnd.pullPolicy }}
         env:
-          - name: REACT_APP_FLASK_PORT
-            value: {{ quote .Values.UI.backEnd.NodePort }}
           - name: DEMO_PORT
             value: {{ quote .Values.UI.frontEnd.NodePort }}
+          {{- with .Values.UI.frontEnd.trustedProxyCIDRs }}
+          - name: TRUSTED_PROXY_CIDRS
+            value: {{ . | quote }}
+          {{- end }}
         ports:
         - containerPort: {{ .Values.UI.frontEnd.NodePort }}
         volumeMounts:

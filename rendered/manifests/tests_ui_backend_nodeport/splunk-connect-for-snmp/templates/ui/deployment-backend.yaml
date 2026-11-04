@@ -1,0 +1,128 @@
+---
+# Source: splunk-connect-for-snmp/templates/ui/deployment-backend.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui-backend-deployment
+  labels:
+    app: ui-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui-backend
+  template:
+    metadata:
+      labels:
+        app: ui-backend
+      annotations:
+        checksum/redis-config: e82c09fa615350d9c147a0884485f953308babd6b8842d0cbe695ed5595eb530
+    spec:
+      # nosemgrep: splunk.run-as-non-root-security-context-pod-level
+      securityContext:
+        runAsUser: 10000
+        runAsGroup: 10000
+        runAsNonRoot: true
+        fsGroup: 10000
+      initContainers:
+        - name: patch-log-dirs
+          image: registry.access.redhat.com/ubi9/ubi
+          imagePullPolicy: IfNotPresent
+          command: [ 'sh', '-c', '
+                mkdir -p /var/values_dir;
+                chmod -v g+rwxs /var/values_dir;
+                if [ -d "/var/values_dir" ];
+                then
+                    setfacl -n -Rm d:m::rwx,m::rwx,d:g:10000:rwx,g:10000:rwx /var/values_dir;
+                fi;' ]
+          securityContext:
+            # nosemgrep: splunk.run-as-non-root
+            runAsUser: 0
+            runAsNonRoot: false
+            allowPrivilegeEscalation: false
+          volumeMounts:
+          - name: values-directory
+            mountPath: /var/values_dir
+      containers:
+      - name: ui-backend
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+        image: "ghcr.io/splunk/sc4snmp-ui/backend/container:main"
+        imagePullPolicy: Always
+        command: ["sh","-c","/flask_start.sh"]
+        env:
+        
+        - name: REDIS_MODE
+          value: "standalone"
+        - name: REDIS_HOST
+          value: release-name-redis
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_DB
+          value: "1"
+        - name: CELERY_DB
+          value: "0"
+        
+        - name: MONGODB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: release-name-mongodb-secret
+              key: root-user
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: release-name-mongodb-secret
+              key: root-password
+        - name: MONGODB_MODE
+          value: "standalone"
+        - name: MONGODB_AUTH_SOURCE
+          value: "admin"
+        - name: MONGODB_DATABASE
+          value: "sc4snmp"
+        - name: MONGODB_HOST
+          value: release-name-mongodb-0.release-name-mongodb
+        - name: MONGODB_PORT
+          value: "27017"
+        - name: JOB_CONFIG_PATH
+          value: /config/job_config.yaml
+        - name: JOB_NAMESPACE
+          value: "default"
+        - name: VALUES_DIRECTORY
+          value: /var/values_dir
+        - name: VALUES_FILE
+          value: values.yaml
+        - name: KEEP_TEMP_FILES
+          value: "false"
+        - name: AUTH_ENABLED
+          value: "false"
+        - name: JWT_EXPIRY_HOURS
+          value: "2"
+        - name: IDLE_TIMEOUT_MINUTES
+          value: "30"
+        - name: SECURE_COOKIES
+          value: "false"
+        - name: TRUSTED_PROXY_COUNT
+          value: "0"
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: backend-configmap
+          mountPath: /config
+        - name: tmp
+          mountPath: /tmp
+        - name: values-directory
+          mountPath: /var/values_dir
+      serviceAccountName: job-robot
+      volumes:
+        - name: backend-configmap
+          configMap:
+            name: splunk-connect-for-snmp-job-configmap
+            items:
+              - key: job_config
+                path: job_config.yaml
+        - name: tmp
+          emptyDir: {}
+        - name: values-directory
+          hostPath:
+            path: /home/ubuntu
