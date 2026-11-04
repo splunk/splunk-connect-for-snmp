@@ -166,3 +166,23 @@ def wait_for_mongodb_replicaset(logger=None, max_retries=120, retry_interval=5):
                 sys.exit(1)
 
         logger.info(f"  Still waiting... ({attempt}/{max_retries})")
+
+
+def positive_integer(value: object, name: str, maximum: int | None = None) -> int:
+    """
+    Read a positive whole number from an integer or decimal text.
+
+    :param value: Integer or decimal text to validate
+    :param name: Field name included in an error message
+    :param maximum: Optional inclusive upper limit
+
+    :return: Validated positive integer
+    """
+    if isinstance(value, str) and value.isascii() and value.isdecimal():
+        value = int(value)
+    if type(value) is not int or value < 1 or (maximum is not None and value > maximum):
+        raise ValueError(
+            f"{name} must be a positive whole number"
+            + (f" up to {maximum}" if maximum else "")
+        )
+    return value

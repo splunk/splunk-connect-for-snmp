@@ -202,6 +202,7 @@ class TestCustomTaskManager(TestCase):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
 
         task1 = Mock()
+        task1.jitter_fingerprint = None
         task1.name = "test1"
         task1.schedule = schedule(120)
         task1.save = Mock()
@@ -313,6 +314,7 @@ class TestCustomTaskManager(TestCase):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
 
         task1 = Mock()
+        task1.jitter_fingerprint = None
         task1.name = "test1"
         task1.target = "some_target"
         task1.save = Mock()
@@ -345,6 +347,7 @@ class TestCustomTaskManager(TestCase):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
 
         task1 = Mock()
+        task1.jitter_fingerprint = None
         task1.name = "test1"
         task1.task = ("task1",)
         task1.args = ({"arg1": "val1", "arg2": "val2"},)
@@ -600,6 +603,7 @@ class TestCustomTaskManager(TestCase):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
 
         task1 = Mock()
+        task1.jitter_fingerprint = None
         task1.run_immediately = False
         task1.task = "splunk_connect_for_snmp.snmp.tasks.walk"
         task1.name = "test1"
@@ -620,6 +624,7 @@ class TestCustomTaskManager(TestCase):
             "redbeat:sc4snmp;good;walk",
         ]
         good = Mock()
+        good.jitter_fingerprint = None
         good.task = WALK_TASK
         good.name = "sc4snmp;good;walk"
 

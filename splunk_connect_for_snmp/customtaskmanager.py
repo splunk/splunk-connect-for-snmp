@@ -14,10 +14,18 @@
 # limitations under the License.
 #
 import logging
+from datetime import timezone
 from typing import List, Set
 
 from redbeat.schedulers import RedBeatSchedulerEntry, get_redis
 
+from .common import polling_jitter
+from .common.polling_jitter import (
+    INITIAL_REGISTRATION,
+    SCHEDULE_CONTEXT,
+    calculate_offset,
+    first_due,
+)
 from .poller import app
 
 logger = logging.getLogger(__name__)
@@ -111,6 +119,8 @@ class CustomPeriodicTaskManager:
             if periodic_document.task != "splunk_connect_for_snmp.snmp.tasks.walk":
                 continue
             periodic_document.set_run_immediately(True)
+            if periodic_document.jitter_fingerprint:
+                periodic_document.first_run_kwargs = {}
             logger.debug("Got Schedule")
             periodic_document.save()
             periodic_document.reschedule()
@@ -118,7 +128,21 @@ class CustomPeriodicTaskManager:
     def delete_all_tasks_of_host(self, target):
         RedBeatSchedulerEntry.delete_schedules_by_target(target, app=app)
 
-    def manage_task(self, **task_data) -> None:
+    def manage_task(self, *, initial_registration=False, **task_data) -> None:
+        """
+        Create or update the existing recurring entry for one polling task.
+
+        Only confirmed initial registration may phase a new WALK or POLL.
+        Existing execution requests keep their current behavior in this stage.
+        A managed definition-only update preserves its saved due time.
+
+        :param initial_registration: Whether the caller confirmed first setup
+        :param task_data: Existing task definition or partial execution request
+
+        :return: None
+        :raises PollingJitterError: If initial phasing rejects the device address
+        :raises ValueError: If a port, interval or saved schedule state is invalid
+        """
         task_name = task_data.get("name")
         # When task is updated, we don't want to change existing schedules.
         # If task interval is very long, running walk process in between would result in calculating
@@ -157,11 +181,67 @@ class CustomPeriodicTaskManager:
                 return
             logger.info(f"Setting up a new task: {task_name}")
             periodic_document = RedBeatSchedulerEntry(**task_data)
+            settings = polling_jitter.JITTER_SETTINGS
+            polling_task = task_data.get("task") in (WALK_TASK, POLL_TASK)
+            if initial_registration and polling_task and settings.enabled:
+                self._save_initial_phase(periodic_document, settings)
+                return
             periodic_document.save()
             if task_data.get("run_immediately"):
                 periodic_document.reschedule()
             return
+        if periodic_document.jitter_fingerprint:
+            if not task_data.get("run_immediately"):
+                periodic_document.update_definition()
+                return
+            periodic_document.first_run_kwargs = {}
         periodic_document.save()
+
+    def _save_initial_phase(
+        self, entry: RedBeatSchedulerEntry, settings: polling_jitter.JitterSettings
+    ) -> None:
+        """
+        Save a new device schedule using its normal baseline plus one offset.
+
+        The WALK/POLL generators supply an interval schedule and address string.
+        The target key is split at its last colon, preserving an IPv6 address.
+        The resulting identity is validated without changing the schedule key.
+        After saving, a debug message records the offset and selected first due
+        without including credentials or the task payload.
+
+        :param entry: New WALK or POLL entry that has not been saved
+        :param settings: Validated jitter settings
+
+        :return: None
+        :raises PollingJitterError: If identity validation rejects the device address
+        :raises ValueError: If the port or interval is invalid, or the entry
+            fails validation when saved
+        """
+        # Inventory and profile validation supply whole-second intervals.
+        interval = entry.schedule.run_every
+        seconds = interval.days * 86400 + interval.seconds
+        # TaskGenerator pairs address:port with matching interval/frequency values.
+        target = entry.kwargs.get("address")
+        # Only the final colon separates the port, including for IPv6 targets.
+        address, port = target.rsplit(":", 1)
+        task_type = "walk" if entry.task == WALK_TASK else "poll"
+        offset, fingerprint = calculate_offset(
+            address, port, seconds, task_type, settings
+        )
+        baseline = entry.app.now().astimezone(timezone.utc)
+        if task_type == "poll" and seconds <= 300:
+            baseline += interval
+        first_run_kwargs = (
+            {SCHEDULE_CONTEXT: INITIAL_REGISTRATION} if task_type == "walk" else {}
+        )
+        due = first_due(baseline, offset)
+        entry.save_with_first_due(due, fingerprint, first_run_kwargs=first_run_kwargs)
+        logger.debug(
+            f"Applied polling jitter: schedule={entry.name} interval_seconds={seconds} "
+            f"window_seconds={settings.window_seconds} "
+            f"effective_window_seconds={min(settings.window_seconds, seconds)} "
+            f"offset_seconds={offset} first_due_utc={due.isoformat()}"
+        )
 
     def get_chain_of_task_expiries(self, task_types: List[str]) -> Set[int]:
         return {

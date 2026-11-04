@@ -8,6 +8,7 @@ from typing import List
 
 import pymongo
 
+from splunk_connect_for_snmp.common import polling_jitter
 from splunk_connect_for_snmp.common.collection_manager import GroupsManager
 from splunk_connect_for_snmp.common.common import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
@@ -206,6 +207,34 @@ class InventoryRecordManager:
     def update(
         self, inventory_record, new_source_record, runtime_profiles, expiry_time_changed
     ):
+        """
+        Save an inventory record and keep its existing WALK refresh rules.
+
+        When jitter is enabled, prior inventory and WALK state distinguish a
+        genuinely new device from recovery. These checks happen before upsert.
+
+        :param inventory_record: Validated device inventory record
+        :param new_source_record: Incoming CSV or UI record
+        :param runtime_profiles: Available profile definitions
+        :param expiry_time_changed: Whether schedule recreation is in progress
+
+        :return: None
+        """
+        settings = polling_jitter.JITTER_SETTINGS
+        initial_registration = False
+        if settings.enabled and not expiry_time_changed:
+            prior_inventory = self.inventory_collection.find_one(
+                {"address": inventory_record.address, "port": inventory_record.port},
+                {"_id": 1},
+            )
+            initial_registration = (
+                prior_inventory is None
+                and not self.periodic_object_collection.walk_task_exists(
+                    transform_address_to_key(
+                        inventory_record.address, inventory_record.port
+                    )
+                )
+            )
         profiles = new_source_record["profiles"].split(";")
         walk_profile = self.return_walk_profile(runtime_profiles, profiles)
         if walk_profile:
@@ -240,7 +269,12 @@ class InventoryRecordManager:
             walk_profile,
             new_source_record.get("group"),
         )
-        self.periodic_object_collection.manage_task(**task_config)
+        if initial_registration:
+            self.periodic_object_collection.manage_task(
+                initial_registration=True, **task_config
+            )
+        else:
+            self.periodic_object_collection.manage_task(**task_config)
 
     def return_walk_profile(self, runtime_profiles, inventory_profiles):
         walk_profile = None
