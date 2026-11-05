@@ -289,6 +289,19 @@ def _safe_str(render) -> str:
         return f"<{type(exc).__name__}: {exc}>"
 
 
+def raw_value_text(snmp_val) -> str:
+    """
+    Text of the value held by an SNMP object, without applying the MIB display hint.
+
+    Used when ``prettyPrint()`` fails because the object's class (taken from the MIB)
+    does not match the type the agent actually sent.
+    """
+    raw = getattr(snmp_val, "_value", None)
+    if isinstance(raw, (bytes, bytearray)):
+        return bytes(raw).decode("utf-8", errors="replace")
+    return "" if raw is None else str(raw)
+
+
 def describe_varbind(varbind) -> str:
     """
     Render a varbind for log messages without ever raising.
@@ -919,7 +932,16 @@ class Poller(Task):
         snmp_val = varbind[1]
         snmp_type = type(snmp_val).__name__
         metric_type = map_metric_type(snmp_type, snmp_val)
-        metric_value = value_as_best(snmp_val.prettyPrint())
+        try:
+            printed_value = snmp_val.prettyPrint()
+        except Exception as exc:
+            printed_value = raw_value_text(snmp_val)
+            logger.warning(
+                f"Value from {target} does not match its MIB syntax "
+                f"({type(exc).__name__}: {exc}); using the raw value "
+                f"{printed_value!r}. {describe_varbind(varbind)}"
+            )
+        metric_value = value_as_best(printed_value)
         index_number = extract_index_number(index)
         metric_value = fill_empty_value(index_number, metric_value, target)
         return metric_type, metric_value

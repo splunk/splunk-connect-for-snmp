@@ -239,6 +239,84 @@ class TestProfiles:
 
 
 @pytest.fixture(scope="class")
+def setup_value_type_differs_from_mib(request):
+    """
+    The simulator (integration_tests/snmpsim/data/public.snmprec) answers with an
+    INTEGER for cucsComputeRackUnitModel.1, which the MIB declares as SnmpAdminString,
+    and with a normal string for cucsComputeRackUnitSerial.1.
+    """
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
+    profile = {
+        "value_type_differs_from_mib": {
+            "frequency": 5,
+            "varBinds": [
+                yaml_escape_list(
+                    sq("CISCO-UNIFIED-COMPUTING-COMPUTE-MIB"),
+                    sq("cucsComputeRackUnitModel"),
+                ),
+                yaml_escape_list(
+                    sq("CISCO-UNIFIED-COMPUTING-COMPUTE-MIB"),
+                    sq("cucsComputeRackUnitSerial"),
+                ),
+            ],
+        }
+    }
+    inventory_record = (
+        f"{trap_external_ip},,2c,public,,,600,value_type_differs_from_mib,,"
+    )
+
+    if str(deployment) == "microk8s":
+        update_profiles_microk8s(profile)
+        update_file_microk8s([inventory_record], "inventory.yaml")
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    else:
+        update_profiles_compose(profile)
+        update_inventory_compose([inventory_record])
+        upgrade_docker_compose()
+    time.sleep(30)
+    yield
+    if str(deployment) == "microk8s":
+        update_file_microk8s([f"{inventory_record}t"], "inventory.yaml")
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose([f"{inventory_record}t"])
+        upgrade_docker_compose()
+    time.sleep(20)
+
+
+@pytest.mark.usefixtures("setup_value_type_differs_from_mib")
+@pytest.mark.part1
+class TestValueTypeDiffersFromMib:
+    """
+    A value whose SNMP type differs from the type declared in its MIB must not make
+    the poll fail: before the fix pysnmp raised
+    AttributeError: 'SnmpAdminString' object has no attribute 'getNamedValues'
+    and no data from the poll reached Splunk.
+    """
+
+    def test_value_with_unexpected_type_is_kept(self, setup_splunk):
+        search_string = f"""search index=netops sourcetype="sc4snmp:event"
+        ""CISCO-UNIFIED-COMPUTING-COMPUTE-MIB.cucsComputeRackUnitModel" """
+        logger.info("Integration test: INTEGER sent for an SnmpAdminString object")
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count > 0
+        assert metric_count > 0
+
+    def test_other_values_from_the_same_poll_are_kept(self, setup_splunk):
+        search_string = f"""search index=netops sourcetype="sc4snmp:event"
+        "CISCO-UNIFIED-COMPUTING-COMPUTE-MIB.cucsComputeRackUnitSerial" "FCH12345ABC" """
+        logger.info("Integration test: values next to a mismatched value are kept")
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count > 0
+        assert metric_count > 0
+
+
+@pytest.fixture(scope="class")
 def setup_profiles(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")

@@ -5,7 +5,7 @@
 ### Changed
 
 ### Fixed
-- A single varbind that cannot be printed no longer fails the whole poll task. The error handler in `process_snmp_data` now logs the OID, value class, tag set and raw value of the varbind without calling the `prettyPrint()`.
+- A value whose SNMP type differs from the type declared in its MIB no longer drops the whole poll. When `prettyPrint()` fails, the raw value is used and a warning with the OID, class, tag set and raw value is logged.
 
 ## [1.18.1]
 
