@@ -2,9 +2,11 @@ from tokenize import group
 from unittest import TestCase
 from unittest.mock import MagicMock, Mock, patch
 
+from pysnmp.proto import rfc1902
 from pysnmp.smi import builder, view
+from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
-from splunk_connect_for_snmp.snmp.manager import Poller
+from splunk_connect_for_snmp.snmp.manager import Poller, describe_varbind
 
 
 class TestProcessSnmpData(TestCase):
@@ -506,3 +508,124 @@ class TestProcessSnmpData(TestCase):
             metrics,
             {"SNMPv2-MIB::tuple=int=0": {"indexes": [1], "fields": {}, "metrics": {}}},
         )
+
+
+class _UnprintableValue:
+    """Value whose prettyPrint() fails like SnmpAdminString with a mismatched type."""
+
+    tagSet = "tags 0:0:2"
+    _value = 5
+
+    def prettyPrint(self):
+        raise AttributeError(
+            "'SnmpAdminString' object has no attribute 'getNamedValues'"
+        )
+
+
+class _UnprintableVarbind:
+    """Varbind whose str() fails the same way as the value's prettyPrint()."""
+
+    def __init__(self, oid, mib_symbol, value):
+        identity = Mock()
+        identity.get_oid.return_value = oid
+        identity.prettyPrint.return_value = f"{mib_symbol[0]}::{mib_symbol[1]}.1"
+        identity.get_mib_symbol.return_value = mib_symbol
+        self._items = (identity, value)
+
+    def __getitem__(self, item):
+        return self._items[item]
+
+    def __str__(self):
+        return self[1].prettyPrint()
+
+
+class TestDescribeVarbind(TestCase):
+    def test_describe_varbind_does_not_raise_when_value_cannot_be_printed(self):
+        varbind = _UnprintableVarbind(
+            "1.3.6.1.4.1.9.9.719.1.9.35.1.4",
+            ("CISCO-UNIFIED-COMPUTING-MIB", "cucsFaultDescription", 1),
+            _UnprintableValue(),
+        )
+
+        with self.assertRaises(AttributeError):
+            str(varbind)
+
+        description = describe_varbind(varbind)
+
+        self.assertIn("oid=1.3.6.1.4.1.9.9.719.1.9.35.1.4", description)
+        self.assertIn(
+            "name=CISCO-UNIFIED-COMPUTING-MIB::cucsFaultDescription.1", description
+        )
+        self.assertIn("value_class=_UnprintableValue", description)
+        self.assertIn("value_tags=tags 0:0:2", description)
+        self.assertIn("raw_value=5", description)
+        self.assertIn(
+            "pretty_value=<AttributeError: 'SnmpAdminString' object has no attribute "
+            "'getNamedValues'>",
+            description,
+        )
+
+    def test_describe_varbind_with_resolved_object_type(self):
+        mib_builder = builder.MibBuilder()
+        mib_builder.load_modules("SNMPv2-MIB")
+        varbind = ObjectType(
+            ObjectIdentity("1.3.6.1.2.1.1.5.0"), rfc1902.OctetString("router1")
+        ).resolve_with_mib(view.MibViewController(mib_builder))
+
+        description = describe_varbind(varbind)
+
+        self.assertIn("oid=1.3.6.1.2.1.1.5.0", description)
+        self.assertIn("name=SNMPv2-MIB::sysName.0", description)
+        self.assertIn("value_class=DisplayString", description)
+        self.assertIn("pretty_value=router1", description)
+
+    def test_describe_varbind_with_unresolved_object_type(self):
+        varbind = ObjectType(ObjectIdentity("1.3.6.1.2.1.1.5.0"))
+
+        description = describe_varbind(varbind)
+
+        self.assertIn("unreadable varbind ObjectType", description)
+        self.assertIn("not fully initialized", description)
+
+    def test_describe_varbind_with_unreadable_object(self):
+        self.assertIn("unreadable varbind", describe_varbind(object()))
+
+
+class TestProcessSnmpDataErrorLogging(TestCase):
+    @patch("splunk_connect_for_snmp.snmp.manager.is_mib_resolved", return_value=True)
+    @patch("splunk_connect_for_snmp.snmp.manager.get_group_key", return_value="KEY")
+    @patch("splunk_connect_for_snmp.snmp.manager.map_metric_type", return_value="g")
+    @patch("splunk_connect_for_snmp.snmp.manager.extract_index_number", return_value=1)
+    @patch("splunk_connect_for_snmp.snmp.manager.extract_indexes", return_value=[1])
+    @patch("time.time", return_value=1640609779.473053)
+    def test_bad_varbind_is_logged_and_other_varbinds_are_kept(
+        self, _time, _indexes, _index_number, _metric_type, _group_key, _resolved
+    ):
+        poller = Poller.__new__(Poller)
+        bad = _UnprintableVarbind(
+            "1.3.6.1.4.1.9.9.719.1.9.35.1.4",
+            ("CISCO-UNIFIED-COMPUTING-MIB", "cucsFaultDescription", 1),
+            _UnprintableValue(),
+        )
+        good_identity = Mock()
+        good_identity.get_mib_symbol.return_value = ("IF-MIB", "ifInErrors", 1)
+        good_identity.prettyPrint.return_value = "IF-MIB::ifInErrors.1"
+        good_identity.get_oid.return_value = "1.3.6.1.2.1.2.2.1.14.1"
+        good_value = Mock()
+        good_value.prettyPrint.return_value = 7
+        metrics = {}
+
+        with self.assertLogs(
+            "splunk_connect_for_snmp.snmp.manager", level="ERROR"
+        ) as logs:
+            poller.process_snmp_data(
+                [bad, (good_identity, good_value)], metrics, "10.14.191.36", {}
+            )
+
+        output = "\n".join(logs.output)
+        self.assertIn("Exception processing data from 10.14.191.36", output)
+        self.assertIn(
+            "name=CISCO-UNIFIED-COMPUTING-MIB::cucsFaultDescription.1", output
+        )
+        self.assertIn("oid=1.3.6.1.4.1.9.9.719.1.9.35.1.4", output)
+        self.assertEqual(7.0, metrics["KEY"]["metrics"]["IF-MIB.ifInErrors"]["value"])

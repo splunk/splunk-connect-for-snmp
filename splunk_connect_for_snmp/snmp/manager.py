@@ -281,6 +281,44 @@ def value_as_best(value) -> Union[str, float]:
         return value
 
 
+def _safe_str(render) -> str:
+    """Return ``render()`` as text, or a description of the error it raised."""
+    try:
+        return str(render())
+    except Exception as exc:
+        return f"<{type(exc).__name__}: {exc}>"
+
+
+def describe_varbind(varbind) -> str:
+    """
+    Render a varbind for log messages without ever raising.
+
+    ``str(varbind)`` calls ``prettyPrint()`` on the value, which is the same call that
+    failed when the varbind could not be processed. Formatting the varbind inside the
+    ``except`` block therefore raised again and aborted the whole poll. Every part
+    below is rendered on its own, so one failing part cannot hide the others.
+
+    :param varbind: ObjectType (OID identity, value) as returned by pysnmp
+    :return: single-line description with the OID, the value class and tag set and the
+        raw value
+    """
+    try:
+        identity, value = varbind[0], varbind[1]
+    except Exception as exc:
+        return f"<unreadable varbind {type(varbind).__name__}: {exc}>"
+
+    value_type = type(value)
+    return (
+        f"oid={_safe_str(identity.get_oid)} "
+        f"name={_safe_str(identity.prettyPrint)} "
+        f"value_class={value_type.__name__} "
+        f"value_bases={[base.__name__ for base in value_type.__mro__[1:5]]} "
+        f"value_tags={_safe_str(lambda: value.tagSet)} "
+        f"raw_value={_safe_str(lambda: repr(value._value))} "
+        f"pretty_value={_safe_str(value.prettyPrint)}"
+    )
+
+
 def map_metric_type(t, snmp_value):
     if t in MTYPES_CC:
         metric_type = "cc"
@@ -809,8 +847,11 @@ class Poller(Task):
                         profile,
                     )
                 except Exception:
+                    # Do not format ``varbind`` directly: its prettyPrint() may be the
+                    # call that failed above and would abort the whole poll.
                     logger.exception(
-                        f"Exception processing data from {target} {varbind}"
+                        f"Exception processing data from {target} "
+                        f"{describe_varbind(varbind)}"
                     )
             else:
                 found = self.find_new_mibs(oid, remotemibs, target, varbind_id)

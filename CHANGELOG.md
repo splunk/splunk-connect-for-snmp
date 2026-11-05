@@ -5,6 +5,7 @@
 ### Changed
 
 ### Fixed
+- A single varbind that cannot be printed no longer fails the whole poll task. The error handler in `process_snmp_data` now logs the OID, value class, tag set and raw value of the varbind without calling the `prettyPrint()`.
 
 ## [1.18.1]
 
