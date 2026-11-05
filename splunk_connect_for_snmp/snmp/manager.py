@@ -938,8 +938,8 @@ class Poller(Task):
             printed_value = raw_value_text(snmp_val)
             logger.warning(
                 f"Value from {target} does not match its MIB syntax "
-                f"({type(exc).__name__}: {exc}); using the raw value "
-                f"{printed_value!r}. {describe_varbind(varbind)}"
+                f"({type(exc).__name__}: {exc}); using the raw value. "
+                f"{describe_varbind(varbind)}"
             )
         metric_value = value_as_best(printed_value)
         index_number = extract_index_number(index)

@@ -263,7 +263,7 @@ def setup_value_type_differs_from_mib(request):
         }
     }
     inventory_record = (
-        f"{trap_external_ip},,2c,public,,,600,value_type_differs_from_mib,,"
+        f"{trap_external_ip},1166,2c,public,,,600,value_type_differs_from_mib,,"
     )
 
     if str(deployment) == "microk8s":
@@ -297,7 +297,7 @@ class TestValueTypeDiffersFromMib:
 
     def test_value_with_unexpected_type_is_kept(self, setup_splunk):
         search_string = f"""search index=netops sourcetype="sc4snmp:event"
-        ""CISCO-UNIFIED-COMPUTING-COMPUTE-MIB.cucsComputeRackUnitModel" """
+        "CISCO-UNIFIED-COMPUTING-COMPUTE-MIB.cucsComputeRackUnitModel" """
         logger.info("Integration test: INTEGER sent for an SnmpAdminString object")
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
