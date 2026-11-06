@@ -640,7 +640,7 @@ mongodb:
   replicaInitJob:
     image:
       repository: "alpine/kubectl"
-      tag: "1.37.1"
+      tag: "1.37.2"
     # MongoDB replicas pod initialisation timeout in seconds
     timeout: 600
   image:
