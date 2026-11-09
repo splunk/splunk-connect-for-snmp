@@ -608,12 +608,21 @@ class TestCustomTaskManager(TestCase):
         task1.task = "splunk_connect_for_snmp.snmp.tasks.walk"
         task1.name = "test1"
 
-        m_objects.return_value = [task1]
+        poll = Mock(task=POLL_TASK, name="poll-entry")
+        discovery = Mock(task=DISCOVERY_TASK, name="discovery-entry")
+        m_objects.return_value = [task1, poll, discovery]
 
         task_manager.rerun_all_walks()
 
-        task1.set_run_immediately.assert_called_with(True)
-        task1.save.assert_called()
+        task1.set_run_immediately.assert_called_once_with(True)
+        task1.save.assert_called_once_with()
+        task1.reschedule.assert_called_once_with()
+        poll.set_run_immediately.assert_not_called()
+        poll.save.assert_not_called()
+        poll.reschedule.assert_not_called()
+        discovery.set_run_immediately.assert_not_called()
+        discovery.save.assert_not_called()
+        discovery.reschedule.assert_not_called()
 
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
     @patch("splunk_connect_for_snmp.customtaskmanager.get_redis")
@@ -637,5 +646,6 @@ class TestCustomTaskManager(TestCase):
 
         task_manager.rerun_all_walks()
 
-        good.set_run_immediately.assert_called_with(True)
-        good.save.assert_called()
+        good.set_run_immediately.assert_called_once_with(True)
+        good.save.assert_called_once_with()
+        good.reschedule.assert_called_once_with()

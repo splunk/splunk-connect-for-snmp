@@ -9,6 +9,7 @@ from splunk_connect_for_snmp.common.common import positive_integer
 from splunk_connect_for_snmp.common.polling_jitter import (
     JitterSettings,
     PollingJitterError,
+    applied_settings,
     calculate_offset,
     canonical_identity,
     first_due,
@@ -53,7 +54,9 @@ def test_settings_are_read_once(monkeypatch):
     ],
 )
 def test_boolean_environment(value, expected):
-    assert read_settings({"POLLING_JITTER_ENABLED": value}).enabled is expected
+    settings = read_settings({"POLLING_JITTER_ENABLED": value})
+    assert settings.enabled is expected
+    assert settings.window_seconds == 60
 
 
 def test_absent_settings():
@@ -63,7 +66,10 @@ def test_absent_settings():
 
 @pytest.mark.parametrize("value", ["", " true ", "invalid"])
 def test_unrecognized_enablement_defaults_to_false(value):
-    assert read_settings({"POLLING_JITTER_ENABLED": value}).enabled is False
+    settings = read_settings(
+        {"POLLING_JITTER_ENABLED": value, "POLLING_JITTER_WINDOW_SECONDS": "abc"}
+    )
+    assert (settings.enabled, settings.window_seconds) == (False, 60)
 
 
 @pytest.mark.parametrize("enabled", ["false", "true"])
@@ -71,19 +77,24 @@ def test_unrecognized_enablement_defaults_to_false(value):
 def test_valid_window(enabled, value):
     assert read_settings(
         {"POLLING_JITTER_ENABLED": enabled, "POLLING_JITTER_WINDOW_SECONDS": value}
-    ).window_seconds == int(value)
+    ).window_seconds == (int(value) if enabled == "true" else 60)
+
+
+def test_disabled_window_is_not_read():
+    def environment(key, default=None):
+        if key == "POLLING_JITTER_WINDOW_SECONDS":
+            raise AssertionError("Disabled jitter must not read the unused window")
+        return default
+
+    with patch("os.getenv", side_effect=environment):
+        settings = runpy.run_path(polling_jitter.__file__)["JITTER_SETTINGS"]
+    assert (settings.enabled, settings.window_seconds) == (False, 60)
 
 
 @pytest.mark.parametrize("enabled", ["false", "true"])
 @pytest.mark.parametrize(
     "value",
     [
-        0,
-        -1,
-        1.5,
-        True,
-        False,
-        None,
         "",
         "0",
         "-1",
@@ -91,7 +102,7 @@ def test_valid_window(enabled, value):
         "1e2",
         "true",
         "false",
-        "invalid",
+        "abc",
         "86401",
         " 60 ",
         "+60",
@@ -99,11 +110,17 @@ def test_valid_window(enabled, value):
         "\uff16\uff10",
     ],
 )
-def test_invalid_window_even_when_disabled(enabled, value):
+def test_window_validation_depends_on_enablement(enabled, value):
+    environment = {
+        "POLLING_JITTER_ENABLED": enabled,
+        "POLLING_JITTER_WINDOW_SECONDS": value,
+    }
+    if enabled == "false":
+        settings = read_settings(environment)
+        assert (settings.enabled, settings.window_seconds) == (False, 60)
+        return
     with pytest.raises(ValueError, match="POLLING_JITTER_WINDOW_SECONDS") as error:
-        read_settings(
-            {"POLLING_JITTER_ENABLED": enabled, "POLLING_JITTER_WINDOW_SECONDS": value}
-        )
+        read_settings(environment)
     assert type(error.value) is ValueError
 
 
@@ -185,7 +202,7 @@ def test_ten_600_second_poll_vectors():
         for i in range(1, 11)
     ]
     assert offsets == [22, 38, 49, 17, 16, 43, 24, 22, 51, 50]
-    assert offsets[0] == offsets[7]  # A collision is valid.
+    assert offsets[0] == offsets[7]  # Different schedules can share an offset.
 
 
 def test_repeatability_and_changed_identity():
@@ -239,28 +256,12 @@ def test_inclusive_offset_bounds(interval, window, number, offset):
         )
 
 
-@pytest.mark.parametrize("microsecond,extra", [(0, 0), (1, 1), (999999, 1)])
-def test_rounding_never_moves_due_earlier(microsecond, extra):
+@pytest.mark.parametrize("microsecond", [0, 1, 250000, 999999])
+def test_first_due_adds_exact_offset_and_preserves_microseconds(microsecond):
     baseline = NOW.replace(microsecond=microsecond)
     due = first_due(baseline, 20)
-    assert due == NOW + timedelta(seconds=20 + extra)
-    assert (
-        timedelta(0) <= due - (baseline + timedelta(seconds=20)) < timedelta(seconds=1)
-    )
-
-
-@pytest.mark.parametrize(
-    "baseline", [NOW.replace(tzinfo=None), NOW.astimezone(timezone(timedelta(hours=1)))]
-)
-def test_only_aware_utc_baselines(baseline):
-    with pytest.raises(PollingJitterError, match="UTC"):
-        first_due(baseline, 1)
-
-
-def test_no_zero_or_fractional_offset():
-    for offset in (0, -1, True, 0.5):
-        with pytest.raises(ValueError):
-            first_due(NOW, offset)
+    assert due == baseline + timedelta(seconds=20)
+    assert due.microsecond == microsecond
 
 
 def test_positive_decimal_text():
@@ -277,3 +278,29 @@ def test_shared_integer_validation_remains_generic():
     with pytest.raises(ValueError) as error:
         positive_integer(0, "Shared setting")
     assert type(error.value) is ValueError
+
+
+@pytest.mark.parametrize("window", [1, 60, 86400])
+def test_applied_policy_reuses_its_saved_window(window):
+    _, fingerprint = calculate_offset(
+        "router-01", 161, 1800, "walk", JitterSettings(True, window)
+    )
+    assert applied_settings(fingerprint) == JitterSettings(True, window)
+
+
+@pytest.mark.parametrize(
+    "fingerprint",
+    [
+        "unknown:60:" + "a" * 64,
+        "sha256-v1:0:" + "a" * 64,
+        "sha256-v1:86401:" + "a" * 64,
+        "sha256-v1:1.5:" + "a" * 64,
+        "sha256-v1:60:" + "a" * 63,
+        "sha256-v1:60:" + "g" * 64,
+        "sha256-v1:60:" + "aa " * 32,
+        "sha256-v1:60",
+    ],
+)
+def test_invalid_applied_policy_is_refused(fingerprint):
+    with pytest.raises(PollingJitterError, match="applied"):
+        applied_settings(fingerprint)

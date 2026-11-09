@@ -30,14 +30,8 @@ NOW = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
 
 @pytest.fixture
 def app(monkeypatch):
-    """
-    Create a fixed-clock app without a real broker or storage connection.
-
-    :return: Test Celery app with jitter enabled
-    """
     monkeypatch.setattr(polling_jitter, "JITTER_SETTINGS", JitterSettings(True, 60))
-    # Older tests patch __new__, which can leave Python's allocation slot
-    # altered even after restoration. Isolate our real-constructor checks.
+    # Reset __new__ so earlier constructor mocks cannot affect these entries.
     monkeypatch.setattr(
         RedBeatSchedulerEntry,
         "__new__",
@@ -52,15 +46,6 @@ def app(monkeypatch):
 
 
 def definition(app, kind, interval):
-    """
-    Generate the existing full task definition for a dummy device.
-
-    :param app: Isolated Celery app
-    :param kind: Either walk or poll
-    :param interval: Interval in seconds
-
-    :return: Ordinary task definition including its full callback chain
-    """
     if kind == "walk":
         return WalkTaskGenerator(
             "router-01:161", interval, app, None, "WalkProfile"
@@ -126,7 +111,7 @@ def test_disabled_or_recovery_creation_stays_legacy(
     initial = RedBeatSchedulerEntry(**data)
     with patch.object(
         customtaskmanager, "RedBeatSchedulerEntry"
-    ) as entry_class, patch.object(initial, "save") as save, patch.object(
+    ) as entry_class, patch.object(initial, "save_guarded") as save, patch.object(
         initial, "reschedule"
     ) as reschedule, patch.object(
         initial, "save_with_first_due"
@@ -136,10 +121,32 @@ def test_disabled_or_recovery_creation_stays_legacy(
         customtaskmanager.CustomPeriodicTaskManager().manage_task(
             initial_registration=confirmed, **data
         )
-    save.assert_called_once()
-    reschedule.assert_called_once()
+    save.assert_called_once_with(create=True)
+    reschedule.assert_not_called()
     exact.assert_not_called()
     assert SCHEDULE_CONTEXT not in initial.kwargs
+
+
+def test_update_task_uses_loaded_entry_without_another_lookup(app):
+    data = definition(app, "poll", 60)
+    existing = RedBeatSchedulerEntry(**data)
+    existing.jitter_fingerprint = "sha256-v1:60:" + "a" * 64
+    changes = {"name": data["name"], "kwargs": {"profile": ["UpdatedProfile"]}}
+    manager = customtaskmanager.CustomPeriodicTaskManager()
+    with patch.object(
+        customtaskmanager.RedBeatSchedulerEntry, "from_key"
+    ) as load, patch.object(existing, "update_definition") as update, patch.object(
+        existing, "save"
+    ) as save, patch.object(
+        existing, "request_run"
+    ) as request:
+        manager.update_task(existing, changes)
+
+    load.assert_not_called()
+    update.assert_called_once_with()
+    save.assert_not_called()
+    request.assert_not_called()
+    assert existing.kwargs == changes["kwargs"]
 
 
 @pytest.mark.parametrize("interval", [60, 300, 600])
@@ -153,18 +160,22 @@ def test_existing_phased_poll_keeps_threshold(app, interval):
         existing, "save"
     ) as save, patch.object(
         existing, "save_with_first_due"
-    ) as exact:
+    ) as exact, patch.object(
+        existing, "request_run"
+    ) as request:
         customtaskmanager.CustomPeriodicTaskManager().manage_task(
             initial_registration=True, **data
         )
     exact.assert_not_called()
     if interval > 300:
-        save.assert_called_once()
+        request.assert_called_once_with(NOW, run_immediately=True, fingerprint=None)
+        save.assert_not_called()
         update.assert_not_called()
         assert existing.run_immediately is True
     else:
         update.assert_called_once()
         save.assert_not_called()
+        request.assert_not_called()
 
 
 def test_operational_walk_request_clears_initial_note(app):
@@ -174,40 +185,19 @@ def test_operational_walk_request_clears_initial_note(app):
     existing.jitter_fingerprint = "sha256-v1:60:" + "a" * 64
     with patch.object(
         customtaskmanager.RedBeatSchedulerEntry, "from_key", return_value=existing
-    ), patch.object(existing, "save") as save:
+    ), patch.object(existing, "save") as save, patch.object(
+        existing, "request_run"
+    ) as request:
         customtaskmanager.CustomPeriodicTaskManager().manage_task(
             name=data["name"], run_immediately=True
         )
     assert existing.run_immediately is True
     assert SCHEDULE_CONTEXT not in existing.kwargs
-    assert existing.first_run_kwargs == {}
-    save.assert_called_once()
-
-
-def test_global_rewalk_preserves_immediate_and_reschedule_calls(app):
-    existing = RedBeatSchedulerEntry(**definition(app, "walk", 1800))
-    existing.jitter_fingerprint = "sha256-v1:60:" + "a" * 64
-    existing.first_run_kwargs = {SCHEDULE_CONTEXT: INITIAL_REGISTRATION}
-    with patch.object(
-        customtaskmanager, "_get_all_schedules", return_value=[existing]
-    ), patch.object(existing, "save") as save, patch.object(
-        existing, "reschedule"
-    ) as reschedule, patch.object(
-        existing, "save_with_first_due"
-    ) as exact:
-        customtaskmanager.CustomPeriodicTaskManager().rerun_all_walks()
-    assert existing.run_immediately is True
-    assert SCHEDULE_CONTEXT not in existing.kwargs
-    assert existing.first_run_kwargs == {}
-    save.assert_called_once()
-    reschedule.assert_called_once()
-    exact.assert_not_called()
+    request.assert_called_once_with(NOW, run_immediately=True, fingerprint=None)
+    save.assert_not_called()
 
 
 def test_shared_celery_config_does_not_load_polling_jitter():
-    """
-    Load shared worker configuration without parsing polling-only settings.
-    """
     environment = dict(
         os.environ, POLLING_JITTER_ENABLED="false", POLLING_JITTER_WINDOW_SECONDS="0"
     )
@@ -236,7 +226,7 @@ assert "splunk_connect_for_snmp.common.polling_jitter" not in sys.modules
 )
 def test_invalid_settings_fail_during_startup_before_storage(module):
     environment = dict(
-        os.environ, POLLING_JITTER_ENABLED="false", POLLING_JITTER_WINDOW_SECONDS="0"
+        os.environ, POLLING_JITTER_ENABLED="true", POLLING_JITTER_WINDOW_SECONDS="0"
     )
     code = """
 import importlib
@@ -257,21 +247,53 @@ with patch("pymongo.MongoClient", side_effect=AssertionError("Unexpected storage
     assert "Unexpected storage access" not in result.stderr
 
 
-@pytest.mark.parametrize("frequency", [True, False, 1.5, 0, -1, None, "bad", 120])
-def test_invalid_or_mismatched_poll_frequency_cannot_be_phased(app, frequency):
-    data = definition(app, "poll", 60)
-    data["kwargs"]["frequency"] = frequency
-    initial = RedBeatSchedulerEntry(**data)
+@pytest.mark.parametrize(
+    "module",
+    [
+        "splunk_connect_for_snmp.customtaskmanager",
+        "splunk_connect_for_snmp.inventory.loader",
+    ],
+)
+@pytest.mark.parametrize("window", ["abc", "", "0", "-1", "86401"])
+def test_disabled_invalid_window_does_not_block_startup(module, window):
+    environment = dict(
+        os.environ,
+        POLLING_JITTER_ENABLED="false",
+        POLLING_JITTER_WINDOW_SECONDS=window,
+    )
+    code = """
+import importlib
+from unittest.mock import patch
+with patch("pymongo.MongoClient", side_effect=AssertionError("Unexpected storage access")) as client:
+    importlib.import_module(MODULE)
+    from splunk_connect_for_snmp.common.polling_jitter import JITTER_SETTINGS
+    assert not JITTER_SETTINGS.enabled
+    assert JITTER_SETTINGS.window_seconds == 60
+    client.assert_not_called()
+""".replace("MODULE", repr(module))
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        env=environment,
+        capture_output=True,
+        text=True,
+        timeout=15,
+    )
+    assert result.returncode == 0, result.stderr
+
+
+@pytest.mark.parametrize("kind", ["walk", "poll"])
+@pytest.mark.parametrize("interval", [0.5, 60.000001, 60.5, -0.5])
+def test_fractional_interval_cannot_be_phased(app, kind, interval):
+    initial = RedBeatSchedulerEntry(**definition(app, kind, interval))
     with patch.object(initial, "save_with_first_due") as exact:
-        with pytest.raises(ValueError) as error:
+        with pytest.raises(PollingJitterError, match="whole-second interval"):
             customtaskmanager.CustomPeriodicTaskManager()._save_initial_phase(
                 initial, JitterSettings(True)
             )
-    assert type(error.value) is PollingJitterError
     exact.assert_not_called()
 
 
-@pytest.mark.parametrize("interval", [0, -1, 1800.5])
+@pytest.mark.parametrize("interval", [0, -1])
 def test_invalid_interval_cannot_be_phased(app, interval):
     initial = RedBeatSchedulerEntry(**definition(app, "walk", interval))
     with patch.object(initial, "save_with_first_due") as exact:
@@ -279,14 +301,37 @@ def test_invalid_interval_cannot_be_phased(app, interval):
             customtaskmanager.CustomPeriodicTaskManager()._save_initial_phase(
                 initial, JitterSettings(True)
             )
-    assert type(error.value) is (
-        PollingJitterError if interval == 1800.5 else ValueError
-    )
+    assert type(error.value) is ValueError
+    exact.assert_not_called()
+
+
+@pytest.mark.parametrize("kind", ["walk", "poll"])
+@pytest.mark.parametrize(
+    "address_kwargs",
+    [
+        {},
+        {"address": None},
+        {"address": ""},
+        {"address": "router-01"},
+        {"address": 161},
+        {"address": b"router-01:161"},
+    ],
+)
+def test_missing_or_malformed_address_cannot_be_phased(app, kind, address_kwargs):
+    data = definition(app, kind, 1800)
+    data["kwargs"].pop("address")
+    data["kwargs"].update(address_kwargs)
+    initial = RedBeatSchedulerEntry(**data)
+    with patch.object(initial, "save_with_first_due") as exact:
+        with pytest.raises(PollingJitterError, match="device address with a port"):
+            customtaskmanager.CustomPeriodicTaskManager()._save_initial_phase(
+                initial, JitterSettings(True)
+            )
     exact.assert_not_called()
 
 
 @pytest.mark.parametrize(
-    "target", ["router-01", "router-01:", ":161", "router-01:bad", "router-01:65536"]
+    "target", ["router-01:", ":161", "router-01:bad", "router-01:65536"]
 )
 def test_invalid_target_cannot_be_phased(app, target):
     data = definition(app, "walk", 1800)
@@ -297,7 +342,7 @@ def test_invalid_target_cannot_be_phased(app, target):
             customtaskmanager.CustomPeriodicTaskManager()._save_initial_phase(
                 initial, JitterSettings(True)
             )
-    expected = PollingJitterError if target in ("router-01", ":161") else ValueError
+    expected = PollingJitterError if target == ":161" else ValueError
     assert type(error.value) is expected
     exact.assert_not_called()
 

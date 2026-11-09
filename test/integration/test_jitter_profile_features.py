@@ -1,10 +1,9 @@
-"""Exercise documented profile and group paths with real private Redis storage."""
-
 from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock
 
 import pytest
 from bson.int64 import Int64
+from celery.schedules import schedule
 from redbeat.schedulers import RedBeatSchedulerEntry
 
 from splunk_connect_for_snmp import customtaskmanager
@@ -21,19 +20,22 @@ NOW = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
 ADDRESS = "192.0.2.10:161"
 
 
+@pytest.fixture(params=[False, True], autouse=True)
+def jitter_mode(request, monkeypatch):
+    monkeypatch.setattr(
+        polling_jitter, "JITTER_SETTINGS", JitterSettings(request.param, 60)
+    )
+
+
 def configure_app(app, monkeypatch):
-    """Use a fixed clock and private Redis for actual SC4SNMP schedule writes."""
     app.now = lambda: NOW
+    monkeypatch.setattr(schedule, "now", lambda self: NOW)
     monkeypatch.setattr(customtaskmanager, "app", app)
     monkeypatch.setattr(tasks, "app", app)
     monkeypatch.setattr(inventory_processor, "app", app)
-    monkeypatch.setattr(polling_jitter, "JITTER_SETTINGS", JitterSettings(True, 60))
 
 
 def inventory_record(profiles="static", smart=True, address="192.0.2.10", port=161):
-    """
-    Build a validated inventory record without requiring DNS or SNMP access.
-    """
     return InventoryRecord(
         address=address,
         port=port,
@@ -47,9 +49,6 @@ def inventory_record(profiles="static", smart=True, address="192.0.2.10", port=1
 
 
 def configure_mongo(monkeypatch, profiles, ir, records=()):
-    """
-    Replace database queries while retaining real profile assignment logic
-    """
     ProfilesManager.validate_elements(profiles)
     database = MagicMock()
     database.profiles.find.return_value = [
@@ -68,18 +67,26 @@ def configure_mongo(monkeypatch, profiles, ir, records=()):
 
 
 def saved_poll(app, frequency, address=ADDRESS):
-    """
-    Load the ordinary device-frequency schedule written by poller setup.
-    """
     return RedBeatSchedulerEntry.from_key(
         f"redbeat:sc4snmp;{address};{frequency};poll", app=app
     )
 
 
 def assert_phase(app, entry, interval, address="192.0.2.10", port=161, kind="poll"):
-    """
-    Compare saved timing with the deterministic identity and first-run rule.
-    """
+    if not polling_jitter.JITTER_SETTINGS.enabled:
+        assert entry.jitter_fingerprint is None
+        assert not entry.first_run_kwargs
+        immediate = kind == "walk" or interval > 300
+        assert (
+            bool(app.redbeat_redis.sismember("run_immediately", entry.key)) == immediate
+        )
+        assert entry.is_due()[0] == immediate
+        if not immediate:
+            assert (
+                app.redbeat_redis.zscore(app.redbeat_conf.schedule_key, entry.key)
+                == (NOW + timedelta(seconds=interval)).timestamp()
+            )
+        return
     offset, fingerprint = calculate_offset(
         address, port, interval, kind, JitterSettings(True, 60)
     )
@@ -324,3 +331,188 @@ def test_same_frequency_profile_update_preserves_saved_phase(app, monkeypatch):
     assert after.last_run_at == before.last_run_at
     assert app.redbeat_redis.zscore(app.redbeat_conf.schedule_key, after.key) == score
     assert len(list(app.redbeat_redis.scan_iter("redbeat:sc4snmp;*"))) == 1
+
+
+def test_profile_removals_delete_only_obsolete_frequencies(app, monkeypatch):
+    configure_app(app, monkeypatch)
+    profiles = {
+        name: {"frequency": interval, "varBinds": [["SNMPv2-MIB", "sysName", 0]]}
+        for name, interval in (("A", 60), ("B", 60), ("C", 120))
+    }
+    database = configure_mongo(monkeypatch, profiles, inventory_record("A;B;C", False))
+    tasks.inventory_setup_poller.run(
+        {"address": ADDRESS, "_schedule_context": "initial_registration"}
+    )
+    original = saved_poll(app, 60)
+    due = app.redbeat_redis.zscore(app.redbeat_conf.schedule_key, original.key)
+
+    for assigned, expected in (
+        ("B;C", {60: {"B"}, 120: {"C"}}),
+        ("C", {120: {"C"}}),
+        ("", {}),
+    ):
+        database.inventory.find_one.return_value = inventory_record(
+            assigned, False
+        ).asdict()
+        tasks.inventory_setup_poller.run({"address": ADDRESS})
+        entries = RedBeatSchedulerEntry.get_schedules_by_target(ADDRESS, app=app)
+        assert {
+            int(entry.schedule.run_every.total_seconds()): set(entry.kwargs["profiles"])
+            for entry in entries
+        } == expected
+        if 60 in expected:
+            remaining = saved_poll(app, 60)
+            assert remaining.jitter_fingerprint == original.jitter_fingerprint
+            assert (
+                app.redbeat_redis.zscore(app.redbeat_conf.schedule_key, remaining.key)
+                == due
+            )
+
+
+def test_smart_match_changes_reconcile_frequency_schedules(app, monkeypatch):
+    configure_app(app, monkeypatch)
+    profiles = {
+        name: {
+            "frequency": interval,
+            "varBinds": [["SNMPv2-MIB", "sysName", 0]],
+            "condition": {
+                "type": "field",
+                "field": "SNMPv2-MIB.sysDescr",
+                "patterns": [pattern],
+            },
+        }
+        for name, interval, pattern in (
+            ("linux", 60, "Linux.*"),
+            ("router", 120, "Router.*"),
+        )
+    }
+    database = configure_mongo(monkeypatch, profiles, inventory_record("", True))
+    tasks.inventory_setup_poller.run(
+        {"address": ADDRESS, "_schedule_context": "initial_registration"}
+    )
+    assert_phase(app, saved_poll(app, 60), 60)
+
+    for description, expected in (("Router test", {120}), ("Windows test", set())):
+        database.targets.find_one.return_value = {
+            "state": {"SNMPv2-MIB|sysDescr": {"value": description}}
+        }
+        tasks.inventory_setup_poller.run({"address": ADDRESS})
+        entries = RedBeatSchedulerEntry.get_schedules_by_target(ADDRESS, app=app)
+        assert {
+            int(entry.schedule.run_every.total_seconds()) for entry in entries
+        } == expected
+        if expected:
+            # This frequency was not created by the initial WALK. Its first
+            # run keeps the existing no-offset rule for missing POLL entries.
+            assert saved_poll(app, 120).jitter_fingerprint is None
+
+
+def test_conditional_indexes_refresh_without_rephasing(app, monkeypatch):
+    configure_app(app, monkeypatch)
+    profile = {
+        "frequency": 60,
+        "conditions": [
+            {"field": "IF-MIB.ifAdminStatus", "operation": "equals", "value": "up"}
+        ],
+        "varBinds": [["IF-MIB", "ifDescr"], ["IF-MIB", "ifInErrors"]],
+    }
+    database = configure_mongo(
+        monkeypatch, {"conditional": profile}, inventory_record("conditional", False)
+    )
+    original_due = None
+    for position, indexes in enumerate(([1], [1, 7, 9], [7], [])):
+        database.attributes.find.return_value = [
+            {"indexes": [index]} for index in indexes
+        ]
+        work = {"address": ADDRESS}
+        if position == 0:
+            work["_schedule_context"] = "initial_registration"
+        tasks.inventory_setup_poller.run(work)
+        generated = database.profiles.replace_one.call_args.args[1]
+        assert generated["conditional__192|0|2|10:161"]["varBinds"] == [
+            varbind + [index] for index in indexes for varbind in profile["varBinds"]
+        ]
+        entry = saved_poll(app, 60)
+        due = app.redbeat_redis.zscore(app.redbeat_conf.schedule_key, entry.key)
+        if position == 0:
+            original_due = due
+        assert due == original_due
+        assert entry.kwargs["profiles"] == ["conditional__192|0|2|10:161"]
+    assert len(list(app.redbeat_redis.scan_iter("redbeat:sc4snmp;*"))) == 1
+
+
+@pytest.mark.parametrize("old_frequency,new_frequency", [(300, 301), (301, 300)])
+def test_frequency_edit_preserves_the_300_second_first_run_boundary(
+    app, monkeypatch, old_frequency, new_frequency
+):
+    configure_app(app, monkeypatch)
+    profiles = {
+        "selected": {
+            "frequency": old_frequency,
+            "varBinds": [["SNMPv2-MIB", "sysName", 0]],
+        }
+    }
+    database = configure_mongo(
+        monkeypatch, profiles, inventory_record("selected", False)
+    )
+    tasks.inventory_setup_poller.run(
+        {"address": ADDRESS, "_schedule_context": "initial_registration"}
+    )
+    initial = saved_poll(app, old_frequency)
+    assert_phase(app, initial, old_frequency)
+    profiles["selected"]["frequency"] = new_frequency
+    database.profiles.find.return_value = [profiles]
+    tasks.inventory_setup_poller.run({"address": ADDRESS})
+    assert not app.redbeat_redis.exists(initial.key)
+    changed = saved_poll(app, new_frequency)
+    assert changed.jitter_fingerprint is None
+    assert changed.is_due()[0] == (new_frequency > 300)
+    assert changed.kwargs["profiles"] == ["selected"]
+    assert app.redbeat_redis.zcard(app.redbeat_conf.schedule_key) == 1
+
+
+@pytest.mark.parametrize(
+    "profile_kind", ["static", "base", "field", "mandatory", "conditional"]
+)
+def test_profile_varbind_and_supported_type_edit_keeps_same_schedule(
+    app, monkeypatch, profile_kind
+):
+    configure_app(app, monkeypatch)
+    profile = {"frequency": 60, "varBinds": [["IF-MIB", "ifDescr"]]}
+    database = configure_mongo(
+        monkeypatch,
+        {"selected": profile},
+        inventory_record("selected", True),
+        [{"indexes": [1]}],
+    )
+    tasks.inventory_setup_poller.run(
+        {"address": ADDRESS, "_schedule_context": "initial_registration"}
+    )
+    original = saved_poll(app, 60)
+    due = app.redbeat_redis.zscore(app.redbeat_conf.schedule_key, original.key)
+    profile["varBinds"] = [["IF-MIB", "ifInErrors"]]
+    if profile_kind in ("base", "mandatory"):
+        profile["condition"] = {"type": profile_kind}
+    elif profile_kind == "field":
+        profile["condition"] = {
+            "type": "field",
+            "field": "SNMPv2-MIB.sysDescr",
+            "patterns": ["Linux.*"],
+        }
+    elif profile_kind == "conditional":
+        profile["conditions"] = [
+            {"field": "IF-MIB.ifAdminStatus", "operation": "equals", "value": "up"}
+        ]
+    updated_profiles = {"selected": profile}
+    ProfilesManager.validate_elements(updated_profiles)
+    assert "selected" in updated_profiles
+    database.profiles.find.return_value = [updated_profiles]
+    tasks.inventory_setup_poller.run({"address": ADDRESS})
+    updated = saved_poll(app, 60)
+    expected_name = (
+        "selected__192|0|2|10:161" if profile_kind == "conditional" else "selected"
+    )
+    assert updated.kwargs["profiles"] == [expected_name]
+    assert updated.jitter_fingerprint == original.jitter_fingerprint
+    assert app.redbeat_redis.zscore(app.redbeat_conf.schedule_key, updated.key) == due
+    assert app.redbeat_redis.zcard(app.redbeat_conf.schedule_key) == 1

@@ -59,6 +59,10 @@ spec:
               value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/standard.txt"
             - name: LOG_LEVEL
               value: {{ .Values.scheduler.logLevel | default "INFO" }}
+            - name: POLLING_JITTER_ENABLED
+              value: {{ .Values.scheduler.pollingJitter.enabled | default false | quote }}
+            - name: POLLING_JITTER_WINDOW_SECONDS
+              value: {{ .Values.scheduler.pollingJitter.windowSeconds | default 60 | quote }}
           volumeMounts:
             - name: config
               mountPath: "/app/config"

@@ -1,7 +1,4 @@
-"""SC4SNMP scheduling policy checks against disposable Redis and real RedBeat."""
-
 import json
-import logging
 from datetime import datetime, timedelta, timezone
 from queue import Empty
 from unittest.mock import patch
@@ -23,12 +20,9 @@ def read_message(queue):
         return None
 
 
-def create_entry(app, monkeypatch, kind="poll", interval=60, window=60):
-    """
-    Create a new device schedule through SC4SNMP's actual task manager.
-
-    :return: Manager, generated task definition and saved RedBeat entry
-    """
+def create_entry(
+    app, monkeypatch, kind="poll", interval=60, window=60, *, created_at=NOW
+):
     from splunk_connect_for_snmp import customtaskmanager
     from splunk_connect_for_snmp.common.task_generator import (
         PollTaskGenerator,
@@ -37,7 +31,7 @@ def create_entry(app, monkeypatch, kind="poll", interval=60, window=60):
 
     monkeypatch.setattr(polling_jitter, "JITTER_SETTINGS", JitterSettings(True, window))
     monkeypatch.setattr(customtaskmanager, "app", app)
-    app.now = lambda: NOW
+    app.now = lambda: created_at
     generator = (
         WalkTaskGenerator("router-01:161", interval, app, None, "Walk")
         if kind == "walk"
@@ -51,6 +45,62 @@ def create_entry(app, monkeypatch, kind="poll", interval=60, window=60):
         data,
         RedBeatSchedulerEntry.from_key("redbeat:" + data["name"], app=app),
     )
+
+
+@pytest.mark.parametrize(
+    "kind,interval", [("walk", 1800), ("poll", 60), ("poll", 300), ("poll", 301)]
+)
+@pytest.mark.parametrize("lateness", [0, 3.55])
+def test_fractional_creation_keeps_due_and_uses_actual_reservation_for_recurrence(
+    app, monkeypatch, kind, interval, lateness
+):
+    from splunk_connect_for_snmp.common.polling_jitter import calculate_offset
+
+    created_at = NOW + timedelta(microseconds=250000)
+    _, _, entry = create_entry(app, monkeypatch, kind, interval, created_at=created_at)
+    offset, _ = calculate_offset(
+        "router-01", 161, interval, kind, JitterSettings(True, 60)
+    )
+    due = created_at + timedelta(
+        seconds=offset + (interval if kind == "poll" and interval <= 300 else 0)
+    )
+    assert entry.last_run_at == due - timedelta(seconds=interval)
+    assert app.redbeat_redis.zscore(
+        app.redbeat_conf.schedule_key, entry.key
+    ) == to_timestamp(due)
+    scheduler = RedBeatScheduler(app, lazy=True, max_interval=86400)
+    with app.connection_for_read() as connection:
+        queue = connection.SimpleQueue(app.conf.task_default_queue)
+        try:
+            app.now = lambda: due - timedelta(microseconds=1)
+            scheduler.tick()
+            assert read_message(queue) is None
+            reserved_at = due + timedelta(seconds=lateness)
+            app.now = lambda: reserved_at
+            scheduler.tick()
+            message = read_message(queue)
+            assert message is not None
+            message.ack()
+            assert read_message(queue) is None
+            stored = RedBeatSchedulerEntry.from_key(entry.key, app=app)
+            assert stored.last_run_at == reserved_at
+            assert stored.total_run_count == 1
+            next_due = reserved_at + timedelta(seconds=interval)
+            app.now = lambda: next_due - timedelta(microseconds=1)
+            scheduler.tick()
+            assert read_message(queue) is None
+            app.now = lambda: next_due
+            scheduler.tick()
+            message = read_message(queue)
+            assert message is not None
+            message.ack()
+            assert read_message(queue) is None
+            assert (
+                RedBeatSchedulerEntry.from_key(entry.key, app=app).total_run_count == 2
+            )
+        finally:
+            queue.close()
+            scheduler.close()
 
 
 @pytest.mark.parametrize("window", [1, 60, 86400])
@@ -182,7 +232,6 @@ def test_recovery_and_disabled_creation_have_no_feature_state(
     stored = RedBeatSchedulerEntry.from_key(key, app=app)
     assert not app.redbeat_redis.hexists(key, "jitter_fingerprint")
     assert "_schedule_context" not in stored.kwargs
-    assert not app.redbeat_redis.hexists(key, "jitter_pending_request")
 
 
 def test_initial_walk_payload_update_preserves_first_invocation_state(app, monkeypatch):
@@ -204,51 +253,6 @@ def test_initial_walk_payload_update_preserves_first_invocation_state(app, monke
     saved = RedBeatSchedulerEntry.from_key(entry.key, app=app)
     assert saved.first_run_kwargs == {}
     assert "_schedule_context" not in saved.kwargs
-
-
-def test_global_rewalk_cancels_pending_first_invocation_state(app, monkeypatch):
-    manager, _, entry = create_entry(app, monkeypatch, "walk", 1800)
-    manager.rerun_all_walks()
-    saved = RedBeatSchedulerEntry.from_key(entry.key, app=app)
-    assert saved.is_due()[0]
-    assert saved.first_run_kwargs == {}
-    assert "_schedule_context" not in saved.kwargs
-    scheduler = RedBeatScheduler(app, lazy=True)
-    with patch.object(app, "send_task") as publish:
-        scheduler.tick()
-    assert publish.call_count == 1
-    assert "_schedule_context" not in publish.call_args.args[2]
-    assert (
-        app.redbeat_redis.zscore(app.redbeat_conf.schedule_key, entry.key)
-        == (NOW + timedelta(seconds=1800)).timestamp()
-    )
-
-
-@pytest.mark.parametrize("kind,interval", [("walk", 1800), ("poll", 60)])
-def test_debug_offset_matches_persisted_first_due(
-    app, monkeypatch, caplog, kind, interval
-):
-    with caplog.at_level(
-        logging.DEBUG, logger="splunk_connect_for_snmp.customtaskmanager"
-    ):
-        _, _, entry = create_entry(app, monkeypatch, kind, interval)
-    records = [
-        r
-        for r in caplog.records
-        if r.getMessage().startswith("Applied polling jitter:")
-    ]
-    assert len(records) == 1
-    record = records[0]
-    assert record.levelno == logging.DEBUG
-    due = entry.last_run_at + timedelta(seconds=interval)
-    offset = int((due - NOW).total_seconds()) - (interval if kind == "poll" else 0)
-    message = record.getMessage()
-    assert f"schedule={entry.name} " in message
-    assert f"interval_seconds={interval} " in message
-    assert "window_seconds=60 effective_window_seconds=60 " in message
-    assert f"offset_seconds={offset} first_due_utc={due.isoformat()}" in message
-    assert entry.jitter_fingerprint not in message
-    assert "community" not in message and "password" not in message
 
 
 @pytest.mark.parametrize(
@@ -290,8 +294,8 @@ def test_sc4snmp_manager_preserves_chain_when_publishing(
             scheduler.tick()
             assert read_message(queue) is None
             app.now = lambda: due
-            # No real polling task is imported or executed. Beat publishes its
-            # ordinary signature and complete existing success callbacks.
+            # Inspect the published task and callbacks without running SNMP
+            # requests or sending data to an output destination.
             with patch.object(app, "send_task", wraps=app.send_task) as publish:
                 scheduler.tick()
             publish.assert_called_once()

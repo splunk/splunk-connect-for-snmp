@@ -208,10 +208,11 @@ class InventoryRecordManager:
         self, inventory_record, new_source_record, runtime_profiles, expiry_time_changed
     ):
         """
-        Save an inventory record and keep its existing WALK refresh rules.
+        Save inventory and request a WALK for new or changed records.
 
-        When jitter is enabled, prior inventory and WALK state distinguish a
-        genuinely new device from recovery. These checks happen before upsert.
+        Check saved inventory and WALK state before the upsert to identify a
+        first registration. A missing schedule for a saved device, or a rebuild
+        after an expiry change, keeps its usual recovery timing.
 
         :param inventory_record: Validated device inventory record
         :param new_source_record: Incoming CSV or UI record
@@ -222,6 +223,9 @@ class InventoryRecordManager:
         """
         settings = polling_jitter.JITTER_SETTINGS
         initial_registration = False
+        # Only a device absent from both inventory and WALK schedules gets an
+        # initial offset. Lost Redis schedules and expiry rebuilds need recovery
+        # timing so existing devices can resume polling promptly.
         if settings.enabled and not expiry_time_changed:
             prior_inventory = self.inventory_collection.find_one(
                 {"address": inventory_record.address, "port": inventory_record.port},
@@ -269,12 +273,13 @@ class InventoryRecordManager:
             walk_profile,
             new_source_record.get("group"),
         )
-        if initial_registration:
-            self.periodic_object_collection.manage_task(
-                initial_registration=True, **task_config
-            )
-        else:
-            self.periodic_object_collection.manage_task(**task_config)
+        # With jitter enabled, changes to an already phased WALK request now
+        # plus its saved offset. Missing schedules use recovery timing.
+        self.periodic_object_collection.manage_task(
+            initial_registration=initial_registration,
+            inventory_update=not initial_registration,
+            **task_config,
+        )
 
     def return_walk_profile(self, runtime_profiles, inventory_profiles):
         walk_profile = None

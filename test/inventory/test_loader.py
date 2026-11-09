@@ -4,11 +4,16 @@ from unittest.mock import Mock, mock_open, patch
 from celery import chain, group, signature
 from celery.schedules import schedule
 from pymongo.results import UpdateResult
+from redbeat.schedulers import EntryPolicyChanged
 
 from splunk_connect_for_snmp.common.inventory_processor import gen_walk_task
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.customtaskmanager import POLL_TASK, WALK_TASK
-from splunk_connect_for_snmp.inventory.loader import load, transform_address_to_key
+from splunk_connect_for_snmp.inventory.loader import (
+    load,
+    manage_inventory_records,
+    transform_address_to_key,
+)
 
 mock_inventory = """address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
 192.168.0.1,,2c,public,,,1805,test_1,False,False"""
@@ -308,7 +313,9 @@ class TestLoader(TestCase):
         m_load_profiles.return_value = default_profiles
         self.assertFalse(load())
 
-        periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
+        periodic_obj_mock.manage_task.assert_called_with(
+            initial_registration=False, inventory_update=True, **expected_managed_task
+        )
 
     @mock.patch(
         "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", False
@@ -357,7 +364,9 @@ class TestLoader(TestCase):
         m_load_profiles.return_value = default_profiles
         self.assertFalse(load())
 
-        periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
+        periodic_obj_mock.manage_task.assert_called_with(
+            initial_registration=False, inventory_update=True, **expected_managed_task
+        )
 
     @mock.patch(
         "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", False
@@ -468,7 +477,9 @@ class TestLoader(TestCase):
         m_load_profiles.return_value = default_profiles
         self.assertFalse(load())
 
-        periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
+        periodic_obj_mock.manage_task.assert_called_with(
+            initial_registration=False, inventory_update=True, **expected_managed_task
+        )
 
     @mock.patch(
         "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", False
@@ -524,7 +535,9 @@ class TestLoader(TestCase):
         periodic_obj_mock.did_expiry_time_change.assert_called_once_with(
             180, [WALK_TASK, POLL_TASK]
         )
-        periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
+        periodic_obj_mock.manage_task.assert_called_with(
+            initial_registration=False, inventory_update=True, **expected_managed_task
+        )
 
     @mock.patch(
         "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", False
@@ -733,6 +746,32 @@ class TestLoader(TestCase):
         m_load_profiles.return_value = default_profiles
 
         self.assertTrue(load())
+
+    @patch("splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO", False)
+    @patch("splunk_connect_for_snmp.inventory.loader.InventoryRecord")
+    def test_inventory_continues_after_schedule_policy_conflict(self, record_class):
+        source_records = [
+            {"address": f"snmp-agent-{number}", "port": 161, "delete": False}
+            for number in range(1, 4)
+        ]
+        records = [Mock(**source) for source in source_records]
+        record_class.side_effect = records
+        manager = Mock()
+        manager.update.side_effect = [EntryPolicyChanged("Window changed"), None, None]
+
+        has_errors = manage_inventory_records(
+            {}, False, [], False, source_records, manager, Mock()
+        )
+
+        self.assertTrue(has_errors)
+        self.assertEqual(
+            manager.update.call_args_list,
+            [
+                mock.call(record, source, {}, False)
+                for record, source in zip(records, source_records)
+            ],
+        )
+        manager.delete.assert_not_called()
 
     def test_transform_address_to_key_161(self):
         self.assertEqual(transform_address_to_key("127.0.0.1", 161), "127.0.0.1:161")
