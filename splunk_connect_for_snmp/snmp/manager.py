@@ -281,6 +281,57 @@ def value_as_best(value) -> Union[str, float]:
         return value
 
 
+def _safe_str(render) -> str:
+    """Return ``render()`` as text, or a description of the error it raised."""
+    try:
+        return str(render())
+    except Exception as exc:
+        return f"<{type(exc).__name__}: {exc}>"
+
+
+def raw_value_text(snmp_val) -> str:
+    """
+    Text of the value held by an SNMP object, without applying the MIB display hint.
+
+    Used when ``prettyPrint()`` fails because the object's class (taken from the MIB)
+    does not match the type the agent actually sent.
+    """
+    raw = getattr(snmp_val, "_value", None)
+    if isinstance(raw, (bytes, bytearray)):
+        return bytes(raw).decode("utf-8", errors="replace")
+    return "" if raw is None else str(raw)
+
+
+def describe_varbind(varbind) -> str:
+    """
+    Render a varbind for log messages without ever raising.
+
+    ``str(varbind)`` calls ``prettyPrint()`` on the value, which is the same call that
+    failed when the varbind could not be processed. Formatting the varbind inside the
+    ``except`` block therefore raised again and aborted the whole poll. Every part
+    below is rendered on its own, so one failing part cannot hide the others.
+
+    :param varbind: ObjectType (OID identity, value) as returned by pysnmp
+    :return: single-line description with the OID, the value class and tag set and the
+        raw value
+    """
+    try:
+        identity, value = varbind[0], varbind[1]
+    except Exception as exc:
+        return f"<unreadable varbind {type(varbind).__name__}: {exc}>"
+
+    value_type = type(value)
+    return (
+        f"oid={_safe_str(identity.get_oid)} "
+        f"name={_safe_str(identity.prettyPrint)} "
+        f"value_class={value_type.__name__} "
+        f"value_bases={[base.__name__ for base in value_type.__mro__[1:5]]} "
+        f"value_tags={_safe_str(lambda: value.tagSet)} "
+        f"raw_value={_safe_str(lambda: repr(value._value))} "
+        f"pretty_value={_safe_str(value.prettyPrint)}"
+    )
+
+
 def map_metric_type(t, snmp_value):
     if t in MTYPES_CC:
         metric_type = "cc"
@@ -809,8 +860,11 @@ class Poller(Task):
                         profile,
                     )
                 except Exception:
+                    # Do not format ``varbind`` directly: its prettyPrint() may be the
+                    # call that failed above and would abort the whole poll.
                     logger.exception(
-                        f"Exception processing data from {target} {varbind}"
+                        f"Exception processing data from {target} "
+                        f"{describe_varbind(varbind)}"
                     )
             else:
                 found = self.find_new_mibs(oid, remotemibs, target, varbind_id)
@@ -878,7 +932,16 @@ class Poller(Task):
         snmp_val = varbind[1]
         snmp_type = type(snmp_val).__name__
         metric_type = map_metric_type(snmp_type, snmp_val)
-        metric_value = value_as_best(snmp_val.prettyPrint())
+        try:
+            printed_value = snmp_val.prettyPrint()
+        except Exception as exc:
+            printed_value = raw_value_text(snmp_val)
+            logger.warning(
+                f"Value from {target} does not match its MIB syntax "
+                f"({type(exc).__name__}: {exc}); using the raw value. "
+                f"{describe_varbind(varbind)}"
+            )
+        metric_value = value_as_best(printed_value)
         index_number = extract_index_number(index)
         metric_value = fill_empty_value(index_number, metric_value, target)
         return metric_type, metric_value

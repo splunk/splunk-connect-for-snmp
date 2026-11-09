@@ -2,9 +2,15 @@ from tokenize import group
 from unittest import TestCase
 from unittest.mock import MagicMock, Mock, patch
 
+from pysnmp.proto import rfc1902
 from pysnmp.smi import builder, view
+from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
-from splunk_connect_for_snmp.snmp.manager import Poller
+from splunk_connect_for_snmp.snmp.manager import (
+    Poller,
+    describe_varbind,
+    raw_value_text,
+)
 
 
 class TestProcessSnmpData(TestCase):
@@ -505,4 +511,200 @@ class TestProcessSnmpData(TestCase):
         self.assertEqual(
             metrics,
             {"SNMPv2-MIB::tuple=int=0": {"indexes": [1], "fields": {}, "metrics": {}}},
+        )
+
+
+class _UnprintableValue:
+    """Value whose prettyPrint() fails like SnmpAdminString with a mismatched type."""
+
+    tagSet = "tags 0:0:2"
+    _value = 5
+
+    def prettyPrint(self):
+        raise AttributeError(
+            "'SnmpAdminString' object has no attribute 'getNamedValues'"
+        )
+
+
+class _UnprintableVarbind:
+    """Varbind whose str() fails the same way as the value's prettyPrint()."""
+
+    def __init__(self, oid, mib_symbol, value):
+        identity = Mock()
+        identity.get_oid.return_value = oid
+        identity.prettyPrint.return_value = f"{mib_symbol[0]}::{mib_symbol[1]}.1"
+        identity.get_mib_symbol.return_value = mib_symbol
+        self._items = (identity, value)
+
+    def __getitem__(self, item):
+        return self._items[item]
+
+    def __str__(self):
+        return self[1].prettyPrint()
+
+
+class TestDescribeVarbind(TestCase):
+    def test_describe_varbind_does_not_raise_when_value_cannot_be_printed(self):
+        varbind = _UnprintableVarbind(
+            "1.3.6.1.4.1.9.9.719.1.9.35.1.4",
+            ("CISCO-UNIFIED-COMPUTING-MIB", "cucsFaultDescription", 1),
+            _UnprintableValue(),
+        )
+
+        with self.assertRaises(AttributeError):
+            str(varbind)
+
+        description = describe_varbind(varbind)
+
+        self.assertIn("oid=1.3.6.1.4.1.9.9.719.1.9.35.1.4", description)
+        self.assertIn(
+            "name=CISCO-UNIFIED-COMPUTING-MIB::cucsFaultDescription.1", description
+        )
+        self.assertIn("value_class=_UnprintableValue", description)
+        self.assertIn("value_tags=tags 0:0:2", description)
+        self.assertIn("raw_value=5", description)
+        self.assertIn(
+            "pretty_value=<AttributeError: 'SnmpAdminString' object has no attribute "
+            "'getNamedValues'>",
+            description,
+        )
+
+    def test_describe_varbind_with_resolved_object_type(self):
+        mib_builder = builder.MibBuilder()
+        mib_builder.load_modules("SNMPv2-MIB")
+        varbind = ObjectType(
+            ObjectIdentity("1.3.6.1.2.1.1.5.0"), rfc1902.OctetString("router1")
+        ).resolve_with_mib(view.MibViewController(mib_builder))
+
+        description = describe_varbind(varbind)
+
+        self.assertIn("oid=1.3.6.1.2.1.1.5.0", description)
+        self.assertIn("name=SNMPv2-MIB::sysName.0", description)
+        self.assertIn("value_class=DisplayString", description)
+        self.assertIn("pretty_value=router1", description)
+
+    def test_describe_varbind_with_unresolved_object_type(self):
+        varbind = ObjectType(ObjectIdentity("1.3.6.1.2.1.1.5.0"))
+
+        description = describe_varbind(varbind)
+
+        self.assertIn("unreadable varbind ObjectType", description)
+        self.assertIn("not fully initialized", description)
+
+    def test_describe_varbind_with_unreadable_object(self):
+        self.assertIn("unreadable varbind", describe_varbind(object()))
+
+
+class TestProcessSnmpDataErrorLogging(TestCase):
+    @patch.object(
+        Poller,
+        "set_metrics_index",
+        side_effect=[AttributeError("cannot process"), ("g", 7.0)],
+    )
+    @patch("splunk_connect_for_snmp.snmp.manager.is_mib_resolved", return_value=True)
+    @patch("splunk_connect_for_snmp.snmp.manager.get_group_key", return_value="KEY")
+    @patch("splunk_connect_for_snmp.snmp.manager.extract_indexes", return_value=[1])
+    @patch("time.time", return_value=1640609779.473053)
+    def test_bad_varbind_is_logged_and_other_varbinds_are_kept(
+        self, _time, _indexes, _group_key, _resolved, _set_metrics_index
+    ):
+        poller = Poller.__new__(Poller)
+        bad = _UnprintableVarbind(
+            "1.3.6.1.4.1.9.9.719.1.9.35.1.4",
+            ("CISCO-UNIFIED-COMPUTING-MIB", "cucsFaultDescription", 1),
+            _UnprintableValue(),
+        )
+        good_identity = Mock()
+        good_identity.get_mib_symbol.return_value = ("IF-MIB", "ifInErrors", 1)
+        good_identity.prettyPrint.return_value = "IF-MIB::ifInErrors.1"
+        good_identity.get_oid.return_value = "1.3.6.1.2.1.2.2.1.14.1"
+        good_value = Mock()
+        good_value.prettyPrint.return_value = 7
+        metrics = {}
+
+        with self.assertLogs(
+            "splunk_connect_for_snmp.snmp.manager", level="ERROR"
+        ) as logs:
+            poller.process_snmp_data(
+                [bad, (good_identity, good_value)], metrics, "10.14.191.36", {}
+            )
+
+        output = "\n".join(logs.output)
+        self.assertIn("Exception processing data from 10.14.191.36", output)
+        self.assertIn(
+            "name=CISCO-UNIFIED-COMPUTING-MIB::cucsFaultDescription.1", output
+        )
+        self.assertIn("oid=1.3.6.1.4.1.9.9.719.1.9.35.1.4", output)
+        self.assertEqual(7.0, metrics["KEY"]["metrics"]["IF-MIB.ifInErrors"]["value"])
+
+
+class TestValueTypeDiffersFromMib(TestCase):
+    """Agent sends an INTEGER for an object whose MIB syntax is SnmpAdminString."""
+
+    def _resolved_varbind(self, value):
+        mib_builder = builder.MibBuilder()
+        mib_builder.load_modules("SNMP-USER-BASED-SM-MIB")
+        return ObjectType(
+            ObjectIdentity("1.3.6.1.6.3.15.1.2.2.1.3.1"), value
+        ).resolve_with_mib(view.MibViewController(mib_builder))
+
+    def test_integer_for_snmp_admin_string_cannot_be_pretty_printed(self):
+        varbind = self._resolved_varbind(rfc1902.Integer32(5))
+
+        self.assertEqual("SnmpAdminString", type(varbind[1]).__name__)
+        with self.assertRaises(AttributeError):
+            varbind[1].prettyPrint()
+
+    def test_raw_value_text(self):
+        self.assertEqual(
+            "5", raw_value_text(self._resolved_varbind(rfc1902.Integer32(5))[1])
+        )
+        self.assertEqual(
+            "abc", raw_value_text(self._resolved_varbind(rfc1902.OctetString("abc"))[1])
+        )
+
+    def test_set_metrics_index_keeps_the_value(self):
+        poller = Poller.__new__(Poller)
+        varbind = self._resolved_varbind(rfc1902.Integer32(5))
+
+        with self.assertLogs(
+            "splunk_connect_for_snmp.snmp.manager", level="WARNING"
+        ) as logs:
+            metric_type, metric_value = poller.set_metrics_index(
+                varbind[0].get_mib_symbol()[2], "10.14.191.36", varbind
+            )
+
+        self.assertEqual("f", metric_type)
+        self.assertEqual(5.0, metric_value)
+        output = "\n".join(logs.output)
+        self.assertIn("does not match its MIB syntax", output)
+        self.assertIn("usmUserSecurityName", output)
+
+    def test_set_metrics_index_with_matching_type_does_not_warn(self):
+        poller = Poller.__new__(Poller)
+        varbind = self._resolved_varbind(rfc1902.OctetString("alice"))
+
+        with self.assertNoLogs("splunk_connect_for_snmp.snmp.manager", level="WARNING"):
+            _, metric_value = poller.set_metrics_index(
+                varbind[0].get_mib_symbol()[2], "10.14.191.36", varbind
+            )
+
+        self.assertEqual("alice", metric_value)
+
+    def test_process_snmp_data_keeps_the_poll(self):
+        poller = Poller.__new__(Poller)
+        metrics = {}
+
+        with self.assertLogs("splunk_connect_for_snmp.snmp.manager", level="WARNING"):
+            retry, _, _ = poller.process_snmp_data(
+                [self._resolved_varbind(rfc1902.Integer32(5))],
+                metrics,
+                "10.14.191.36",
+                {},
+            )
+
+        self.assertFalse(retry)
+        (group,) = metrics.values()
+        self.assertEqual(
+            ["5"], [str(int(f["value"])) for f in group["fields"].values()]
         )
