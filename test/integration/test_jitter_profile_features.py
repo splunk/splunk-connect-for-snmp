@@ -159,6 +159,52 @@ def test_profile_assignment_and_frequency_grouping(
     assert_phase(app, saved_poll(app, 120), 120)
 
 
+def test_poller_setup_continues_after_another_worker_creates_a_frequency(
+    app, monkeypatch
+):
+    configure_app(app, monkeypatch)
+    profiles = {
+        "short": {"frequency": 60, "varBinds": [["SNMPv2-MIB", "sysName", 0]]},
+        "long": {"frequency": 600, "varBinds": [["SNMPv2-MIB", "sysName", 0]]},
+    }
+    configure_mongo(monkeypatch, profiles, inventory_record("short;long", False))
+    stale_data = tasks.generate_poll_task_definition(
+        [], ADDRESS, {120: ["RemovedProfile"]}, 120, 120
+    )
+    customtaskmanager.CustomPeriodicTaskManager().manage_task(**stale_data)
+    enabled = polling_jitter.JITTER_SETTINGS.enabled
+    method = "save_with_first_due" if enabled else "save_guarded"
+    original_save = getattr(RedBeatSchedulerEntry, method)
+    winning_entries = []
+
+    def create_before_the_other_worker(entry, *args, **kwargs):
+        if entry.schedule.run_every == timedelta(seconds=60) and not winning_entries:
+            winning_data = tasks.generate_poll_task_definition(
+                [], ADDRESS, {60: ["EarlierProfile"]}, 60, 120
+            )
+            winner = RedBeatSchedulerEntry(**winning_data)
+            original_save(winner, *args, **kwargs)
+            winning_entries.append(winner.entry_id)
+        return original_save(entry, *args, **kwargs)
+
+    monkeypatch.setattr(RedBeatSchedulerEntry, method, create_before_the_other_worker)
+    tasks.inventory_setup_poller.run(
+        {
+            "address": ADDRESS,
+            "_schedule_context": "initial_registration",
+            "chain_of_tasks_expiry_time": 120,
+        }
+    )
+
+    updated = saved_poll(app, 60)
+    assert winning_entries == [updated.entry_id]
+    assert updated.kwargs["profiles"] == ["short"]
+    assert saved_poll(app, 600).kwargs["profiles"] == ["long"]
+    assert not app.redbeat_redis.exists("redbeat:" + stale_data["name"])
+    assert_phase(app, updated, 60)
+    assert_phase(app, saved_poll(app, 600), 600)
+
+
 @pytest.mark.parametrize("indexes", [[1, 7], []])
 def test_conditional_profile_keeps_selected_varbinds(app, monkeypatch, indexes):
     configure_app(app, monkeypatch)

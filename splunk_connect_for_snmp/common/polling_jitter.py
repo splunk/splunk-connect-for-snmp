@@ -129,6 +129,18 @@ def canonical_identity(
     return f"v1|{task_type}|{address}|{port}|{interval}"
 
 
+def effective_window_seconds(settings: JitterSettings, interval: int) -> int:
+    """
+    Return the largest allowed offset for this schedule.
+
+    :param settings: Configured jitter window
+    :param interval: Schedule interval in whole seconds, greater than one
+
+    :return: Smaller of the configured window and the interval minus one
+    """
+    return min(settings.window_seconds, interval - 1)
+
+
 def calculate_offset(
     address: str,
     port: int | str,
@@ -139,13 +151,14 @@ def calculate_offset(
     """
     Choose a repeatable positive offset for one recurring schedule.
 
-    The offset is between one second and the smaller of the configured window
-    and this schedule's interval. The same identity and window always give the
+    The offset is at least one second and strictly below the schedule's
+    interval. The configured window can limit it further. Phased intervals
+    must exceed one second. The same identity and window always give the
     same offset. Different identities may share an offset.
 
     :param address: Device IP address or hostname
     :param port: Device SNMP port
-    :param interval: Schedule interval in whole seconds
+    :param interval: Schedule interval in whole seconds, greater than one
     :param task_type: Either walk or poll
     :param settings: Validated jitter settings
 
@@ -156,7 +169,9 @@ def calculate_offset(
     identity = canonical_identity(address, port, interval, task_type)
     interval = int(interval)
     digest = hashlib.sha256(identity.encode("utf-8")).digest()
-    offset = 1 + int.from_bytes(digest, "big") % min(settings.window_seconds, interval)
+    offset = 1 + int.from_bytes(digest, "big") % effective_window_seconds(
+        settings, interval
+    )
     # Save the requested window so Beat can notice a later settings change,
     # even when this schedule's interval kept its offset range smaller.
     return offset, f"sha256-v1:{settings.window_seconds}:{digest.hex()}"

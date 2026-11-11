@@ -17,13 +17,19 @@ import logging
 from datetime import timezone
 from typing import List, Set
 
-from redbeat.schedulers import EntryPolicyChanged, RedBeatSchedulerEntry, get_redis
+from redbeat.schedulers import (
+    EntryAlreadyExists,
+    EntryPolicyChanged,
+    RedBeatSchedulerEntry,
+    get_redis,
+)
 
 from .common import polling_jitter
 from .common.polling_jitter import (
     INITIAL_REGISTRATION,
     SCHEDULE_CONTEXT,
     applied_settings,
+    effective_window_seconds,
     first_due,
     schedule_phase,
 )
@@ -146,7 +152,8 @@ class CustomPeriodicTaskManager:
         due now.
 
         Phased entries keep their saved timing for definition-only updates.
-        WALK and POLL creation refuses a schedule saved by another writer.
+        If another writer creates the same WALK or POLL first, update that
+        entry instead of interrupting setup of the remaining POLLs.
         Existing entries go to update_task(), which reloads changed policies
         and refuses deleted or replaced entries.
 
@@ -161,6 +168,7 @@ class CustomPeriodicTaskManager:
         :raises EntryPolicyChanged: If the policy keeps changing during update
         """
         task_name = task_data.get("name")
+        creation_conflict = False
         try:
             periodic_document = RedBeatSchedulerEntry.from_key(
                 f"redbeat:{task_name}", app=app
@@ -184,20 +192,54 @@ class CustomPeriodicTaskManager:
             polling_task = task_data.get("task") in (WALK_TASK, POLL_TASK)
             # Spread the first polling load for a new device. A missing schedule
             # for an existing device keeps its usual recovery timing.
-            if initial_registration and polling_task and settings.enabled:
-                self._save_initial_phase(periodic_document, settings)
+            try:
+                if initial_registration and polling_task and settings.enabled:
+                    self._save_initial_phase(periodic_document, settings)
+                    return
+                if polling_task:
+                    # Another inventory worker may have created this schedule
+                    # after our missing-entry check. Never replace its entry.
+                    periodic_document.save_guarded(create=True)
+                else:
+                    periodic_document.save()
+                # Guarded creation already stores the initial timing and immediate
+                # flag together. A second write could replace a newer schedule.
+                if not polling_task and task_data.get("run_immediately"):
+                    periodic_document.reschedule()
                 return
-            if polling_task:
-                # Two inventory workers can both see a missing schedule. Refuse
-                # creation if another worker has already saved it.
-                periodic_document.save_guarded(create=True)
-            else:
-                periodic_document.save()
-            # Guarded creation already stores the initial timing and immediate
-            # flag together. A second write could replace a newer schedule.
-            if not polling_task and task_data.get("run_immediately"):
-                periodic_document.reschedule()
-            return
+            except EntryAlreadyExists:
+                creation_conflict = True
+                logger.debug(
+                    f"Another worker created the schedule first. Reloading it "
+                    f"instead of replacing it: task={periodic_document.task}"
+                )
+                periodic_document = RedBeatSchedulerEntry.from_key(
+                    f"redbeat:{task_name}", app=app
+                )
+
+        if (
+            initial_registration
+            and periodic_document.jitter_fingerprint
+            and periodic_document.total_run_count == 0
+            and (
+                (creation_conflict and periodic_document.task == POLL_TASK)
+                or (
+                    periodic_document.task == WALK_TASK
+                    and periodic_document.first_run_kwargs.get(SCHEDULE_CONTEXT)
+                    == INITIAL_REGISTRATION
+                )
+            )
+        ):
+            # Two loaders can both identify a new device before either saves it.
+            # Finding the other loader's first WALK is not an urgent refresh.
+            # POLLs keep this protection only for a competing creation attempt.
+            logger.debug(
+                f"Keeping the first run at its saved due time while "
+                f"applying the update: task={periodic_document.task} "
+                f"entry_id={periodic_document.entry_id}"
+            )
+            task_data = dict(task_data)
+            task_data.pop("run_immediately", None)
 
         self.update_task(
             periodic_document, task_data, inventory_update=inventory_update
@@ -274,6 +316,9 @@ class CustomPeriodicTaskManager:
                         periodic_document.request_run(
                             first_due(app.now().astimezone(timezone.utc), offset),
                             fingerprint=fingerprint,
+                            # A second inventory load can arrive before the first
+                            # WALK. Keep its setup context so new POLLs get jitter.
+                            preserve_first_run_kwargs=True,
                         )
                         return
                     if not task_data.get("run_immediately"):
@@ -352,7 +397,7 @@ class CustomPeriodicTaskManager:
         logger.debug(
             f"Applied polling jitter: schedule={entry.name} interval_seconds={seconds} "
             f"window_seconds={settings.window_seconds} "
-            f"effective_window_seconds={min(settings.window_seconds, seconds)} "
+            f"effective_window_seconds={effective_window_seconds(settings, seconds)} "
             f"offset_seconds={offset} first_due_utc={due.isoformat()}"
         )
 
