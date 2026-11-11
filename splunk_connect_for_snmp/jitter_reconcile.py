@@ -19,6 +19,7 @@ from datetime import datetime, timezone
 from splunk_connect_for_snmp.common import polling_jitter
 from splunk_connect_for_snmp.common.polling_jitter import (
     applied_settings,
+    effective_window_seconds,
     first_due,
     schedule_phase,
 )
@@ -64,12 +65,14 @@ def apply_entry_policy(entry):
     ):
         return None
 
-    seconds, offset, requested_fingerprint = schedule_phase(entry, settings)
     interval = entry.schedule.run_every
     # The current run has already been selected, including any inventory refresh
     # or urgent recovery. Apply settings after its normal next interval.
     baseline = entry.last_run_at.astimezone(timezone.utc) + interval
     if not settings.enabled:
+        # Removing jitter only needs the interval, not another device hash.
+        offset = 0
+        requested_fingerprint = None
         # After disabling jitter, move the following run to the nearest shared
         # UTC interval boundary. A tie goes later. This one gap may be shorter
         # or longer before the normal interval resumes.
@@ -78,23 +81,25 @@ def apply_entry_policy(entry):
         if remainder * 2 >= interval:
             quotient += 1
         due = epoch + quotient * interval
-    elif previous and min(previous.window_seconds, seconds) == min(
-        settings.window_seconds, seconds
-    ):
-        # A window change from 60 to 120 still gives a 60-second POLL the same
-        # 1-60-second range. Record the new setting without moving its next run.
-        due = None
     else:
-        # Add the new offset once after this reservation plus one interval.
-        # Later runs keep normal intervals from this new due time.
-        due = first_due(baseline, offset)
+        seconds, offset, requested_fingerprint = schedule_phase(entry, settings)
+        if previous and effective_window_seconds(
+            previous, seconds
+        ) == effective_window_seconds(settings, seconds):
+            # A 60-second POLL keeps its 1-59-second range when the window
+            # grows from 60 to 120. Save the setting without moving its next run.
+            due = None
+        else:
+            # Add the new offset once after this reservation plus one interval.
+            # Later runs keep normal intervals from this new due time.
+            due = first_due(baseline, offset)
 
     logger.debug(
         f"Calculated following polling timing: schedule={entry.name} "
         f"enabled={settings.enabled} window_seconds={settings.window_seconds} "
-        f"effective_window_seconds={min(settings.window_seconds, seconds)} "
-        f"offset_seconds={offset if settings.enabled else 0} "
+        f"effective_window_seconds={effective_window_seconds(settings, int(interval.total_seconds()))} "
+        f"offset_seconds={offset} "
         f"due_utc={due.isoformat() if due else 'unchanged'}"
     )
     # Remove the marker on disable so later reservations keep normal intervals.
-    return due, requested_fingerprint if settings.enabled else None
+    return due, requested_fingerprint

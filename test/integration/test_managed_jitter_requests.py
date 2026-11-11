@@ -28,6 +28,35 @@ def reserve_initial(app, entry):
     return saved(entry)
 
 
+@pytest.mark.parametrize("already_reserved", [False, True])
+def test_initial_creator_finds_the_other_creators_walk(
+    app, monkeypatch, already_reserved
+):
+    manager, data, entry = create_entry(app, monkeypatch, "walk", 1800)
+    if already_reserved:
+        entry = reserve_initial(app, entry)
+    due = entry.last_run_at + entry.schedule.run_every
+    context = dict(entry.first_run_kwargs)
+    count = entry.total_run_count
+    request_time = app.now() + timedelta(seconds=1)
+    app.now = lambda: request_time
+    data["kwargs"]["profile"] = "UpdatedWalk"
+
+    manager.manage_task(initial_registration=True, **data)
+
+    current = saved(entry)
+    assert current.entry_id == entry.entry_id
+    assert current.total_run_count == count
+    assert current.kwargs["profile"] == "UpdatedWalk"
+    if already_reserved:
+        assert current.is_due()[0]
+        assert current.first_run_kwargs == {}
+    else:
+        assert current.last_run_at + current.schedule.run_every == due
+        assert current.first_run_kwargs == context
+        assert not current.is_due()[0]
+
+
 @pytest.mark.parametrize("shift", [-10, 10])
 def test_inventory_request_replaces_ordinary_due_and_respects_not_before(
     app, monkeypatch, shift
@@ -90,6 +119,7 @@ def test_inventory_refresh_uses_applied_window_and_preserves_microseconds(
     app, monkeypatch, window
 ):
     manager, data, entry = create_entry(app, monkeypatch, "walk", 1800, window=window)
+    entry = reserve_initial(app, entry)
     monkeypatch.setattr(polling_jitter, "JITTER_SETTINGS", JitterSettings(True, 60))
     request_time = NOW + timedelta(minutes=2, microseconds=250000)
     app.now = lambda: request_time
@@ -138,6 +168,7 @@ def test_repeated_inventory_edits_keep_earliest_due_and_latest_payload(
 @pytest.mark.parametrize("urgent_first", [False, True])
 def test_urgent_requests_win_in_both_arrival_orders(app, monkeypatch, urgent_first):
     manager, data, entry = create_entry(app, monkeypatch, "walk", 1800)
+    entry = reserve_initial(app, entry)
     options = entry.options
     request_time = NOW + timedelta(minutes=2)
     app.now = lambda: request_time
@@ -168,6 +199,7 @@ def test_disabled_settings_keep_accepted_request_until_an_immediate_inventory_up
     app, monkeypatch
 ):
     manager, data, entry = create_entry(app, monkeypatch, "walk", 1800)
+    entry = reserve_initial(app, entry)
     request_time = NOW + timedelta(minutes=2)
     app.now = lambda: request_time
     manager.manage_task(inventory_update=True, **data)
@@ -191,6 +223,7 @@ def test_disabled_settings_keep_accepted_request_until_an_immediate_inventory_up
 
 def test_inventory_interval_edit_keeps_key_and_applied_window(app, monkeypatch):
     manager, data, entry = create_entry(app, monkeypatch, "walk", 1800, window=10)
+    entry = reserve_initial(app, entry)
     count = entry.total_run_count
     monkeypatch.setattr(polling_jitter, "JITTER_SETTINGS", JitterSettings(True, 60))
     data["schedule"] = schedule(1200)
@@ -343,6 +376,7 @@ def test_inventory_record_manager_requests_only_actual_changes(
     from splunk_connect_for_snmp.common import inventory_processor
 
     manager, _, entry = create_entry(app, monkeypatch, "walk", 1800)
+    entry = reserve_initial(app, entry)
     monkeypatch.setattr(inventory_processor, "app", app)
     request_time = NOW + timedelta(minutes=2)
     app.now = lambda: request_time

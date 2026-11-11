@@ -102,12 +102,13 @@ def test_retained_walk_with_new_inventory_is_not_first_registration(
     app.now = lambda: NOW + timedelta(minutes=2)
     register_inventory(manager, inventory_mongo(False))
     updated = saved(entry)
-    assert updated.first_run_kwargs == {}
+    assert updated.first_run_kwargs == entry.first_run_kwargs
     assert "_schedule_context" not in updated.kwargs
     if managed:
         assert updated.jitter_fingerprint == fingerprint
         assert updated._strtobool(updated.run_immediately)
-        assert not updated.is_due()[0]
+        assert updated.last_run_at == entry.last_run_at
+        assert updated.is_due()[0]
     else:
         assert_legacy(app, updated)
         assert updated.is_due()[0]

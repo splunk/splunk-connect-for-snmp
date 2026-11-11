@@ -59,7 +59,7 @@ def definition(app, kind, interval):
     "kind,interval,offset",
     [
         ("walk", 1800, 35),
-        ("poll", 60, 42),
+        ("poll", 60, 47),
         ("poll", 300, 56),
         ("poll", 301, None),
         ("poll", 600, 22),
@@ -86,7 +86,7 @@ def test_new_entry_uses_correct_first_run_baseline(app, kind, interval, offset):
     baseline = NOW + timedelta(
         seconds=interval if kind == "poll" and interval <= 300 else 0
     )
-    assert 1 <= (due - baseline).total_seconds() <= 60
+    assert 1 <= (due - baseline).total_seconds() <= min(60, interval - 1)
     if offset is not None:
         assert due == baseline + timedelta(seconds=offset)
     assert fingerprint.startswith("sha256-v1:60:")
@@ -125,6 +125,27 @@ def test_disabled_or_recovery_creation_stays_legacy(
     reschedule.assert_not_called()
     exact.assert_not_called()
     assert SCHEDULE_CONTEXT not in initial.kwargs
+
+
+@pytest.mark.parametrize("initial_registration", [False, True])
+def test_creation_does_not_treat_other_value_errors_as_a_collision(
+    app, initial_registration
+):
+    data = definition(app, "walk", 1800)
+    initial = RedBeatSchedulerEntry(**data)
+    method = "save_with_first_due" if initial_registration else "save_guarded"
+    with patch.object(
+        customtaskmanager, "RedBeatSchedulerEntry"
+    ) as entry_class, patch.object(
+        initial, method, side_effect=ValueError("Invalid scheduling state")
+    ):
+        entry_class.from_key.side_effect = KeyError
+        entry_class.return_value = initial
+        with pytest.raises(ValueError, match="Invalid scheduling state"):
+            customtaskmanager.CustomPeriodicTaskManager().manage_task(
+                initial_registration=initial_registration, **data
+            )
+        entry_class.from_key.assert_called_once_with(f"redbeat:{data['name']}", app=app)
 
 
 def test_update_task_uses_loaded_entry_without_another_lookup(app):
@@ -195,6 +216,25 @@ def test_operational_walk_request_clears_initial_note(app):
     assert SCHEDULE_CONTEXT not in existing.kwargs
     request.assert_called_once_with(NOW, run_immediately=True, fingerprint=None)
     save.assert_not_called()
+
+
+def test_inventory_refresh_preserves_pending_initial_walk_context(app):
+    data = definition(app, "walk", 1800)
+    existing = RedBeatSchedulerEntry(**data)
+    existing.first_run_kwargs = {SCHEDULE_CONTEXT: INITIAL_REGISTRATION}
+    _, offset, fingerprint = customtaskmanager.schedule_phase(
+        existing, polling_jitter.JITTER_SETTINGS
+    )
+    existing.jitter_fingerprint = fingerprint
+    with patch.object(existing, "request_run") as request:
+        customtaskmanager.CustomPeriodicTaskManager().update_task(
+            existing, data, inventory_update=True
+        )
+    request.assert_called_once_with(
+        NOW + timedelta(seconds=offset),
+        fingerprint=fingerprint,
+        preserve_first_run_kwargs=True,
+    )
 
 
 def test_shared_celery_config_does_not_load_polling_jitter():
@@ -435,7 +475,7 @@ def test_credential_and_profile_changes_are_not_hash_inputs(app):
         data = manager.manage_task.call_args.kwargs
         assert community not in json.dumps(data["kwargs"])
         assert not data.get("initial_registration")
-    assert calculate_offset("router-01", 161, 60, "poll", JitterSettings(True))[0] == 42
+    assert calculate_offset("router-01", 161, 60, "poll", JitterSettings(True))[0] == 47
 
 
 @pytest.mark.parametrize(

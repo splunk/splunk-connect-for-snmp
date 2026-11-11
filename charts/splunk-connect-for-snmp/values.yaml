@@ -252,8 +252,8 @@ scheduler:
   pollingJitter:
     enabled: false
     # Maximum offset in whole seconds, validated when enabled. Range: 1–86400.
-    # A schedule's offset is 1 through min(windowSeconds, polling interval).
-    # Both ends are included. The offset cannot be zero.
+    # Offset is 1 through min(windowSeconds, polling interval - 1), inclusive.
+    # It is never zero or a full interval, for intervals greater than 1 second.
     windowSeconds: 60
 
   # mapping MIB fields to custom names

@@ -104,7 +104,7 @@ def test_fractional_creation_keeps_due_and_uses_actual_reservation_for_recurrenc
 
 
 @pytest.mark.parametrize("window", [1, 60, 86400])
-@pytest.mark.parametrize("interval", [1, 10, 60, 300, 301, 600, 1800, 86400])
+@pytest.mark.parametrize("interval", [2, 10, 60, 300, 301, 600, 1800, 86400])
 @pytest.mark.parametrize("kind", ["walk", "poll"])
 def test_window_boundaries_and_three_reservations(
     app, monkeypatch, window, interval, kind
@@ -118,7 +118,7 @@ def test_window_boundaries_and_three_reservations(
     offset, fingerprint = calculate_offset(
         "router-01", 161, interval, kind, JitterSettings(True, window)
     )
-    assert 1 <= offset <= min(window, interval)
+    assert 1 <= offset <= min(window, interval - 1)
     first = NOW + timedelta(
         seconds=offset + (interval if kind == "poll" and interval <= 300 else 0)
     )
@@ -257,7 +257,7 @@ def test_initial_walk_payload_update_preserves_first_invocation_state(app, monke
 
 @pytest.mark.parametrize(
     "kind,interval,delay",
-    [("walk", 1800, 35), ("poll", 60, 102), ("poll", 300, 356), ("poll", 600, 22)],
+    [("walk", 1800, 35), ("poll", 60, 107), ("poll", 300, 356), ("poll", 600, 22)],
 )
 def test_sc4snmp_manager_preserves_chain_when_publishing(
     app, monkeypatch, kind, interval, delay

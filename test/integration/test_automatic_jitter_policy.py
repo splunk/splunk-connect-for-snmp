@@ -182,9 +182,12 @@ def test_disabled_invalid_window_preserves_saved_run_and_allows_reenable(
     assert _score(entry) == due.timestamp()
 
     app.now = lambda: due
-    with patch.object(app, "send_task") as publish:
+    with patch.object(app, "send_task") as publish, patch.object(
+        polling_jitter.hashlib, "sha256"
+    ) as hashing:
         automatic.maybe_due(_load(entry))
     publish.assert_called_once()
+    hashing.assert_not_called()
     stored = _load(entry)
     baseline = due.timestamp() + interval
     quotient, remainder = divmod(baseline, interval)
@@ -278,13 +281,25 @@ def test_exact_adoption_due_and_normal_following_intervals(
         assert _score(stored) == (current + timedelta(seconds=interval)).timestamp()
 
 
+@pytest.mark.parametrize(
+    "interval,old_window,new_window",
+    [(60, 60, 120), (10, 9, 10), (10, 10, 9), (60, 59, 60), (60, 60, 59)],
+)
 def test_same_effective_window_changes_only_saved_fingerprint(
-    app, monkeypatch, automatic
+    app, monkeypatch, automatic, interval, old_window, new_window
 ):
-    entry = _entry(app, due=NOW + timedelta(seconds=41), managed=True)
+    entry = _entry(
+        app,
+        interval=interval,
+        due=NOW + timedelta(seconds=41),
+        managed=True,
+        window=old_window,
+    )
     before = app.redbeat_redis.hgetall(entry.key)
     score = _score(entry)
-    monkeypatch.setattr(polling_jitter, "JITTER_SETTINGS", JitterSettings(True, 120))
+    monkeypatch.setattr(
+        polling_jitter, "JITTER_SETTINGS", JitterSettings(True, new_window)
+    )
     automatic.maybe_due(entry)
     assert app.redbeat_redis.hgetall(entry.key) == before
     assert _score(entry) == score
@@ -298,22 +313,29 @@ def test_same_effective_window_changes_only_saved_fingerprint(
         "jitter_fingerprint",
         "meta",
     }
-    assert _score(entry) == score + 60
+    assert _score(entry) == score + interval
+    _, fingerprint = calculate_offset(
+        "agent-01", 161, interval, "poll", JitterSettings(True, new_window)
+    )
+    assert _load(entry).jitter_fingerprint == fingerprint
 
 
-@pytest.mark.parametrize("old_window,new_window", [(120, 10), (60, 120)])
+@pytest.mark.parametrize(
+    "interval,old_window,new_window",
+    [(600, 120, 10), (600, 60, 120), (10, 8, 9), (10, 9, 8), (60, 58, 59)],
+)
 def test_effective_window_change_adds_new_offset_once_without_subtracting_old(
-    app, monkeypatch, automatic, old_window, new_window
+    app, monkeypatch, automatic, interval, old_window, new_window
 ):
     entry = _entry(
         app,
-        interval=600,
+        interval=interval,
         due=NOW + timedelta(seconds=55),
         managed=True,
         window=old_window,
     )
     offset, fingerprint = calculate_offset(
-        "agent-01", 161, 600, "poll", JitterSettings(True, new_window)
+        "agent-01", 161, interval, "poll", JitterSettings(True, new_window)
     )
     monkeypatch.setattr(
         polling_jitter, "JITTER_SETTINGS", JitterSettings(True, new_window)
@@ -328,7 +350,9 @@ def test_effective_window_change_adds_new_offset_once_without_subtracting_old(
     publish.assert_called_once()
     stored = _load(entry)
     assert stored.jitter_fingerprint == fingerprint
-    assert _score(stored) == (NOW + timedelta(seconds=655 + offset)).timestamp()
+    assert (
+        _score(stored) == (NOW + timedelta(seconds=55 + interval + offset)).timestamp()
+    )
     before = app.redbeat_redis.hgetall(entry.key)
     with patch.object(polling_jitter.hashlib, "sha256") as hashing:
         automatic.maybe_due(stored)
@@ -488,7 +512,7 @@ def test_positive_offset_bounds_and_profiles_remain_grouped(
     automatic.maybe_due(entry)
     stored = _load(entry)
     offset = _score(stored) - (NOW + timedelta(seconds=interval)).timestamp()
-    assert 1 <= offset <= min(window, interval)
+    assert 1 <= offset <= min(window, interval - 1)
     if window == 1:
         assert offset == 1
     assert stored.kwargs["profiles"] == ["A", "B"]

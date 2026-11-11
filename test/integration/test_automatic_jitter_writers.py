@@ -216,10 +216,7 @@ def test_overlapping_ordinary_creators_keep_the_winning_entry(app, monkeypatch):
 
     def create(profile):
         task_data = {**data, "kwargs": {**data["kwargs"], "profile": profile}}
-        try:
-            manager.manage_task(**task_data)
-        except ValueError:
-            return None
+        manager.manage_task(**task_data)
         return profile
 
     monkeypatch.setattr(
@@ -229,12 +226,75 @@ def test_overlapping_ordinary_creators_keep_the_winning_entry(app, monkeypatch):
         futures = [executor.submit(create, profile) for profile in ("First", "Second")]
         outcomes = [future.result(timeout=10) for future in futures]
     winner = original_load("redbeat:" + data["name"], app=app)
-    assert sum(outcome is not None for outcome in outcomes) == 1
-    assert winner.kwargs["profile"] == next(
-        outcome for outcome in outcomes if outcome is not None
-    )
+    assert outcomes == ["First", "Second"]
+    assert winner.kwargs["profile"] in outcomes
     assert winner.entry_id
     assert winner.is_due()[0]
+
+
+@pytest.mark.parametrize("kind,interval", [("walk", 1800), ("poll", 600)])
+@pytest.mark.parametrize("reserved", [False, True])
+def test_initial_creation_collision_updates_the_winner_without_rephasing(
+    app, monkeypatch, kind, interval, reserved
+):
+    manager, data, entry = create_entry(app, monkeypatch, kind, interval)
+    if reserved:
+        entry = reserve_initial(app, entry)
+    original_load = RedBeatSchedulerEntry.from_key
+    previous_due = app.redbeat_redis.zscore(app.redbeat_conf.schedule_key, entry.key)
+    previous_meta = app.redbeat_redis.hget(entry.key, "meta")
+    loads = []
+
+    def load_after_another_creator(key, app=None):
+        loads.append(key)
+        if len(loads) == 1:
+            raise KeyError(key)
+        return original_load(key, app=app)
+
+    monkeypatch.setattr(RedBeatSchedulerEntry, "from_key", load_after_another_creator)
+    profile_field = "profile" if kind == "walk" else "profiles"
+    latest_profiles = "LatestWalk" if kind == "walk" else ["LatestPoll"]
+    data["kwargs"][profile_field] = latest_profiles
+    manager.manage_task(initial_registration=True, **data)
+    updated = original_load(entry.key, app=app)
+
+    assert updated.entry_id == entry.entry_id
+    assert updated.kwargs[profile_field] == latest_profiles
+    assert updated.total_run_count == entry.total_run_count
+    if reserved:
+        assert updated._strtobool(updated.run_immediately)
+        assert updated.last_run_at + updated.schedule.run_every == app.now()
+    else:
+        assert updated.first_run_kwargs == entry.first_run_kwargs
+        assert not updated._strtobool(updated.run_immediately)
+        assert app.redbeat_redis.hget(entry.key, "meta") == previous_meta
+        assert (
+            app.redbeat_redis.zscore(app.redbeat_conf.schedule_key, entry.key)
+            == previous_due
+        )
+
+
+def test_creation_collision_does_not_recreate_an_entry_deleted_before_reload(
+    app, monkeypatch
+):
+    manager, data, entry = create_entry(app, monkeypatch, "walk", 1800)
+    original_load = RedBeatSchedulerEntry.from_key
+    loads = []
+
+    def delete_before_collision_reload(key, app=None):
+        loads.append(key)
+        if len(loads) == 1:
+            raise KeyError(key)
+        entry.delete()
+        return original_load(key, app=app)
+
+    monkeypatch.setattr(
+        RedBeatSchedulerEntry, "from_key", delete_before_collision_reload
+    )
+    with pytest.raises(KeyError):
+        manager.manage_task(initial_registration=True, **data)
+    assert len(loads) == 2
+    assert not app.redbeat_redis.exists(entry.key)
 
 
 def test_recovery_creation_keeps_identity_when_rescheduled(app, monkeypatch):

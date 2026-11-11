@@ -12,6 +12,7 @@ from splunk_connect_for_snmp.common.polling_jitter import (
     applied_settings,
     calculate_offset,
     canonical_identity,
+    effective_window_seconds,
     first_due,
 )
 
@@ -183,7 +184,7 @@ def test_only_walk_and_poll_identities(kind):
         canonical_identity("router-01", 161, 60, kind)
 
 
-@pytest.mark.parametrize("interval,offset", [(60, 42), (300, 56)])
+@pytest.mark.parametrize("interval,offset", [(60, 47), (300, 56)])
 def test_fixed_vectors(interval, offset):
     actual, fingerprint = calculate_offset(
         "router-01", 161, interval, "poll", JitterSettings(True)
@@ -218,10 +219,18 @@ def test_repeatability_and_changed_identity():
         assert calculate_offset(*changed, JitterSettings(True))[1] != original[1]
 
 
+@pytest.mark.parametrize(
+    "interval,window,expected",
+    [(10, 60, 9), (10, 5, 5), (60, 60, 59), (300, 60, 60), (2, 60, 1), (60, 1, 1)],
+)
+def test_effective_window_seconds(interval, window, expected):
+    assert effective_window_seconds(JitterSettings(True, window), interval) == expected
+
+
 def test_effective_window_and_configured_fingerprint():
     args = ("router-01", 161, 10, "poll")
     offset, fingerprint = calculate_offset(*args, JitterSettings(True, 60))
-    assert 1 <= offset <= 10
+    assert 1 <= offset <= 9
     other_offset, other_fingerprint = calculate_offset(*args, JitterSettings(True, 120))
     assert other_offset == offset
     assert other_fingerprint != fingerprint
@@ -231,7 +240,7 @@ def test_effective_window_and_configured_fingerprint():
     )
 
 
-@pytest.mark.parametrize("interval,window", [(1, 60), (60, 1), (1, 1)])
+@pytest.mark.parametrize("interval,window", [(2, 60), (60, 1), (2, 1)])
 def test_single_slot(interval, window):
     assert (
         calculate_offset(
@@ -243,17 +252,24 @@ def test_single_slot(interval, window):
 
 @pytest.mark.parametrize(
     "interval,window,number,offset",
-    [(300, 60, 0, 1), (300, 60, 59, 60), (10, 60, 0, 1), (10, 60, 9, 10)],
+    [
+        (300, 60, 0, 1),
+        (300, 60, 59, 60),
+        (10, 60, 0, 1),
+        (10, 60, 8, 9),
+        (10, 60, 9, 1),
+        (60, 60, 58, 59),
+        (60, 60, 59, 1),
+    ],
 )
-def test_inclusive_offset_bounds(interval, window, number, offset):
+def test_offset_bounds_stay_below_interval(interval, window, number, offset):
     with patch("splunk_connect_for_snmp.common.polling_jitter.hashlib.sha256") as sha:
         sha.return_value.digest.return_value = number.to_bytes(32, "big")
-        assert (
-            calculate_offset(
-                "router-01", 161, interval, "poll", JitterSettings(True, window)
-            )[0]
-            == offset
+        actual, _ = calculate_offset(
+            "router-01", 161, interval, "poll", JitterSettings(True, window)
         )
+        assert actual == offset
+        assert 0 < actual < interval
 
 
 @pytest.mark.parametrize("microsecond", [0, 1, 250000, 999999])
