@@ -356,52 +356,6 @@ class CustomPeriodicTaskManager:
             f"offset_seconds={offset} first_due_utc={due.isoformat()}"
         )
 
-    def _save_initial_phase(
-        self, entry: RedBeatSchedulerEntry, settings: polling_jitter.JitterSettings
-    ) -> None:
-        """
-        Save a new device schedule using its normal baseline plus one offset.
-
-        The WALK/POLL generators supply an interval schedule and address string.
-        The target key is split at its last colon, preserving an IPv6 address.
-        The resulting identity is validated without changing the schedule key.
-        After saving, a debug message records the offset and selected first due
-        without including credentials or the task payload.
-
-        :param entry: New WALK or POLL entry that has not been saved
-        :param settings: Validated jitter settings
-
-        :return: None
-        :raises PollingJitterError: If identity validation rejects the device address
-        :raises ValueError: If the port or interval is invalid, or the entry
-            fails validation when saved
-        """
-        # Inventory and profile validation supply whole-second intervals.
-        interval = entry.schedule.run_every
-        seconds = interval.days * 86400 + interval.seconds
-        # TaskGenerator pairs address:port with matching interval/frequency values.
-        target = entry.kwargs.get("address")
-        # Only the final colon separates the port, including for IPv6 targets.
-        address, port = target.rsplit(":", 1)
-        task_type = "walk" if entry.task == WALK_TASK else "poll"
-        offset, fingerprint = calculate_offset(
-            address, port, seconds, task_type, settings
-        )
-        baseline = entry.app.now().astimezone(timezone.utc)
-        if task_type == "poll" and seconds <= 300:
-            baseline += interval
-        first_run_kwargs = (
-            {SCHEDULE_CONTEXT: INITIAL_REGISTRATION} if task_type == "walk" else {}
-        )
-        due = first_due(baseline, offset)
-        entry.save_with_first_due(due, fingerprint, first_run_kwargs=first_run_kwargs)
-        logger.debug(
-            f"Applied polling jitter: schedule={entry.name} interval_seconds={seconds} "
-            f"window_seconds={settings.window_seconds} "
-            f"effective_window_seconds={min(settings.window_seconds, seconds)} "
-            f"offset_seconds={offset} first_due_utc={due.isoformat()}"
-        )
-
     def get_chain_of_task_expiries(self, task_types: List[str]) -> Set[int]:
         return {
             periodic_task.options["expires"]
