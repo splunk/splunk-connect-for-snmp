@@ -2,6 +2,11 @@
 
 Redis serves as the message broker and task scheduler for SC4SNMP, managing periodic tasks and queueing operations such as SNMP Walk and Poll. It is a critical component for coordinating work between the scheduler, poller, and sender services.
 
+### Supported Redis versions
+
+Use Redis server 6.2 or later for standalone and replication deployments, including
+external Redis servers.
+
 !!!note
     Previously, Redis in our stack was provided via the Bitnami Helm chart. As Bitnami transitions certain components to a paid model, we have replaced it with our own Kubernetes manifests, implementing the necessary deployment logic in-house.
     This change ensures we maintain full control over configuration, compatibility, and licensing. If you encounter any issues or identify missing configuration options, please open an issue in the project repository so we can address it promptly.
