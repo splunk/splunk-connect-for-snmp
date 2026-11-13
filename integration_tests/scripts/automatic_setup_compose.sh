@@ -129,6 +129,16 @@ cd "$INT_TEST_DIR"
 
 chmod u+x "$SCRIPT_DIR/prepare_splunk.sh"
 "$SCRIPT_DIR/prepare_splunk.sh"
+if [[ "${JITTER_ENABLED:-false}" == "true" ]]; then
+  export SIMULATOR_NAMESPACE="${SIMULATOR_NAMESPACE:-jitter-docker-agent-simulator}"
+  export SIMULATOR_MANIFEST="${SIMULATOR_MANIFEST:-${INT_TEST_DIR}/.simulators/docker-compose/endpoints.json}"
+  "$SCRIPT_DIR/setup_simulator.sh" docker || exit 1
+  if [[ ${1:-} == 'integration' ]]; then
+    define_python
+    deploy_poetry
+  fi
+  exit 0
+fi
 echo $(green "Setting up docker compose configuration")
 DOCKER_COMPOSE_LOCAL="${INT_TEST_DIR}/docker_compose"
 COMPOSE_FILE="${DOCKER_COMPOSE_LOCAL}/docker-compose.yaml"
@@ -188,9 +198,9 @@ sudo docker run -d -p 1165:161/udp tandrup/snmpsim
 sudo docker run -d -p 1166:161/udp -v $(pwd)/snmpsim/data:/usr/local/snmpsim/data -e EXTRA_FLAGS="--variation-modules-dir=/usr/local/snmpsim/variation --data-dir=/usr/local/snmpsim/data" tandrup/snmpsim
 
 if [[ "$AUTODISCOVERY_ENABLED" == "true" ]]; then
-  "$SCRIPT_DIR/setup_autodiscovery_simulators.sh" docker || exit 1
+  "$SCRIPT_DIR/setup_simulator.sh" docker || exit 1
 else
-  echo $(green "Skipping autodiscovery simulators and services for this test part")
+  echo $(green "Skipping shared SNMP simulators and autodiscovery services for this test part")
 fi
 
 echo $(green "Running up Docker Compose environment")

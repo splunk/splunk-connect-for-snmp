@@ -7,18 +7,8 @@ import time
 from pathlib import Path
 
 import pytest
-from pysnmp.hlapi.v3arch.asyncio import (
-    USM_AUTH_HMAC96_SHA,
-    USM_PRIV_CFB128_AES,
-    CommunityData,
-    ContextData,
-    ObjectIdentity,
-    ObjectType,
-    SnmpEngine,
-    UdpTransportTarget,
-    UsmUserData,
-    get_cmd,
-)
+
+from integration_tests.utils.simulators import authentication, snmp_get
 
 DISCOVERY_OUTPUT_DIR = Path(
     os.getenv(
@@ -116,9 +106,7 @@ def simulator_profile(deployment):
     profile = SIMULATOR_PROFILES[deployment]
     return {
         **profile,
-        "namespace": os.getenv(
-            "AUTODISCOVERY_SIMULATOR_NAMESPACE", profile["namespace"]
-        ),
+        "namespace": os.getenv("SIMULATOR_NAMESPACE", profile["namespace"]),
     }
 
 
@@ -204,7 +192,7 @@ def deployed_agents(simulator_profile, expected_by_key):
                 "-n",
                 simulator_profile["namespace"],
                 "-l",
-                "sc4snmp.integration.autodiscovery=true",
+                "sc4snmp.integration.simulator=true",
                 "-o",
                 "json",
             ]
@@ -336,7 +324,7 @@ def stop_removable_simulator(simulator_profile):
         "metadata": {
             "name": OFFLINE_NETWORK_POLICY,
             "namespace": simulator_profile["namespace"],
-            "labels": {"sc4snmp.integration.autodiscovery": "true"},
+            "labels": {"sc4snmp.integration.simulator": "true"},
         },
         "spec": {
             "podSelector": {"matchLabels": {"agent-id": REMOVABLE_SIMULATOR_NAME}},
@@ -370,23 +358,6 @@ def start_removable_simulator(simulator_profile):
             "--ignore-not-found=true",
         ]
     )
-
-
-async def fetch_base_oids(address, auth_data):
-    snmp_engine = SnmpEngine()
-    try:
-        result = await get_cmd(
-            snmp_engine,
-            auth_data,
-            await UdpTransportTarget.create(
-                (address, AUTODISCOVERY_PORT), timeout=2, retries=2
-            ),
-            ContextData(),
-            *(ObjectType(ObjectIdentity(*oid_spec)) for oid_spec in BASE_OID_SPECS),
-        )
-        return result
-    finally:
-        snmp_engine.close_dispatcher()
 
 
 @pytest.mark.part8
@@ -453,27 +424,32 @@ def test_delete_already_discovered_removes_offline_device(
 async def test_get_cmd_resolves_base_mib_oids_from_simulator_ips(
     simulator_profile,
 ):
+    credentials = {
+        "v2c": {"community": "public"},
+        "v3": {
+            "username": "autodiscovery-sha",
+            "auth_key": "AuthPass1",
+            "priv_key": "PrivPass1",
+        },
+    }
     requests = (
         (
             f'{simulator_profile["prefixes"]["integration_v2c"]}.1',
-            CommunityData("public", mpModel=1),
+            authentication("2c", credentials),
             "autodiscovery integration v2c",
         ),
         (
             f'{simulator_profile["prefixes"]["integration_v3"]}.1',
-            UsmUserData(
-                "autodiscovery-sha",
-                authKey="AuthPass1",
-                privKey="PrivPass1",
-                authProtocol=USM_AUTH_HMAC96_SHA,
-                privProtocol=USM_PRIV_CFB128_AES,
-            ),
+            authentication("3", credentials),
             "autodiscovery integration v3 SHA",
         ),
     )
 
     responses = await asyncio.gather(
-        *(fetch_base_oids(address, auth_data) for address, auth_data, _ in requests)
+        *(
+            snmp_get(address, AUTODISCOVERY_PORT, auth_data, BASE_OID_SPECS)
+            for address, auth_data, _ in requests
+        )
     )
     for response, (_, _, expected_description) in zip(responses, requests):
         error_indication, error_status, error_index, var_binds = response

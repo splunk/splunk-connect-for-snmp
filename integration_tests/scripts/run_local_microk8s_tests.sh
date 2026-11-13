@@ -93,30 +93,32 @@ start_snmpsim() {
 
 # ===== RUN TESTS =====
 run_tests() {
-  step "Waiting for first poll cycle (up to 3 minutes)"
+  if [[ "$TEST_FILTER" != "tests/jitter" ]]; then
+    step "Waiting for first poll cycle (up to 3 minutes)"
 
-  local waited=0
+    local waited=0
 
-  while [[ $waited -lt 180 ]]; do
-    local count
-    count=$(curl -sk -u "${SPLUNK_USER}:${SPLUNK_PASSWORD}" \
-      "${SPLUNK_API}/services/search/jobs" \
-      -d "search=search index=netops sourcetype=\"sc4snmp:event\" earliest=-10m" \
-      -d exec_mode=oneshot 2>/dev/null \
-      | grep -c "<s:key name=\"count\">" || true)
+    while [[ $waited -lt 180 ]]; do
+      local count
+      count=$(curl -sk -u "${SPLUNK_USER}:${SPLUNK_PASSWORD}" \
+        "${SPLUNK_API}/services/search/jobs" \
+        -d "search=search index=netops sourcetype=\"sc4snmp:event\" earliest=-10m" \
+        -d exec_mode=oneshot 2>/dev/null \
+        | grep -c "<s:key name=\"count\">" || true)
 
-    if [[ "$count" -gt 0 ]]; then
-      info "Data confirmed in Splunk after ${waited}s"
-      break
-    fi
+      if [[ "$count" -gt 0 ]]; then
+        info "Data confirmed in Splunk after ${waited}s"
+        break
+      fi
 
-    info "No data yet... ${waited}s elapsed"
+      info "No data yet... ${waited}s elapsed"
 
-    sleep 20
-    (( waited += 20 ))
-  done
+      sleep 20
+      (( waited += 20 ))
+    done
 
-  [[ $waited -ge 180 ]] && warn "Timeout waiting for data — running tests anyway"
+    [[ $waited -ge 180 ]] && warn "Timeout waiting for data — running tests anyway"
+  fi
 
   step "Running Integration Tests"
 
@@ -124,6 +126,14 @@ run_tests() {
   trap_ip="$(hostname -I | cut -d " " -f1)"
   info "Using trap_external_ip: $trap_ip"
   info "Running filter: ${TEST_FILTER}"
+
+  local -a pytest_arguments=()
+  if [[ "$TEST_FILTER" == "tests/jitter" ]]; then
+    pytest_arguments+=(-x)
+  elif [[ "$TEST_FILTER" == "tests/" ]]; then
+    info "Jitter needs its isolated environment. Run it separately with --test jitter"
+    pytest_arguments+=(--ignore=tests/jitter)
+  fi
 
   cd "${INT_TEST_DIR}"
   poetry run pytest \
@@ -134,6 +144,7 @@ run_tests() {
     --trap_external_ip="${trap_ip}" \
     --sc4snmp_deployment="microk8s" \
     -v \
+    "${pytest_arguments[@]}" \
     ${TEST_FILTER}
 }
 
@@ -167,6 +178,21 @@ create_indexes
 
 token=$(get_hec_token)
 
+if [[ "$TEST_FILTER" == "tests/jitter" ]]; then
+  umask 077
+  printf '%s\n' "$token" > "${INT_TEST_DIR}/hec_token"
+  sudo microk8s enable dns hostpath-storage helm3
+  sudo microk8s status --wait-ready
+  sudo microk8s helm3 dependency update "${REPO_ROOT}/charts/splunk-connect-for-snmp"
+  export SIMULATOR_NAMESPACE="${SIMULATOR_NAMESPACE:-jitter-microk8s-agent-simulator}"
+  export SIMULATOR_MANIFEST="${SIMULATOR_MANIFEST:-${INT_TEST_DIR}/.simulators/microk8s/endpoints.json}"
+  "${SCRIPT_DIR}/setup_simulator.sh" microk8s
+  ensure_python
+  deploy_poetry
+  run_tests
+  exit 0
+fi
+
 sudo microk8s helm3 repo add splunk-otel-collector-chart https://signalfx.github.io/splunk-otel-collector-chart
 sudo microk8s helm3 upgrade --install sck \
   --set="clusterName=my-cluster" \
@@ -198,7 +224,7 @@ if [[ "$LOCAL_RUN" == "true" ]]; then
 fi
 
 start_snmpsim
-"${SCRIPT_DIR}/setup_autodiscovery_simulators.sh" microk8s
+"${SCRIPT_DIR}/setup_simulator.sh" microk8s
 
 step "MicroK8s Setup"
 

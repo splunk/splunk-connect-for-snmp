@@ -13,13 +13,17 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #   ########################################################################
+import asyncio
 import logging
+import os
 import subprocess
-import sys
 import time
 
 import pytest
 import splunklib.client as client
+
+from integration_tests.utils.deployment import INTEGRATION_TEST_TIMEOUT
+from integration_tests.utils.splunk_test_utils import splunk_test_configuration
 
 logger = logging.getLogger(__name__)
 
@@ -133,6 +137,7 @@ def dump_kubernetes_logs(namespaces=("sc4snmp",)):
 
 
 def pytest_addoption(parser):
+    parser.addoption("--jitter-target", action="store")
     parser.addoption(
         "--splunk_host",
         action="store",
@@ -179,16 +184,20 @@ def pytest_addoption(parser):
 
 @pytest.fixture(scope="session")
 def setup_splunk(request):
+    config = splunk_test_configuration(request.config)
+    connection = {
+        "username": config["username"],
+        "password": config["password"],
+        "host": config["host"],
+        "port": config["port"],
+    }
+    for option in ("verify", "timeout"):
+        if option in config:
+            connection[option] = config[option]
     tried = 0
     while True:
         try:
-            username = request.config.getoption("splunk_user")
-            password = request.config.getoption("splunk_password")
-            hostname = request.config.getoption("splunk_host")
-            port = request.config.getoption("splunk_port")
-            service = client.connect(
-                username=username, password=password, host=hostname, port=port
-            )
+            service = client.connect(**connection)
             break
         except ConnectionRefusedError:
             logger.error("Connection error!")
@@ -199,9 +208,108 @@ def setup_splunk(request):
     return service
 
 
+@pytest.fixture
+def jitter_live(request, tmp_path_factory):
+    from integration_tests.utils.polling import LiveJitter
+
+    ha_test = request.node.get_closest_marker("part12") is not None
+    if ha_test:
+        from integration_tests.utils.files import read_private_json
+
+        target_path = request.config.getoption("jitter_target")
+        if not target_path:
+            pytest.skip("An isolated replica target is required for failover")
+        if read_private_json(target_path).get("ha") is not True:
+            pytest.skip("The isolated target does not use Redis and MongoDB replicas")
+    service = request.getfixturevalue("setup_splunk")
+    manifest, target = request.getfixturevalue("jitter_environment")
+    assert manifest.get("ready") is True, "Every simulator must pass SNMP readiness"
+    assert target["mode"] == request.config.getoption("sc4snmp_deployment")
+    directory = tmp_path_factory.mktemp("jitter-evidence-")
+    os.chmod(directory, 0o700)
+    timeout = INTEGRATION_TEST_TIMEOUT
+    if request.node.get_closest_marker("part10"):
+        timeout = max(timeout, 660)
+    live = LiveJitter(target, manifest, directory, timeout)
+    try:
+        live.start_observing()
+        yield live
+    finally:
+        # A failed drain retains unresolved delivery state for investigation.
+        try:
+            live.stop_observing()
+            outcome = getattr(request.node, "jitter_outcome", "failed")
+            if outcome == "failed":
+                live.stop_producers()
+            elif live.changed:
+                from integration_tests.tests.jitter.delivery import (
+                    assert_indexed_for_all,
+                )
+
+                # Every successful case must deliver real SNMP metrics. Tests
+                # with string-only profiles separately check event output too.
+                if outcome == "passed":
+                    assert_indexed_for_all(
+                        live, service, live.started_at, kinds=("metrics",)
+                    )
+                live.finish()
+        except BaseException:
+            # Observer or delivery failures must also stop new scheduled work.
+            live.stop_producers()
+            raise
+        finally:
+            live.stop_events()
+
+
+@pytest.fixture(scope="session")
+def jitter_environment(request, tmp_path_factory):
+    from integration_tests.utils import polling_environment as environment
+    from integration_tests.utils.files import read_private_json
+
+    target_path = request.config.getoption("jitter_target")
+    if target_path:
+        from integration_tests.utils.simulators import probe_simulators
+
+        target = read_private_json(target_path)
+        manifest = read_private_json(target["manifest_file"])
+        # Retained Pods can acquire different endpoints after cluster recovery.
+        # Check real SNMP readiness instead of trusting an earlier ready flag.
+        asyncio.run(
+            probe_simulators(manifest, read_private_json(manifest["credentials_file"]))
+        )
+        yield manifest, target
+        return
+    directory = tmp_path_factory.mktemp("jitter-environment-")
+    directory.chmod(0o700)
+    environment.prepare(
+        request.config.getoption("sc4snmp_deployment"),
+        directory,
+        splunk_test_configuration(request.config),
+    )
+    target_path = directory / "target.json"
+    yield read_private_json(directory / "simulators/endpoints.json"), read_private_json(
+        target_path
+    )
+    # Keep failed delivery state and storage available for investigation.
+    if request.session.testsfailed == 0:
+        environment.cleanup(target_path)
+
+
 @pytest.hookimpl(tryfirst=True)
 def pytest_runtest_makereport(item, call):
     """Auto dump logs when any test fails"""
+    if any(item.get_closest_marker(f"part{part}") for part in (9, 10, 11, 12)):
+        if call.when == "call":
+            item.jitter_outcome = "passed"
+            if call.excinfo is not None:
+                item.jitter_outcome = (
+                    "skipped"
+                    if call.excinfo.errisinstance(pytest.skip.Exception)
+                    else "failed"
+                )
+        # Jitter evidence stays in its protected run directory. Broad container
+        # logs can contain unrelated credentials and device addresses.
+        return
     if call.when != "call":
         return
 

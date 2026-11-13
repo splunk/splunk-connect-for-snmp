@@ -138,9 +138,6 @@ start_snmp() {
 start_compose() {
   step "Starting SC4SNMP via Docker Compose"
 
-  info "Building snmp-local image..."
-  sudo docker build -t snmp-local .
-
   cd "${DOCKER_COMPOSE_LOCAL}"
 
   COMPOSE="sudo docker compose"
@@ -218,6 +215,14 @@ run_tests() {
   info "Using trap_external_ip: $trap_ip"
   info "Running filter: ${TEST_FILTER}"
 
+  local -a pytest_arguments=()
+  if [[ "$TEST_FILTER" == "tests/jitter" ]]; then
+    pytest_arguments+=(-x)
+  elif [[ "$TEST_FILTER" == "tests/" ]]; then
+    info "Jitter needs its isolated environment. Run it separately with --test jitter"
+    pytest_arguments+=(--ignore=tests/jitter)
+  fi
+
   cd "${INT_TEST_DIR}"
   poetry run pytest \
     --splunk_host="${SPLUNK_HOST}" \
@@ -227,6 +232,7 @@ run_tests() {
     --trap_external_ip="${trap_ip}" \
     --sc4snmp_deployment="docker-compose" \
     -v \
+    "${pytest_arguments[@]}" \
     ${TEST_FILTER}
 }
 
@@ -240,28 +246,41 @@ main() {
   info "ENV_FILE:             $ENV_FILE"
   info "COMPOSE_FILE:         $COMPOSE_FILE"
 
-  step "Copying docker_compose directory for local use"
-  if [[ ! -d "$DOCKER_COMPOSE_ORIG" ]]; then
-    error "Source directory not found: $DOCKER_COMPOSE_ORIG"
-    exit 1
-  fi
-  rm -rf "$DOCKER_COMPOSE_LOCAL"
-  cp -r "$DOCKER_COMPOSE_ORIG" "$DOCKER_COMPOSE_LOCAL"
-  info "Copied $DOCKER_COMPOSE_ORIG -> $DOCKER_COMPOSE_LOCAL"
+  if [[ "$TEST_FILTER" != "tests/jitter" ]]; then
+    step "Copying docker_compose directory for local use"
+    if [[ ! -d "$DOCKER_COMPOSE_ORIG" ]]; then
+      error "Source directory not found: $DOCKER_COMPOSE_ORIG"
+      exit 1
+    fi
+    rm -rf "$DOCKER_COMPOSE_LOCAL"
+    cp -r "$DOCKER_COMPOSE_ORIG" "$DOCKER_COMPOSE_LOCAL"
+    info "Copied $DOCKER_COMPOSE_ORIG -> $DOCKER_COMPOSE_LOCAL"
 
-  install_snmpd
+    install_snmpd
+    validate_paths
+  fi
   start_splunk
-  validate_paths
   check_splunk
   create_indexes
   [[ "$CLEAN_INDEXES" == true ]] && clean_indexes
 
   token=$(get_hec_token)
 
-  update_env "$token"
-  start_snmp
-  "${SCRIPT_DIR}/setup_autodiscovery_simulators.sh" docker
-  start_compose
+  info "Building snmp-local image..."
+  sudo docker build -t snmp-local .
+
+  if [[ "$TEST_FILTER" == "tests/jitter" ]]; then
+    umask 077
+    printf '%s\n' "$token" > "${INT_TEST_DIR}/hec_token"
+    export SIMULATOR_NAMESPACE="${SIMULATOR_NAMESPACE:-jitter-docker-agent-simulator}"
+    export SIMULATOR_MANIFEST="${SIMULATOR_MANIFEST:-${INT_TEST_DIR}/.simulators/docker-compose/endpoints.json}"
+    "${SCRIPT_DIR}/setup_simulator.sh" docker
+  else
+    update_env "$token"
+    start_snmp
+    "${SCRIPT_DIR}/setup_simulator.sh" docker
+    start_compose
+  fi
   ensure_python
   deploy_poetry
   run_tests
