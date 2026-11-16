@@ -72,8 +72,6 @@ async def wait_for_simulator(device, credentials, timeout=45):
             device["port"],
             auth_data,
             (("1.3.6.1.2.1.1.1.0",),),
-            timeout=1,
-            retries=0,
         )
         if (
             not error
@@ -183,21 +181,25 @@ def load_simulators(directory, mode):
         raise RuntimeError("The job needs three v2c and two v3 simulator endpoints")
     directory = Path(directory).resolve()
     directory.mkdir(mode=0o700)
-    error_file = directory / "simulator-command-error.log"
-    pods = {
-        pod["metadata"]["name"]: pod
-        for pod in deployed_simulator_pods(state["namespace"], error_file)
-    }
+    if mode == "microk8s":
+        error_file = directory / "simulator-command-error.log"
+        pods = {
+            pod["metadata"]["name"]: pod
+            for pod in deployed_simulator_pods(state["namespace"], error_file)
+        }
+        for device in state["devices"]:
+            pod = pods.get(device["name"])
+            if (
+                not pod
+                or pod["metadata"]["uid"] != device["uid"]
+                or pod["status"].get("podIP") != device["address"]
+            ):
+                raise RuntimeError(
+                    "The job's simulator deployment changed. Run setup again"
+                )
+    # Docker uses the prepared endpoints and real SNMP readiness. It does not
+    # need another Kubernetes API read before each application deployment.
     for index, device in enumerate(state["devices"], 1):
-        pod = pods.get(device["name"])
-        if (
-            not pod
-            or pod["metadata"]["uid"] != device["uid"]
-            or pod["status"].get("podIP") != device["address"]
-        ):
-            raise RuntimeError(
-                "The job's simulator deployment changed. Run setup again"
-            )
         device["label"] = f"IP{index}"
     credentials = read_private_json(state["credentials_file"])
     asyncio.run(probe_simulators(state, credentials))
@@ -205,7 +207,7 @@ def load_simulators(directory, mode):
     write_private(credential_path, json.dumps(credentials))
     state.update(
         {
-            # A new pytest session gets fresh application storage even when
+            # Each case gets fresh application storage even when
             # it uses the same simulator deployment prepared for this job.
             "run_id": f"jitter-{uuid4().hex[:12]}",
             "credentials_file": str(credential_path),

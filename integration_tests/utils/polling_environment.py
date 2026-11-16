@@ -17,6 +17,7 @@ from integration_tests.utils.compose import (
 )
 from integration_tests.utils.deployment import (
     BASE_DIR,
+    DOCKER,
     MICROK8S,
     _run_integration_command,
     application_context,
@@ -53,6 +54,7 @@ def observe_target(directory, target, manifest, action):
 def wait_for_application(directory, target, manifest):
     logger.info(f"Waiting for an empty isolated application: backend={target['mode']}")
     deadline = time.monotonic() + 600
+    snapshot = {}
     while time.monotonic() < deadline:
         try:
             snapshot = observe_target(directory, target, manifest, "state")
@@ -64,11 +66,18 @@ def wait_for_application(directory, target, manifest):
         except (RuntimeError, subprocess.TimeoutExpired):
             pass
         time.sleep(1)
-    logger.warning("Application readiness timed out. Owned state is retained")
+    logger.warning(
+        f"Application readiness timed out: workers={snapshot.get('workers')} "
+        f"complete={snapshot.get('worker_replies_complete')} "
+        f"queued={snapshot.get('queued')} unacked={snapshot.get('unacked')}. "
+        "Owned state is retained"
+    )
     raise RuntimeError("The isolated application did not become ready and empty")
 
 
-def prepare_kubernetes(directory, target, splunk, manifest, image):
+def prepare_kubernetes(
+    directory, target, splunk, manifest, image, *, ha=False, mongo_inventory=False
+):
     namespace_name = target["namespace"]
     kube = [*MICROK8S, "kubectl", "-n", namespace_name]
     helm = [*MICROK8S, "helm3", "-n", namespace_name]
@@ -94,7 +103,7 @@ def prepare_kubernetes(directory, target, splunk, manifest, image):
         execute([*MICROK8S, "kubectl", "create", "namespace", namespace_name])
     credentials = read_private_json(manifest["credentials_file"])["v3"]
     hec = splunk["hec"]
-    for field, data in {
+    secret_data = {
         "v3_secret": {
             "userName": credentials["username"],
             "authKey": credentials["auth_key"],
@@ -104,7 +113,34 @@ def prepare_kubernetes(directory, target, splunk, manifest, image):
             "securityEngineId": credentials["security_engine_id"],
         },
         "hec_secret": {"hec_token": hec["token"]},
-    }.items():
+    }
+    if mongo_inventory:
+        defaults = yaml.safe_load(
+            (ROOT / "charts/splunk-connect-for-snmp/values.yaml").read_text()
+        )
+        backend = defaults["UI"]["backEnd"]
+        password_hash = execute(
+            [
+                *DOCKER,
+                "run",
+                "--rm",
+                "--network=none",
+                "--cap-drop=ALL",
+                "--security-opt=no-new-privileges",
+                "--entrypoint=python",
+                f"{backend['repository']}:{backend['tag']}",
+                "-c",
+                "import secrets\nfrom argon2 import PasswordHasher\n"
+                "print(PasswordHasher().hash(secrets.token_urlsafe(32)))",
+            ]
+        ).strip()
+        target["ui_secret"] = f"{release}-ui-auth"
+        secret_data["ui_secret"] = {
+            "username": "jitter-integration",
+            "password_hash": password_hash,
+            "jwt_secret": secrets.token_hex(32),
+        }
+    for field, data in secret_data.items():
         secret = {
             "apiVersion": "v1",
             "kind": "Secret",
@@ -115,14 +151,10 @@ def prepare_kubernetes(directory, target, splunk, manifest, image):
             },
             "stringData": data,
         }
-        created = json.loads(
-            execute(
-                [*kube, "create", "-f", "-", "-o", "json"],
-                json.dumps(secret),
-            )
+        execute(
+            [*kube, "create", "-f", "-"],
+            json.dumps(secret),
         )
-        target[f"{field}_uid"] = created["metadata"]["uid"]
-        write_private(directory / "target.json", json.dumps(target))
     repository, separator, tag = image.rpartition(":")
     if not separator or "/" in tag:
         repository, tag = image, "latest"
@@ -145,8 +177,23 @@ def prepare_kubernetes(directory, target, splunk, manifest, image):
         "mongodb": {"auth": {"rootPassword": secrets.token_urlsafe(24)}},
     }
     overrides_file = directory / "runtime-values.yaml"
+    if mongo_inventory:
+        ui_directory = directory / "ui-values"
+        ui_directory.mkdir(mode=0o700)
+        overrides["UI"] = {
+            "auth": {"enabled": True, "existingSecret": target["ui_secret"]},
+            "valuesFileDirectory": str(ui_directory),
+        }
+    if ha:
+        overrides["redis"].update(
+            architecture="replication",
+            replicaCount=3,
+            sentinel={"replicaCount": 3, "quorum": 2},
+        )
+        overrides["mongodb"].update(mode="replication", replicaCount=3)
+        overrides["mongodb"]["auth"]["enabled"] = True
+        logger.info("Preparing authenticated Redis/Sentinel and MongoDB replicas")
     write_private(overrides_file, yaml.safe_dump(overrides))
-    target["stage"] = "application"
     write_private(directory / "target.json", json.dumps(target))
     execute(
         [
@@ -157,8 +204,22 @@ def prepare_kubernetes(directory, target, splunk, manifest, image):
                 overrides_file,
             ),
             "--wait",
-            "--wait-for-jobs",
             "--timeout=10m",
+        ],
+        timeout=660,
+    )
+    inventory_selector = (
+        f"app.kubernetes.io/instance={release},app.kubernetes.io/component=inventory"
+    )
+    execute(
+        [
+            *kube,
+            "wait",
+            "--for=condition=Complete",
+            "job",
+            "-l",
+            inventory_selector,
+            "--timeout=600s",
         ],
         timeout=660,
     )
@@ -168,7 +229,7 @@ def prepare_kubernetes(directory, target, splunk, manifest, image):
             "delete",
             "job",
             "-l",
-            f"app.kubernetes.io/instance={release},app.kubernetes.io/component=inventory",
+            inventory_selector,
             "--ignore-not-found=true",
             "--wait=false",
         ]
@@ -182,7 +243,15 @@ def prepare_kubernetes(directory, target, splunk, manifest, image):
     )
 
 
-def prepare(mode, directory, splunk, image="snmp-local:latest"):
+def prepare(
+    mode,
+    directory,
+    splunk,
+    image="snmp-local:latest",
+    *,
+    ha=False,
+    mongo_inventory=False,
+):
     if not splunk.get("hec", {}).get("token"):
         raise RuntimeError("Prepare the existing integration Splunk HEC token first")
     directory = Path(directory).resolve()
@@ -195,9 +264,8 @@ def prepare(mode, directory, splunk, image="snmp-local:latest"):
     target = {
         "mode": mode,
         "isolated": True,
-        "stage": "infrastructure",
         "run_id": manifest["run_id"],
-        "namespace": "sc4snmp",
+        "namespace": manifest["run_id"] if mode == "microk8s" else "sc4snmp",
         "manifest_file": str(directory / "simulators/endpoints.json"),
         "event_index": splunk.get("event_index", "netops"),
         "metric_index": splunk.get("metric_index", "netmetrics"),
@@ -214,13 +282,19 @@ def prepare(mode, directory, splunk, image="snmp-local:latest"):
     write_private(directory / "target.json", json.dumps(target))
     if mode == "docker-compose":
         target.update(prepare_compose(directory, project, image, splunk))
-        target["stage"] = "application"
         write_private(directory / "target.json", json.dumps(target))
         start_compose(target, read_private_json(manifest["credentials_file"]))
     else:
-        prepare_kubernetes(directory, target, splunk, manifest, image)
+        prepare_kubernetes(
+            directory,
+            target,
+            splunk,
+            manifest,
+            image,
+            ha=ha,
+            mongo_inventory=mongo_inventory,
+        )
     wait_for_application(directory, target, manifest)
-    target["stage"] = "ready"
     write_private(directory / "target.json", json.dumps(target))
     logger.info(
         f"Isolated polling environment prepared: backend={mode}, "
@@ -228,141 +302,22 @@ def prepare(mode, directory, splunk, image="snmp-local:latest"):
     )
 
 
-def cleanup(target_file):
-    target_file = Path(target_file).resolve()
-    target = read_private_json(target_file)
-    directory = target_file.parent
-    execute = partial(run, directory)
-    if target.get("isolated") is not True:
-        logger.warning("Cleanup refused because target isolation is not confirmed")
-        raise RuntimeError("The target is not an isolated fixture")
-    if target.get("cleaned"):
-        logger.info("The owned fixture was already cleaned. Storage remains retained")
-        return
-    logger.info(f"Starting isolated environment cleanup: backend={target['mode']}")
-    manifest_path = Path(target["manifest_file"])
-    manifest = read_private_json(manifest_path) if manifest_path.exists() else None
-    if target.get("run_id") and (
-        not manifest or target["run_id"] != manifest["run_id"]
-    ):
-        logger.warning("Cleanup refused because fixture ownership changed")
-        raise RuntimeError("Fixture ownership no longer matches")
-    application_present = target.get("stage") in ("application", "ready")
-    if target["mode"] == "microk8s":
-        kube = [*MICROK8S, "kubectl", "-n", target["namespace"]]
-        helm = [*MICROK8S, "helm3", "-n", target["namespace"]]
-        if application_present:
-            releases = execute(
-                [
-                    *helm,
-                    "list",
-                    "--all",
-                    "--short",
-                    "--filter",
-                    f"^{target['release']}$",
-                ],
-            ).splitlines()
-            application_present = target["release"] in releases
-            if not application_present:
-                workloads = json.loads(
-                    execute(
-                        [
-                            *kube,
-                            "get",
-                            "deployment,statefulset,job",
-                            "-l",
-                            f"app.kubernetes.io/instance={target['release']}",
-                            "-o",
-                            "json",
-                        ],
-                    )
-                )["items"]
-                if workloads:
-                    logger.warning(
-                        "Cleanup retained workloads without their owning release"
-                    )
-                    raise RuntimeError(
-                        "Application workloads remain without their Helm release. Retain the fixture"
-                    )
-        owned_secrets = []
-        for field in ("v3_secret", "hec_secret"):
-            if not target.get(f"{field}_uid"):
-                continue
-            raw_secret = execute(
-                [
-                    *kube,
-                    "get",
-                    "secret",
-                    target[field],
-                    "--ignore-not-found",
-                    "-o",
-                    "json",
-                ],
-            )
-            if raw_secret.strip():
-                if json.loads(raw_secret)["metadata"]["uid"] != target[f"{field}_uid"]:
-                    logger.warning("Cleanup retained a replaced fixture Secret")
-                    raise RuntimeError(
-                        "The fixture Secret was replaced. Do not delete it"
-                    )
-                owned_secrets.append(target[field])
-        if application_present:
-            statefulsets = json.loads(
-                execute([*kube, "get", "statefulset", "-o", "json"])
-            )["items"]
-            for item in statefulsets:
-                if (
-                    item["metadata"]
-                    .get("annotations", {})
-                    .get("meta.helm.sh/release-name")
-                    == target["release"]
-                ):
-                    retention = (
-                        item["spec"]
-                        .get("persistentVolumeClaimRetentionPolicy", {})
-                        .get("whenDeleted", "Retain")
-                    )
-                    if retention != "Retain":
-                        logger.warning(
-                            "Cleanup refused because storage retention is not enabled"
-                        )
-                        raise RuntimeError(
-                            "Storage must retain its claims before removing the owned workload"
-                        )
-    if application_present:
-        result = observe_target(directory, target, manifest, "state")
-        if not result["drained"]:
-            logger.warning(
-                "Cleanup retained the fixture because delivery is incomplete"
-            )
-            raise RuntimeError(
-                "Outstanding delivery remains. Retain the fixture and storage"
-            )
-        if result["entries"] or result["foreign_entries"]:
-            logger.warning("Cleanup retained the fixture because schedules remain")
-            raise RuntimeError("Schedules remain. Retain the fixture and storage")
-    # The setup script owns the job's simulators, just as for autodiscovery.
-    # Removing this application must not remove that separately deployed cohort.
-    if target["mode"] == "microk8s":
-        if application_present:
-            execute([*helm, "uninstall", target["release"], "--wait"])
-            execute(
-                [
-                    *kube,
-                    "delete",
-                    "job",
-                    "-l",
-                    f"sc4snmp.integration.jitter-run={target['run_id']}",
-                    "--wait=true",
-                ],
-            )
-        for name in owned_secrets:
-            execute([*kube, "delete", "secret", name])
+def remove_application(directory, target):
+    logger.info(f"Removing disposable test application: backend={target['mode']}")
+    if target["mode"] == "docker-compose":
+        run_compose(target, "down")
     else:
-        if Path(target["compose_file"]).exists():
-            run_compose(target, "down")
-    target["cleaned"] = True
-    write_private(target_file, json.dumps(target))
-    logger.info(
-        "Owned test workloads removed after delivery accounting. Storage retained"
-    )
+        run(
+            directory,
+            [
+                *MICROK8S,
+                "helm3",
+                "uninstall",
+                target["release"],
+                "--namespace",
+                target["namespace"],
+                "--wait",
+                "--timeout=180s",
+            ],
+        )
+    logger.info("Disposable application removed, simulator deployment retained")

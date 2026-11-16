@@ -220,7 +220,8 @@ def test_reenable_after_completed_disable(jitter_live, setup_splunk):
     assert_indexed_for_all(live, setup_splunk, enabled_at, kinds=("metrics",))
 
 
-@pytest.mark.part10
+@pytest.mark.part11
+@pytest.mark.long_interval
 def test_beat_restart_continues_partial_policy_adoption(jitter_live, setup_splunk):
     live = jitter_live
 
@@ -270,7 +271,8 @@ def test_beat_restart_continues_partial_policy_adoption(jitter_live, setup_splun
     assert_indexed_for_all(live, setup_splunk, restarted_at)
 
 
-@pytest.mark.part10
+@pytest.mark.part11
+@pytest.mark.long_interval
 def test_later_walk_refresh_runs_existing_long_poll_before_initial_deadline(
     jitter_live, setup_splunk
 ):
@@ -284,10 +286,22 @@ def test_later_walk_refresh_runs_existing_long_poll_before_initial_deadline(
     }
     rows = live.inventory("jitter_long")
 
-    live.configure(profiles, rows, enabled=True, window=300)
+    candidates = []
+    for window in range(61, 301):
+        for device in live.devices:
+            poll_offset = expected_policy(
+                device["address"], device["port"], 301, "poll", window
+            )["offset"]
+            walk_offset = expected_policy(
+                device["address"], device["port"], 1800, "walk", window
+            )["offset"]
+            candidates.append((poll_offset - walk_offset, window))
+    slack, window = max(candidates)
+    assert slack > 90, "Simulator identities must allow a real initial-run overlap"
+    live.configure(profiles, rows, enabled=True, window=window)
     offsets = {
         device["label"]: expected_policy(
-            device["address"], device["port"], 1800, "walk", 300
+            device["address"], device["port"], 1800, "walk", window
         )["offset"]
         for device in live.devices
     }
@@ -305,8 +319,6 @@ def test_later_walk_refresh_runs_existing_long_poll_before_initial_deadline(
                 candidates.append((slack, device, key, poll))
         if candidates:
             return max(candidates, key=lambda candidate: candidate[0])
-        if len(entries) == len(live.devices) * 2:
-            return "no-overlap"
         return None
 
     # Select early. Waiting for the fleet's latest WALK can consume the very
@@ -316,11 +328,6 @@ def test_later_walk_refresh_runs_existing_long_poll_before_initial_deadline(
         "a pending initial POLL with time for its inventory refresh",
         live.timeout,
     )
-    if candidate == "no-overlap":
-        pytest.skip(
-            "Coverage gap: fixture offsets leave no initial POLL pending long enough "
-            "for its normal inventory WALK refresh"
-        )
     _, device, key, before = candidate
     profiles["jitter_long_updated"] = deepcopy(profiles["jitter_long"])
     updated = [
@@ -334,7 +341,7 @@ def test_later_walk_refresh_runs_existing_long_poll_before_initial_deadline(
     event_start = len(live.events)
     refreshed_at = time.time()
 
-    live.configure(profiles, updated, enabled=True, window=300)
+    live.configure(profiles, updated, enabled=True, window=window)
     completed = wait_for(
         lambda: [
             event
@@ -361,7 +368,8 @@ def test_later_walk_refresh_runs_existing_long_poll_before_initial_deadline(
     )
 
 
-@pytest.mark.part10
+@pytest.mark.part11
+@pytest.mark.long_interval
 def test_delayed_inventory_request_survives_disable(jitter_live, setup_splunk):
     live = jitter_live
 

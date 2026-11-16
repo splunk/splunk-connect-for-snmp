@@ -46,7 +46,7 @@ def assert_existing_schedules(before, after):
             assert_preserved(entry, current, ("due",))
 
 
-@pytest.mark.part9
+@pytest.mark.part10
 @pytest.mark.parametrize("enabled", [False, True])
 def test_unchanged_csv_reload_keeps_existing_schedules(
     jitter_live, setup_splunk, enabled
@@ -71,7 +71,7 @@ def test_unchanged_csv_reload_keeps_existing_schedules(
             assert_preserved(entry, after["entries"][key])
 
 
-@pytest.mark.part9
+@pytest.mark.part10
 @pytest.mark.parametrize("enabled", [False, True])
 def test_varbind_only_profile_edit_reaches_splunk_without_rephasing(
     jitter_live, setup_splunk, enabled
@@ -105,7 +105,7 @@ def test_varbind_only_profile_edit_reaches_splunk_without_rephasing(
     )
 
 
-@pytest.mark.part9
+@pytest.mark.part10
 @pytest.mark.parametrize("enabled", [False, True])
 def test_snmpv2c_to_v1_inventory_change_keeps_device_phase(
     jitter_live, setup_splunk, enabled
@@ -133,7 +133,7 @@ def test_snmpv2c_to_v1_inventory_change_keeps_device_phase(
     assert_indexed_for_all(live, setup_splunk, started)
 
 
-@pytest.mark.part9
+@pytest.mark.part10
 @pytest.mark.parametrize("enabled", [False, True])
 def test_group_overrides_member_removal_and_group_deletion(
     jitter_live, setup_splunk, enabled
@@ -188,7 +188,8 @@ def test_group_overrides_member_removal_and_group_deletion(
     wait_for_layout(live, {}, labels=set())
 
 
-@pytest.mark.part9
+@pytest.mark.part10
+@pytest.mark.mongo_inventory
 @pytest.mark.parametrize("enabled", [False, True])
 def test_csv_mongo_source_switch_and_native_inventory_lifecycle(
     jitter_live, setup_splunk, enabled
@@ -259,7 +260,8 @@ def test_csv_mongo_source_switch_and_native_inventory_lifecycle(
             assert_preserved(entry, after_csv["entries"][key])
 
 
-@pytest.mark.part10
+@pytest.mark.part11
+@pytest.mark.long_interval
 @pytest.mark.parametrize("enabled", [False, True])
 def test_profile_frequency_edits_cross_300_second_boundary(
     jitter_live, setup_splunk, enabled
@@ -347,7 +349,7 @@ def test_profile_frequency_edits_cross_300_second_boundary(
     assert_indexed_for_all(live, setup_splunk, started)
 
 
-@pytest.mark.part9
+@pytest.mark.part10
 @pytest.mark.parametrize("enabled", [False, True])
 @pytest.mark.parametrize("full_walk", [False, True])
 def test_full_or_custom_walk_scope_and_scope_changes(
@@ -409,7 +411,7 @@ def test_full_or_custom_walk_scope_and_scope_changes(
     assert_indexed_field(live, setup_splunk, started, "sc4snmp.IF-MIB.ifNumber", None)
 
 
-@pytest.mark.part9
+@pytest.mark.part10
 @pytest.mark.parametrize("enabled", [False, True])
 def test_csv_same_frequency_profile_membership_updates(jitter_live, enabled):
     live = jitter_live
@@ -440,7 +442,7 @@ def test_csv_same_frequency_profile_membership_updates(jitter_live, enabled):
         assert_preserved(before["entries"][key], after["entries"][key], ("entry_id",))
 
 
-@pytest.mark.part9
+@pytest.mark.part10
 @pytest.mark.parametrize("enabled", [False, True])
 def test_csv_last_assignment_removes_obsolete_frequency(jitter_live, enabled):
     live = jitter_live
@@ -465,7 +467,7 @@ def test_csv_last_assignment_removes_obsolete_frequency(jitter_live, enabled):
         assert_preserved(before["entries"][key], entry, ("entry_id",))
 
 
-@pytest.mark.part9
+@pytest.mark.part10
 @pytest.mark.parametrize("enabled", [False, True])
 def test_csv_removing_all_assignments_leaves_valid_walk_only_devices(
     jitter_live, enabled
@@ -484,7 +486,7 @@ def test_csv_removing_all_assignments_leaves_valid_walk_only_devices(
         assert_preserved(before["entries"][key], entry, ("entry_id",))
 
 
-@pytest.mark.part9
+@pytest.mark.part10
 @pytest.mark.parametrize("enabled", [False, True])
 def test_csv_walk_interval_edit_keeps_schedule_identity(jitter_live, enabled):
     live = jitter_live
@@ -521,7 +523,7 @@ def test_csv_walk_interval_edit_keeps_schedule_identity(jitter_live, enabled):
         )
 
 
-@pytest.mark.part9
+@pytest.mark.part10
 @pytest.mark.parametrize("enabled", [False, True])
 def test_csv_delete_and_readd_creates_new_entry_ids(jitter_live, enabled):
     live = jitter_live
@@ -556,7 +558,7 @@ def test_csv_delete_and_readd_creates_new_entry_ids(jitter_live, enabled):
             assert_preserved(previous, entry, ("entry_id",))
 
 
-@pytest.mark.part9
+@pytest.mark.part10
 @pytest.mark.parametrize("enabled", [False, True])
 @pytest.mark.parametrize("smart_profiles", [False, True])
 @pytest.mark.parametrize("poll_base", [False, True])

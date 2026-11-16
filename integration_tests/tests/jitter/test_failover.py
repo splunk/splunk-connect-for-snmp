@@ -35,10 +35,15 @@ def test_primary_failover_preserves_schedules_and_resumes_delivery(
 
     def recovered():
         try:
-            snapshot = live.snapshot()
+            snapshot = live.probe("state")
         except RuntimeError:
             return None
-        return snapshot if len(snapshot["entries"]) == len(live.devices) * 3 else None
+        if (
+            snapshot["worker_replies_complete"]
+            and len(snapshot["entries"]) == len(live.devices) * 3
+        ):
+            return snapshot
+        return None
 
     after = wait_for(
         recovered, "schedule access after primary promotion", live.timeout

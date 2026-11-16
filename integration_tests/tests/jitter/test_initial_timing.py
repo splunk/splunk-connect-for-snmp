@@ -116,7 +116,8 @@ def test_ordinary_recurrence_does_not_add_the_offset_again(jitter_live, setup_sp
     assert_indexed_for_all(live, setup_splunk, started, kinds=("metrics",))
 
 
-@pytest.mark.part10
+@pytest.mark.part11
+@pytest.mark.long_interval
 def test_initial_300_and_301_second_boundary(jitter_live, setup_splunk):
     live = jitter_live
 

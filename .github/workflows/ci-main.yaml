@@ -113,8 +113,15 @@ jobs:
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
           poetry install
-      - name: Run Pytest with coverage
+      - name: Install Redis for isolated regression tests
         run: |
+          sudo apt-get update
+          sudo apt-get install -y redis-server
+      - name: Run Pytest with coverage
+        env:
+          REDBEAT_TEST_REDIS_SERVER: /usr/bin/redis-server
+        run: |
+          test -x "$REDBEAT_TEST_REDIS_SERVER"
           poetry run pytest --cov=./splunk_connect_for_snmp --cov-report=xml --junitxml=test-results/junit.xml
       - uses: actions/upload-artifact@v7 # upload test results
         if: success() || failure() # run this step even if previous step failed
@@ -146,8 +153,9 @@ jobs:
       commit_message:
         echo "${{ steps.get_commit_message.outputs.commit_message }}"
 
+
   test-integration-microk8s:
-    name: Run integration tests in microk8s deployment (${{ matrix.group || matrix.index }})
+    name: Run integration tests in microk8s deployment (${{ matrix.index }})
     needs:
       - integration-tests-check
     runs-on: ubuntu-24.04
@@ -156,44 +164,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        index: [1, 2, 3, 4, 5, 6, 7, 8]
-        include:
-          - index: 9
-            group: jitter-initial-timing
-            pytest_args: tests/jitter/test_initial_timing.py -x
-          - index: 9
-            group: jitter-policy-changes
-            pytest_args: tests/jitter/test_lifecycle.py -k "settings_change" -x
-          - index: 9
-            group: jitter-lifecycle
-            pytest_args: tests/jitter/test_lifecycle.py -k "not settings_change" -x
-          - index: 9
-            group: jitter-inventory-updates
-            pytest_args: >-
-              tests/jitter/test_inventory_profiles.py
-              -k "unchanged_csv_reload or varbind_only or snmpv2c_to_v1" -x
-          - index: 9
-            group: jitter-sources-and-scope
-            pytest_args: >-
-              tests/jitter/test_inventory_profiles.py
-              -k "group_overrides or csv_mongo_source or full_or_custom_walk" -x
-          - index: 9
-            group: jitter-membership-and-identity
-            pytest_args: >-
-              tests/jitter/test_inventory_profiles.py
-              -k "same_frequency_profile or last_assignment or removing_all_assignments or walk_interval_edit or delete_and_readd" -x
-          - index: 9
-            group: jitter-smart-profiles
-            pytest_args: tests/jitter/test_inventory_profiles.py -k "smart_base_mandatory" -x
-          - index: 10
-            group: jitter-long-intervals
-            pytest_args: tests/jitter -x
-          - index: 11
-            group: jitter-recovery
-            pytest_args: tests/jitter/test_recovery.py -x
-          - index: 12
-            group: jitter-failover
-            pytest_args: tests/jitter/test_failover.py -x
+        index: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     steps:
       - name: Checkout Project
         uses: actions/checkout@v7
@@ -218,15 +189,22 @@ jobs:
       - name: run automatic_setup_microk8s.sh
         env:
           AUTODISCOVERY_ENABLED: ${{ matrix.index == 8 }}
-          JITTER_ENABLED: ${{ matrix.index >= 9 && matrix.index <= 12 }}
+          JITTER_ENABLED: ${{ matrix.index >= 9 }}
         run: integration_tests/scripts/automatic_setup_microk8s.sh integration
       - name: run tests
         working-directory: integration_tests
         run: |
-          poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --sc4snmp_deployment="microk8s" -m part${{ matrix.index }} ${{ matrix.pytest_args || '' }}
+          poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --sc4snmp_deployment="microk8s" --junitxml=test-results/integration.xml --tb=short -m part${{ matrix.index }}
+      - name: Upload integration test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: integration-microk8s-${{ matrix.index }}
+          path: integration_tests/test-results/integration.xml
+          if-no-files-found: warn
 
   test-integration-compose:
-    name: Run integration tests in docker compose deployment (${{ matrix.group || matrix.index }})
+    name: Run integration tests in docker compose deployment (${{ matrix.index }})
     needs:
       - integration-tests-check
     runs-on: ubuntu-24.04
@@ -235,44 +213,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        index: [1, 2, 3, 4, 5, 6, 8]
-        include:
-          - index: 9
-            group: jitter-initial-timing
-            pytest_args: tests/jitter/test_initial_timing.py -x
-          - index: 9
-            group: jitter-policy-changes
-            pytest_args: tests/jitter/test_lifecycle.py -k "settings_change" -x
-          - index: 9
-            group: jitter-lifecycle
-            pytest_args: tests/jitter/test_lifecycle.py -k "not settings_change" -x
-          - index: 9
-            group: jitter-inventory-updates
-            pytest_args: >-
-              tests/jitter/test_inventory_profiles.py
-              -k "unchanged_csv_reload or varbind_only or snmpv2c_to_v1" -x
-          - index: 9
-            group: jitter-sources-and-scope
-            pytest_args: >-
-              tests/jitter/test_inventory_profiles.py
-              -k "group_overrides or csv_mongo_source or full_or_custom_walk" -x
-          - index: 9
-            group: jitter-membership-and-identity
-            pytest_args: >-
-              tests/jitter/test_inventory_profiles.py
-              -k "same_frequency_profile or last_assignment or removing_all_assignments or walk_interval_edit or delete_and_readd" -x
-          - index: 9
-            group: jitter-smart-profiles
-            pytest_args: tests/jitter/test_inventory_profiles.py -k "smart_base_mandatory" -x
-          - index: 10
-            group: jitter-long-intervals
-            pytest_args: tests/jitter -x
-          - index: 11
-            group: jitter-recovery
-            pytest_args: tests/jitter/test_recovery.py -x
-          - index: 12
-            group: jitter-failover
-            pytest_args: tests/jitter/test_failover.py -x
+        index: [1, 2, 3, 4, 5, 6, 8, 9, 10, 11]
     steps:
       - name: Checkout Project
         uses: actions/checkout@v7
@@ -317,9 +258,16 @@ jobs:
       - name: run automatic_setup_compose.sh
         env:
           AUTODISCOVERY_ENABLED: ${{ matrix.index == 8 }}
-          JITTER_ENABLED: ${{ matrix.index >= 9 && matrix.index <= 12 }}
+          JITTER_ENABLED: ${{ matrix.index >= 9 }}
         run: integration_tests/scripts/automatic_setup_compose.sh integration
       - name: run tests
         working-directory: integration_tests
         run: |
-          poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --sc4snmp_deployment="docker-compose" -m part${{ matrix.index }} ${{ matrix.pytest_args || '' }}
+          poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --sc4snmp_deployment="docker-compose" --junitxml=test-results/integration.xml --tb=short -m part${{ matrix.index }}
+      - name: Upload integration test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: integration-compose-${{ matrix.index }}
+          path: integration_tests/test-results/integration.xml
+          if-no-files-found: warn

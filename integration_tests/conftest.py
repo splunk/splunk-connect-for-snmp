@@ -212,56 +212,37 @@ def setup_splunk(request):
 def jitter_live(request, tmp_path_factory):
     from integration_tests.utils.polling import LiveJitter
 
-    ha_test = request.node.get_closest_marker("part12") is not None
-    if ha_test:
-        from integration_tests.utils.files import read_private_json
-
-        target_path = request.config.getoption("jitter_target")
-        if not target_path:
-            pytest.skip("An isolated replica target is required for failover")
-        if read_private_json(target_path).get("ha") is not True:
-            pytest.skip("The isolated target does not use Redis and MongoDB replicas")
-    service = request.getfixturevalue("setup_splunk")
     manifest, target = request.getfixturevalue("jitter_environment")
+    if request.node.get_closest_marker("part12"):
+        assert target.get("ha") is True, "Failover requires Redis and MongoDB replicas"
     assert manifest.get("ready") is True, "Every simulator must pass SNMP readiness"
     assert target["mode"] == request.config.getoption("sc4snmp_deployment")
+    service = request.getfixturevalue("setup_splunk")
     directory = tmp_path_factory.mktemp("jitter-evidence-")
     os.chmod(directory, 0o700)
     timeout = INTEGRATION_TEST_TIMEOUT
-    if request.node.get_closest_marker("part10"):
+    if request.node.get_closest_marker("long_interval"):
         timeout = max(timeout, 660)
     live = LiveJitter(target, manifest, directory, timeout)
     try:
         live.start_observing()
         yield live
     finally:
-        # A failed drain retains unresolved delivery state for investigation.
         try:
             live.stop_observing()
-            outcome = getattr(request.node, "jitter_outcome", "failed")
-            if outcome == "failed":
-                live.stop_producers()
-            elif live.changed:
+            if getattr(request.node, "jitter_passed", False) and live.changed:
                 from integration_tests.tests.jitter.delivery import (
                     assert_indexed_for_all,
                 )
 
-                # Every successful case must deliver real SNMP metrics. Tests
-                # with string-only profiles separately check event output too.
-                if outcome == "passed":
-                    assert_indexed_for_all(
-                        live, service, live.started_at, kinds=("metrics",)
-                    )
-                live.finish()
-        except BaseException:
-            # Observer or delivery failures must also stop new scheduled work.
-            live.stop_producers()
-            raise
+                assert_indexed_for_all(
+                    live, service, live.started_at, kinds=("metrics",)
+                )
         finally:
             live.stop_events()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def jitter_environment(request, tmp_path_factory):
     from integration_tests.utils import polling_environment as environment
     from integration_tests.utils.files import read_private_json
@@ -270,6 +251,11 @@ def jitter_environment(request, tmp_path_factory):
     if target_path:
         from integration_tests.utils.simulators import probe_simulators
 
+        if (
+            sum("jitter_live" in item.fixturenames for item in request.session.items)
+            != 1
+        ):
+            raise pytest.UsageError("Select one case when reusing --jitter-target")
         target = read_private_json(target_path)
         manifest = read_private_json(target["manifest_file"])
         # Retained Pods can acquire different endpoints after cluster recovery.
@@ -279,34 +265,35 @@ def jitter_environment(request, tmp_path_factory):
         )
         yield manifest, target
         return
+    ha = request.node.get_closest_marker("part12") is not None
+    if ha and request.config.getoption("sc4snmp_deployment") != "microk8s":
+        raise pytest.UsageError(
+            "Automatic failover setup requires microk8s. For Docker Compose, "
+            "supply --jitter-target for an isolated Redis/Sentinel and MongoDB replica deployment"
+        )
     directory = tmp_path_factory.mktemp("jitter-environment-")
     directory.chmod(0o700)
     environment.prepare(
         request.config.getoption("sc4snmp_deployment"),
         directory,
         splunk_test_configuration(request.config),
+        ha=ha,
+        mongo_inventory=request.node.get_closest_marker("mongo_inventory") is not None,
     )
     target_path = directory / "target.json"
-    yield read_private_json(directory / "simulators/endpoints.json"), read_private_json(
-        target_path
-    )
-    # Keep failed delivery state and storage available for investigation.
-    if request.session.testsfailed == 0:
-        environment.cleanup(target_path)
+    target = read_private_json(target_path)
+    try:
+        yield read_private_json(directory / "simulators/endpoints.json"), target
+    finally:
+        environment.remove_application(directory, target)
 
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_runtest_makereport(item, call):
     """Auto dump logs when any test fails"""
-    if any(item.get_closest_marker(f"part{part}") for part in (9, 10, 11, 12)):
+    if "jitter_live" in item.fixturenames:
         if call.when == "call":
-            item.jitter_outcome = "passed"
-            if call.excinfo is not None:
-                item.jitter_outcome = (
-                    "skipped"
-                    if call.excinfo.errisinstance(pytest.skip.Exception)
-                    else "failed"
-                )
+            item.jitter_passed = call.excinfo is None
         # Jitter evidence stays in its protected run directory. Broad container
         # logs can contain unrelated credentials and device addresses.
         return

@@ -25,7 +25,6 @@ from integration_tests.utils.deployment import (
     probe_application,
     probe_program,
     restart_sc4snmp_component,
-    wait_for_microk8s_rollout,
 )
 from integration_tests.utils.files import (
     read_private_json,
@@ -64,7 +63,6 @@ class LiveJitter:
         self.directory = Path(directory)
         self.timeout = timeout
         self.mode = target["mode"]
-        self.producers_stopped = False
         self.started_at = time.time()
         self.observations = []
         self.stop_observer = threading.Event()
@@ -143,9 +141,7 @@ class LiveJitter:
         if component is None:
             # A probe imports the app. Keep that extra process off busy workers.
             component = (
-                "worker-sender"
-                if self.producers_stopped
-                else "scheduler" if self.mode == "docker-compose" else "worker-poller"
+                "scheduler" if self.mode == "docker-compose" else "worker-poller"
             )
         # Recheck Kubernetes ownership before using the saved exec command.
         self.exec_prefix(component)
@@ -213,12 +209,34 @@ class LiveJitter:
         logger.info(f"Celery event observer stopped: events={len(self.events)}")
 
     def snapshot(self):
-        snapshot = self.probe()
+        if self.observer and not self.stop_observer.is_set():
+            requested_at = time.time()
+            snapshot = wait_for(
+                lambda: (
+                    current
+                    if self.observations
+                    and (current := self.observations[-1])["observed_at"]
+                    >= requested_at
+                    else None
+                ),
+                "a fresh Redis schedule observation",
+                self.timeout,
+                interval=0.05,
+            )
+        else:
+            snapshot = self.probe()
         assert snapshot["foreign_entries"] == 0, "Unexpected device in isolated target"
         return snapshot
 
     def drained(self):
-        return self.probe("drained")["drained"]
+        state = self.probe("drained")
+        write_private(self.directory / "drain-state.json", json.dumps(state))
+        logger.debug(
+            f"Published-work accounting: workers={state['workers']} "
+            f"complete={state['worker_replies_complete']} queued={state['queued']} "
+            f"unacked={state['unacked']} unacked_index={state['unacked_index']}"
+        )
+        return state["drained"]
 
     def start_observing(self):
         logger.info("Starting the Redis schedule observer")
@@ -344,7 +362,7 @@ class LiveJitter:
                 and auth.get("existingSecret")
                 and ui.get("valuesFileDirectory")
             ):
-                pytest.skip(
+                raise RuntimeError(
                     "Mongo inventory requires approved authenticated UI values "
                     "in the supplied target"
                 )
@@ -358,15 +376,7 @@ class LiveJitter:
             name: {"enabled": False}
             for name in ("BaseUpTime", "BaseDeviceData", "EnrichIF", "BaseIF")
         } | profiles
-        self.config = {"profiles": profiles, "groups": groups or {}}
-        self.rows = rows
-        self.polling_options = {
-            "enabled": enabled,
-            "window": window,
-            "poll_base": poll_base,
-            "full_walk": full_walk,
-            "from_mongo": from_mongo,
-        }
+        config = {"profiles": profiles, "groups": groups or {}}
         settings = {"enabled": enabled, "windowSeconds": window}
         # A fresh registration must not overlap a previous Beat policy during
         # rollout. Activate settings on the empty target before adding devices.
@@ -385,7 +395,7 @@ class LiveJitter:
             writer.writeheader()
             writer.writerows(inventory_rows)
             if from_mongo:
-                self.probe("configure_mongo", rows=inventory_rows, config=self.config)
+                self.probe("configure_mongo", rows=inventory_rows, config=config)
             if self.mode == "microk8s":
                 override = self.directory / "values-jitter.yaml"
                 write_private(
@@ -467,10 +477,35 @@ class LiveJitter:
                         "--wait=false",
                     ]
                 )
+                self.context = application_context(self.target, self.run)
+                if not inventory_rows and rows:
+                    # Helm can report the new workers ready while old workers
+                    # still consume tasks. Let them exit before adding devices.
+                    terminating = [
+                        pod["metadata"]["name"]
+                        for pod in self.kube_json("get", "pods", "-l", self.selector)[
+                            "items"
+                        ]
+                        if pod["metadata"].get("deletionTimestamp")
+                    ]
+                    if terminating:
+                        logger.info("Waiting for previous workers to exit")
+                        self.run(
+                            [
+                                *self.kube,
+                                "wait",
+                                "--for=delete",
+                                *(f"pod/{name}" for name in terminating),
+                                f"--timeout={self.timeout}s",
+                            ]
+                        )
+                    wait_for(
+                        self.drained,
+                        "idle replacement workers before initial registration",
+                        self.timeout,
+                    )
             else:
-                write_container_file(
-                    self.target["config_file"], yaml.safe_dump(self.config)
-                )
+                write_container_file(self.target["config_file"], yaml.safe_dump(config))
                 write_container_file(self.target["inventory_file"], stream.getvalue())
                 environment = {
                     "POLLING_JITTER_ENABLED": str(enabled).lower(),
@@ -483,7 +518,6 @@ class LiveJitter:
                     upgrade_env_compose(name, value, self.target["env_file"])
                 self.run([*self.compose, "up", "-d", "scheduler", "worker-poller"])
                 self.load_inventory()
-        self.producers_stopped = False
         logger.info("Polling configuration and inventory applied")
         return started, time.time()
 
@@ -581,71 +615,7 @@ class LiveJitter:
             error_file=self.directory / f"restart-failure-{uuid4().hex}.txt",
             restart_only=True,
         )
-        if component == "scheduler":
-            self.producers_stopped = False
         logger.info(f"Polling component restarted: component={component}")
-
-    def stop_producers(self):
-        logger.info(f"Stopping the isolated scheduler: backend={self.mode}")
-        if self.mode == "microk8s":
-            name = self.component("scheduler")
-            self.run([*self.kube, "scale", f"deployment/{name}", "--replicas=0"])
-            selector = f"{self.selector},app.kubernetes.io/component=scheduler"
-            if self.kube_json("get", "pods", "-l", selector)["items"]:
-                self.run(
-                    [
-                        *self.kube,
-                        "wait",
-                        "--for=delete",
-                        "pod",
-                        "-l",
-                        selector,
-                        f"--timeout={self.timeout}s",
-                    ]
-                )
-        else:
-            self.run([*self.compose, "stop", "scheduler"])
-        self.producers_stopped = True
-        logger.info("Isolated scheduler stopped")
-
-    def finish(self):
-        if not self.changed:
-            return
-        logger.info("Deleting test inventory and accounting for published work")
-        deleted = [{**row, "delete": "true"} for row in self.rows]
-        # Inventory helpers already wait for their jobs. Delete devices using
-        # the same settings, then stop Beat and drain work already published.
-        self.configure(
-            self.config["profiles"],
-            deleted,
-            groups=self.config["groups"],
-            **self.polling_options,
-        )
-        self.stop_producers()
-        wait_for(
-            self.drained, "published work after normal inventory deletion", self.timeout
-        )
-        assert not self.snapshot()[
-            "entries"
-        ], "Owned schedule hashes remain after deletion and published-work drain"
-        logger.info("Test inventory removed and published work drained")
-        # The next case starts with an empty running application. Do not resume
-        # Beat until deletion and all previously published work are accounted for.
-        if self.mode == "microk8s":
-            name = self.component("scheduler")
-            self.run([*self.kube, "scale", f"deployment/{name}", "--replicas=1"])
-            wait_for_microk8s_rollout(
-                f"deployment/{name}",
-                "scheduler",
-                namespace=self.target["namespace"],
-                timeout=self.timeout,
-                kubectl=self.kube[:-2],
-                error_file=self.directory / f"rollout-failure-{uuid4().hex}.txt",
-            )
-        else:
-            self.run([*self.compose, "start", "scheduler"])
-        self.producers_stopped = False
-        logger.info("Polling cleanup complete, empty scheduler resumed")
 
 
 def short_profiles():

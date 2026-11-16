@@ -3,6 +3,7 @@ import logging
 import os
 import subprocess
 from pathlib import Path
+from uuid import uuid4
 
 from integration_tests.utils.files import write_private
 
@@ -36,12 +37,14 @@ def application_context(target, run):
     if target["mode"] == "microk8s":
         kube = [*MICROK8S, "kubectl", "-n", target["namespace"]]
         selector = f"app.kubernetes.io/instance={target['release']}"
-        deployments = json.loads(
-            run([*kube, "get", "deployment", "-l", selector, "-o", "json"])
-        )["items"]
+        deployments = json.loads(run([*kube, "get", "deployment", "-o", "json"]))[
+            "items"
+        ]
         components = {
             item["metadata"]["labels"].get("app.kubernetes.io/component"): item
             for item in deployments
+            if item["metadata"].get("labels", {}).get("app.kubernetes.io/instance")
+            == target["release"]
         }
         if not all(name in components for name in names):
             raise RuntimeError("The owned application components are not ready")
@@ -76,6 +79,13 @@ def application_context(target, run):
         }
         context["expected_workers"] = sum(
             components[name]["spec"].get("replicas", 1) for name in names[1:]
+        )
+        context["expected_workers"] += sum(
+            item["spec"].get("replicas", 1)
+            for item in deployments
+            if item["metadata"]["name"] == "ui-backend-worker-deployment"
+            and item["metadata"].get("annotations", {}).get("meta.helm.sh/release-name")
+            == target["release"]
         )
     else:
         from integration_tests.utils.compose import compose_command
@@ -118,13 +128,72 @@ def probe_application(
         "expected_workers": context["expected_workers"],
         **data,
     }
-    prefix = context["exec_prefixes"][component]
-    if action in ("state", "snapshot", "drained"):
-        prefix = context.get("observer_prefix", prefix)
-    output = run(
-        [*prefix, APP_PYTHON, "-"],
-        probe_program(request),
-    )
+    if action in ("failover_redis", "step_down_mongo") and "kube" in context:
+        deployment = json.loads(
+            run(
+                [
+                    *context["kube"],
+                    "get",
+                    "deployment",
+                    context["deployments"]["scheduler"],
+                    "-o",
+                    "json",
+                ]
+            )
+        )
+        spec = deployment["spec"]["template"]["spec"]
+        spec["restartPolicy"] = "Never"
+        name = f"jitter-probe-{uuid4().hex[:12]}"
+        spec["containers"][0]["name"] = name
+        spec["containers"][0]["command"] = [
+            *PROBE_SHELL,
+            APP_PYTHON,
+            "-c",
+            probe_program(request),
+        ]
+        spec["containers"][0]["args"] = []
+        logger.info(f"Running {action} from a disposable observer Pod")
+        try:
+            output = run(
+                [
+                    *context["kube"],
+                    "run",
+                    name,
+                    "--restart=Never",
+                    "--attach=true",
+                    "--quiet=true",
+                    "--image",
+                    context["images"]["scheduler"],
+                    "--overrides",
+                    json.dumps({"apiVersion": "v1", "spec": spec}),
+                ],
+                timeout=data.get("timeout", INTEGRATION_TEST_TIMEOUT) + 60,
+            )
+        finally:
+            run(
+                [
+                    *context["kube"],
+                    "delete",
+                    "pod",
+                    name,
+                    "--ignore-not-found=true",
+                    "--wait=false",
+                ]
+            )
+    else:
+        prefix = context["exec_prefixes"][component]
+        if action in (
+            "state",
+            "snapshot",
+            "drained",
+            "failover_redis",
+            "step_down_mongo",
+        ):
+            prefix = context.get("observer_prefix", prefix)
+        output = run(
+            [*prefix, APP_PYTHON, "-"],
+            probe_program(request),
+        )
     for line in reversed(output.splitlines()):
         if line.startswith("JITTER_RESULT="):
             return json.loads(line.removeprefix("JITTER_RESULT="))
