@@ -433,6 +433,14 @@ class LiveJitter:
                     container["image"] == self.images["worker-poller"]
                 ), "Rendered inventory Job must use the tested application image"
                 job_name = self.inventory_template["metadata"]["name"]
+                delete_job = [
+                    *self.kube,
+                    "delete",
+                    "job",
+                    job_name,
+                    "--ignore-not-found=true",
+                    "--wait=false",
+                ]
                 current = self.kube_json("get", "job", job_name, "--ignore-not-found")
                 if current:
                     assert (
@@ -446,16 +454,7 @@ class LiveJitter:
                         and condition["status"] == "True"
                         for condition in current.get("status", {}).get("conditions", [])
                     ), "Wait for the existing inventory writer before reloading"
-                    self.run(
-                        [
-                            *self.kube,
-                            "delete",
-                            "job",
-                            job_name,
-                            "--ignore-not-found=true",
-                            "--wait=false",
-                        ]
-                    )
+                    self.run(delete_job)
                 # Follow the existing integration flow. Recreate the completed Job,
                 # then apply actual chart values so the normal loader runs on upgrade.
                 self.run(
@@ -467,16 +466,7 @@ class LiveJitter:
                     ],
                     timeout=self.timeout + 30,
                 )
-                self.run(
-                    [
-                        *self.kube,
-                        "delete",
-                        "job",
-                        job_name,
-                        "--ignore-not-found=true",
-                        "--wait=false",
-                    ]
-                )
+                self.run(delete_job)
                 self.context = application_context(self.target, self.run)
                 if not inventory_rows and rows:
                     # Helm can report the new workers ready while old workers

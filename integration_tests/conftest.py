@@ -215,7 +215,6 @@ def jitter_live(request, tmp_path_factory):
     manifest, target = request.getfixturevalue("jitter_environment")
     if request.node.get_closest_marker("part12"):
         assert target.get("ha") is True, "Failover requires Redis and MongoDB replicas"
-    assert manifest.get("ready") is True, "Every simulator must pass SNMP readiness"
     assert target["mode"] == request.config.getoption("sc4snmp_deployment")
     service = request.getfixturevalue("setup_splunk")
     directory = tmp_path_factory.mktemp("jitter-evidence-")

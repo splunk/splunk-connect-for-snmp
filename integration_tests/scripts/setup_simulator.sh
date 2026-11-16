@@ -427,29 +427,33 @@ start_microk8s_agents() {
   green "[DONE] Kubernetes reports all ${AGENT_COUNT} requested simulator Pod IPs exactly"
 }
 
-verify_v2c_agent() {
-  local address="$1"
+verify_snmp_agent() {
+  local variation="$1" name="$2" address="$3"
   local attempt
+  local -a authentication
+
+  if [[ "${variation}" == "v2c" ]]; then
+    authentication=(-v2c -c public)
+  else
+    authentication=(-v3 -l authPriv -u "${V3_SHA_USER}"
+      -a SHA -A "${V3_SHA_AUTH_KEY}" -x AES -X "${V3_SHA_PRIV_KEY}")
+  fi
 
   for ((attempt = 1; attempt <= 20; attempt++)); do
-    if snmpget -v2c -c public -On "${address}:161" \
+    if snmpget "${authentication[@]}" -On "${address}:161" \
         1.3.6.1.2.1.1.1.0 >/dev/null 2>&1; then
       return 0
     fi
     sleep 1
   done
-  red "A v2c simulator did not return an SNMP response" >&2
+  red "Simulator ${name} (${variation}) did not return an SNMP response" >&2
   return 1
 }
 
-verify_v2c_agents() {
-  local address
-
-  green "[STEP] Verifying v2c simulator readiness"
-  for address in "${V2C_IPS[@]}"; do
-    verify_v2c_agent "${address}"
-  done
-  green "[DONE] All v2c simulators respond to SNMP requests"
+verify_snmp_agents() {
+  green "[STEP] Verifying v2c and v3 simulator readiness"
+  for_each_agent verify_snmp_agent
+  green "[DONE] All v2c and v3 simulators respond to SNMP requests"
 }
 
 report_readiness() {
@@ -468,7 +472,7 @@ main() {
     prepare_discovery_output
   fi
   start_microk8s_agents
-  verify_v2c_agents
+  verify_snmp_agents
   report_readiness
   if [[ -n "${SIMULATOR_MANIFEST:-}" ]]; then
     [[ "${manifest_mode}" != "docker" ]] || manifest_mode="docker-compose"

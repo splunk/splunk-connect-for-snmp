@@ -41,23 +41,23 @@ def run(directory, arguments, content=None, timeout=600, env=None):
     )
 
 
-def observe_target(directory, target, manifest, action):
-    env = compose_environment(target) if target["mode"] == "docker-compose" else None
-    execute = partial(run, directory, timeout=45, env=env)
-    context = application_context(target, execute)
-    target["component_uids"] = context["component_uids"]
-    return probe_application(
-        context, manifest["devices"], action, execute, component="worker-sender"
-    )
-
-
 def wait_for_application(directory, target, manifest):
     logger.info(f"Waiting for an empty isolated application: backend={target['mode']}")
+    env = compose_environment(target) if target["mode"] == "docker-compose" else None
+    execute = partial(run, directory, timeout=45, env=env)
     deadline = time.monotonic() + 600
     snapshot = {}
     while time.monotonic() < deadline:
         try:
-            snapshot = observe_target(directory, target, manifest, "state")
+            context = application_context(target, execute)
+            target["component_uids"] = context["component_uids"]
+            snapshot = probe_application(
+                context,
+                manifest["devices"],
+                "state",
+                execute,
+                component="worker-sender",
+            )
             if snapshot["drained"]:
                 if snapshot["entries"] or snapshot["foreign_entries"]:
                     raise RuntimeError("The isolated application did not start empty")
@@ -96,11 +96,7 @@ def prepare_kubernetes(
         }
     )
     write_private(directory / "target.json", json.dumps(target))
-    namespace = execute(
-        [*kube, "get", "namespace", namespace_name, "--ignore-not-found", "-o", "name"],
-    )
-    if not namespace.strip():
-        execute([*MICROK8S, "kubectl", "create", "namespace", namespace_name])
+    execute([*MICROK8S, "kubectl", "create", "namespace", namespace_name])
     credentials = read_private_json(manifest["credentials_file"])["v3"]
     hec = splunk["hec"]
     secret_data = {
@@ -270,18 +266,9 @@ def prepare(
         "event_index": splunk.get("event_index", "netops"),
         "metric_index": splunk.get("metric_index", "netmetrics"),
     }
-    if mode == "docker-compose":
-        project = manifest["run_id"]
-        target.update(
-            {
-                "project": project,
-                "compose_file": str(directory / "docker-compose.yaml"),
-                "env_file": str(directory / ".env"),
-            }
-        )
     write_private(directory / "target.json", json.dumps(target))
     if mode == "docker-compose":
-        target.update(prepare_compose(directory, project, image, splunk))
+        target.update(prepare_compose(directory, manifest["run_id"], image, splunk))
         write_private(directory / "target.json", json.dumps(target))
         start_compose(target, read_private_json(manifest["credentials_file"]))
     else:

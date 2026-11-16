@@ -99,8 +99,12 @@ async def probe_simulators(state, credentials):
     logger.info(f"All simulators answered SNMP: devices={len(state['devices'])}")
 
 
-def deployed_simulator_pods(namespace, error_file):
-    return json.loads(
+def capture_simulators(mode, namespace, manifest_path, credentials):
+    manifest_path = Path(manifest_path).resolve()
+    directory = manifest_path.parent
+    directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+    directory.chmod(0o700)
+    pods = json.loads(
         _run_integration_command(
             [
                 *MICROK8S,
@@ -115,26 +119,15 @@ def deployed_simulator_pods(namespace, error_file):
                 "json",
             ],
             "Reading the job's simulator pods",
-            error_file=error_file,
+            error_file=directory / "simulator-command-error.log",
         )
     )["items"]
-
-
-def capture_simulators(mode, namespace, manifest_path, credentials):
-    manifest_path = Path(manifest_path).resolve()
-    directory = manifest_path.parent
-    directory.mkdir(mode=0o700, parents=True, exist_ok=True)
-    directory.chmod(0o700)
-    error_file = directory / "simulator-command-error.log"
     devices = []
-    pods = deployed_simulator_pods(namespace, error_file)
     for pod in sorted(pods, key=lambda item: item["metadata"]["name"]):
         version = {"v2c": "2c", "v3": "3"}[pod["metadata"]["labels"]["variation"]]
         devices.append(
             {
                 "label": f"IP{len(devices) + 1}",
-                "name": pod["metadata"]["name"],
-                "uid": pod["metadata"]["uid"],
                 "address": pod["status"]["podIP"],
                 "port": 161,
                 "version": version,
@@ -148,7 +141,6 @@ def capture_simulators(mode, namespace, manifest_path, credentials):
         json.dumps(
             {
                 "mode": mode,
-                "namespace": namespace,
                 "credentials_file": str(credential_path),
                 "devices": devices,
                 "ready": True,
@@ -186,35 +178,11 @@ def load_simulators(directory, mode):
         raise RuntimeError("The job needs three v2c and two v3 simulator endpoints")
     directory = Path(directory).resolve()
     directory.mkdir(mode=0o700)
-    error_file = directory / "simulator-command-error.log"
-    pods = {
-        pod["metadata"]["name"]: pod
-        for pod in deployed_simulator_pods(state["namespace"], error_file)
-    }
     for index, device in enumerate(state["devices"], 1):
-        pod = pods.get(device["name"])
-        if (
-            not pod
-            or pod["metadata"]["uid"] != device["uid"]
-            or pod["status"].get("podIP") != device["address"]
-        ):
-            raise RuntimeError(
-                "The job's simulator deployment changed. Run setup again"
-            )
         device["label"] = f"IP{index}"
-    credentials = read_private_json(state["credentials_file"])
-    credential_path = directory / "credentials.json"
-    write_private(credential_path, json.dumps(credentials))
-    state.update(
-        {
-            # Each case gets fresh application storage even when
-            # it uses the same simulator deployment prepared for this job.
-            "run_id": f"jitter-{uuid4().hex[:12]}",
-            "credentials_file": str(credential_path),
-            "manifest_path": str(directory / "endpoints.json"),
-        }
-    )
-    write_private(state["manifest_path"], json.dumps(state))
+    # Application storage is isolated per case, simulators belong to the job.
+    state["run_id"] = f"jitter-{uuid4().hex[:12]}"
+    write_private(directory / "endpoints.json", json.dumps(state))
     logger.info(f"Using the job's simulator deployment: backend={mode}, devices=5")
     return state
 
