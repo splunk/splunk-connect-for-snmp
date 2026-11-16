@@ -6,6 +6,15 @@
 - Inventory job now takes its log level from `poller.logLevel` instead of `scheduler.logLevel`, defaulting to `INFO`.
 
 ### Fixed
+- A value whose SNMP type differs from the type declared in its MIB no longer drops the whole poll. When `prettyPrint()` fails, the raw value is used and a warning with the OID, class, tag set and raw value is logged.
+
+## [1.18.1]
+
+### Changed
+- Inventory job now takes its log level from `poller.logLevel` instead of `scheduler.logLevel`, defaulting to `INFO`.
+
+### Fixed
+- Downgrade and pin PySMI to 1.6.3 to restore compatibility with MIBs containing enumeration labels with underscores, which PySMI 2.0.0 fails to parse.
 
 ## [1.18.0]
 
