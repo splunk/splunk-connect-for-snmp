@@ -350,7 +350,7 @@ def setup_smart_profiles(request):
     logger.info("Integration test for fields smart profiles")
     profile = {
         "smart_profile_field": {
-            "frequency": 3,
+            "frequency": 5,
             "condition": {
                 "type": "field",
                 "field": "SNMPv2-MIB.sysDescr",
@@ -1883,7 +1883,7 @@ def setup_misconfigured_profiles(request):
             ],
         },
         "no_patterns_profile": {
-            "frequency": 3,
+            "frequency": 5,
             "condition": {
                 "type": "field",
                 "field": "SNMPv2-MIB.sysDescr",
