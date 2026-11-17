@@ -93,33 +93,6 @@ start_snmpsim() {
 
 # ===== RUN TESTS =====
 run_tests() {
-  if [[ "$TEST_FILTER" != "tests/jitter" ]]; then
-    step "Waiting for first poll cycle (up to 3 minutes)"
-
-    local waited=0
-
-    while [[ $waited -lt 180 ]]; do
-      local count
-      count=$(curl -sk -u "${SPLUNK_USER}:${SPLUNK_PASSWORD}" \
-        "${SPLUNK_API}/services/search/jobs" \
-        -d "search=search index=netops sourcetype=\"sc4snmp:event\" earliest=-10m" \
-        -d exec_mode=oneshot 2>/dev/null \
-        | grep -c "<s:key name=\"count\">" || true)
-
-      if [[ "$count" -gt 0 ]]; then
-        info "Data confirmed in Splunk after ${waited}s"
-        break
-      fi
-
-      info "No data yet... ${waited}s elapsed"
-
-      sleep 20
-      (( waited += 20 ))
-    done
-
-    [[ $waited -ge 180 ]] && warn "Timeout waiting for data — running tests anyway"
-  fi
-
   step "Running Integration Tests"
 
   local trap_ip
@@ -128,9 +101,7 @@ run_tests() {
   info "Running filter: ${TEST_FILTER}"
 
   local -a pytest_arguments=()
-  if [[ "$TEST_FILTER" == "tests/jitter" ]]; then
-    pytest_arguments+=(-x)
-  elif [[ "$TEST_FILTER" == "tests/" ]]; then
+  if [[ "$TEST_FILTER" == "tests/" ]]; then
     info "Jitter needs its isolated environment. Run it separately with --test jitter"
     pytest_arguments+=(--ignore=tests/jitter)
   fi
@@ -228,14 +199,6 @@ start_snmpsim
 
 step "MicroK8s Setup"
 
-# ===== CHECK MICROK8S =====
-if ! command -v microk8s &> /dev/null; then
-  info "Installing MicroK8s..."
-  sudo snap install microk8s --classic
-  sudo usermod -aG microk8s $USER
-  sleep 10
-fi
-
 HOST_IP=$(hostname -I | awk '{print $1}')
 RANGE="${HOST_IP%.*}.240-${HOST_IP%.*}.250"
 info "MetalLB range: $RANGE"
@@ -301,6 +264,7 @@ echo "Starting Python setup..."
 ensure_python
 deploy_poetry || true
 sleep 10
+wait_for_initial_poll
 run_tests
 
 info "Restoring values.yaml"

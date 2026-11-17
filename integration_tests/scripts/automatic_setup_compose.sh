@@ -129,14 +129,14 @@ cd "$INT_TEST_DIR"
 
 chmod u+x "$SCRIPT_DIR/prepare_splunk.sh"
 "$SCRIPT_DIR/prepare_splunk.sh"
+if [[ ${1:-} == 'integration' ]]; then
+  define_python
+  deploy_poetry || exit 1
+fi
 if [[ "${JITTER_ENABLED:-false}" == "true" ]]; then
   export SIMULATOR_NAMESPACE="${SIMULATOR_NAMESPACE:-jitter-docker-agent-simulator}"
   export SIMULATOR_MANIFEST="${SIMULATOR_MANIFEST:-${INT_TEST_DIR}/.simulators/docker-compose/endpoints.json}"
   "$SCRIPT_DIR/setup_simulator.sh" docker || exit 1
-  if [[ ${1:-} == 'integration' ]]; then
-    define_python
-    deploy_poetry
-  fi
   exit 0
 fi
 echo $(green "Setting up docker compose configuration")
@@ -211,8 +211,3 @@ wait_for_containers_to_be_up
 
 sudo docker ps
 sudo docker exec sc4snmp-inventory printenv
-
-if [[ $1 == 'integration' ]]; then
-  define_python
-  deploy_poetry
-fi

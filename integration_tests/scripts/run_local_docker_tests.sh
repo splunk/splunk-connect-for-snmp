@@ -180,30 +180,7 @@ start_compose() {
     sleep 5
   done
 
-  step "Waiting for first poll cycle (up to 3 minutes)"
-
-  local waited=0
-
-  while [[ $waited -lt 180 ]]; do
-    local count
-    count=$(curl -sk -u "${SPLUNK_USER}:${SPLUNK_PASSWORD}" \
-      "${SPLUNK_API}/services/search/jobs" \
-      -d "search=search index=netops sourcetype=\"sc4snmp:event\" earliest=-10m" \
-      -d exec_mode=oneshot 2>/dev/null \
-      | grep -c "<s:key name=\"count\">" || true)
-
-    if [[ "$count" -gt 0 ]]; then
-      info "Data confirmed in Splunk after ${waited}s"
-      break
-    fi
-
-    info "No data yet... ${waited}s elapsed"
-
-    sleep 20
-    (( waited += 20 ))
-  done
-
-  [[ $waited -ge 180 ]] && warn "Timeout waiting for data — running tests anyway"
+  wait_for_initial_poll
 }
 
 # ===== RUN TESTS =====
@@ -216,9 +193,7 @@ run_tests() {
   info "Running filter: ${TEST_FILTER}"
 
   local -a pytest_arguments=()
-  if [[ "$TEST_FILTER" == "tests/jitter" ]]; then
-    pytest_arguments+=(-x)
-  elif [[ "$TEST_FILTER" == "tests/" ]]; then
+  if [[ "$TEST_FILTER" == "tests/" ]]; then
     info "Jitter needs its isolated environment. Run it separately with --test jitter"
     pytest_arguments+=(--ignore=tests/jitter)
   fi
@@ -246,19 +221,6 @@ main() {
   info "ENV_FILE:             $ENV_FILE"
   info "COMPOSE_FILE:         $COMPOSE_FILE"
 
-  if [[ "$TEST_FILTER" != "tests/jitter" ]]; then
-    step "Copying docker_compose directory for local use"
-    if [[ ! -d "$DOCKER_COMPOSE_ORIG" ]]; then
-      error "Source directory not found: $DOCKER_COMPOSE_ORIG"
-      exit 1
-    fi
-    rm -rf "$DOCKER_COMPOSE_LOCAL"
-    cp -r "$DOCKER_COMPOSE_ORIG" "$DOCKER_COMPOSE_LOCAL"
-    info "Copied $DOCKER_COMPOSE_ORIG -> $DOCKER_COMPOSE_LOCAL"
-
-    install_snmpd
-    validate_paths
-  fi
   start_splunk
   check_splunk
   create_indexes
@@ -276,6 +238,17 @@ main() {
     export SIMULATOR_MANIFEST="${SIMULATOR_MANIFEST:-${INT_TEST_DIR}/.simulators/docker-compose/endpoints.json}"
     "${SCRIPT_DIR}/setup_simulator.sh" docker
   else
+    step "Copying docker_compose directory for local use"
+    if [[ ! -d "$DOCKER_COMPOSE_ORIG" ]]; then
+      error "Source directory not found: $DOCKER_COMPOSE_ORIG"
+      exit 1
+    fi
+    rm -rf "$DOCKER_COMPOSE_LOCAL"
+    cp -r "$DOCKER_COMPOSE_ORIG" "$DOCKER_COMPOSE_LOCAL"
+    info "Copied $DOCKER_COMPOSE_ORIG -> $DOCKER_COMPOSE_LOCAL"
+
+    install_snmpd
+    validate_paths
     update_env "$token"
     start_snmp
     "${SCRIPT_DIR}/setup_simulator.sh" docker

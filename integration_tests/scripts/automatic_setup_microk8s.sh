@@ -153,6 +153,10 @@ chmod +x "$SCRIPT_DIR/prepare_splunk.sh"
 chmod +x "$SCRIPT_DIR/install_sck.sh"
 
 "$SCRIPT_DIR/prepare_splunk.sh"
+if [[ ${1:-} == 'integration' ]]; then
+  define_python
+  deploy_poetry || exit 1
+fi
 if [[ "${JITTER_ENABLED:-false}" == "true" ]]; then
   sudo microk8s enable dns hostpath-storage helm3
   sudo microk8s status --wait-ready
@@ -160,10 +164,6 @@ if [[ "${JITTER_ENABLED:-false}" == "true" ]]; then
   export SIMULATOR_NAMESPACE="${SIMULATOR_NAMESPACE:-jitter-microk8s-agent-simulator}"
   export SIMULATOR_MANIFEST="${SIMULATOR_MANIFEST:-${INT_TEST_DIR}/.simulators/microk8s/endpoints.json}"
   "$SCRIPT_DIR/setup_simulator.sh" microk8s || exit 1
-  if [[ ${1:-} == 'integration' ]]; then
-    define_python
-    deploy_poetry
-  fi
   exit 0
 fi
 "$SCRIPT_DIR/install_sck.sh"
@@ -250,8 +250,3 @@ wait_for_pod_initialization
 wait_for_sc4snmp_pods_to_be_up
 check_metallb_status
 echo $(green "[DONE] SC4SNMP pods and load-balancer service are ready")
-
-if [[ ${1:-} == 'integration' ]]; then
-  define_python
-  deploy_poetry
-fi

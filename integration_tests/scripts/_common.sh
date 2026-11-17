@@ -277,6 +277,27 @@ get_hec_token() {
   echo "$token"
 }
 
+wait_for_initial_poll() {
+  step "Waiting for first poll cycle (up to 3 minutes)"
+  local waited=0 count
+
+  while [[ $waited -lt 180 ]]; do
+    count=$(curl -sk -u "${SPLUNK_USER}:${SPLUNK_PASSWORD}" \
+      "${SPLUNK_API}/services/search/jobs" \
+      -d "search=search index=netops sourcetype=\"sc4snmp:event\" earliest=-10m" \
+      -d exec_mode=oneshot 2>/dev/null \
+      | grep -c "<s:key name=\"count\">" || true)
+    if [[ "$count" -gt 0 ]]; then
+      info "Data confirmed in Splunk after ${waited}s"
+      return 0
+    fi
+    info "No data yet... ${waited}s elapsed"
+    sleep 20
+    waited=$((waited + 20))
+  done
+  warn "Timeout waiting for data — running tests anyway"
+}
+
 # ===== CLEAN INDEXES =====
 clean_indexes() {
   step "Cleaning indexes"
