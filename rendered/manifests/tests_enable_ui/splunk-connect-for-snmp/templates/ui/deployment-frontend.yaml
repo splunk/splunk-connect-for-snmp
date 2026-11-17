@@ -30,8 +30,6 @@ spec:
         image: "ghcr.io/splunk/sc4snmp-ui/frontend/container:main"
         imagePullPolicy: Always
         env:
-          - name: REACT_APP_FLASK_PORT
-            value: "30002"
           - name: DEMO_PORT
             value: "30001"
         ports:

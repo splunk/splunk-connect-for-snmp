@@ -1,0 +1,14 @@
+---
+# Source: splunk-connect-for-snmp/templates/ui/service-frontend.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui-frontend-entrypoint
+spec:
+  type: NodePort
+  selector:
+    app: ui-frontend
+  ports:
+  - port: 30001
+    targetPort: 30001
+    nodePort: 30001

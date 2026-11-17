@@ -4,11 +4,13 @@ kind: Service
 metadata:
   name: ui-frontend-entrypoint
 spec:
-  type: NodePort
+  type: {{ .Values.UI.frontEnd.serviceType | default "NodePort" }}
   selector:
     app: ui-frontend
   ports:
   - port: {{ .Values.UI.frontEnd.NodePort }}
     targetPort: {{ .Values.UI.frontEnd.NodePort }}
+    {{- if eq (.Values.UI.frontEnd.serviceType | default "NodePort") "NodePort" }}
     nodePort: {{ .Values.UI.frontEnd.NodePort }}
+    {{- end }}
 {{- end }}
