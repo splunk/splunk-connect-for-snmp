@@ -30,7 +30,7 @@ UI:
     # login rate limiting sees real client IPs. Leave empty when users connect directly to the NodePort.
     trustedProxyCIDRs: ""
     repository: ghcr.io/splunk/sc4snmp-ui/frontend/container
-    tag: "1.4.0-beta.3"
+    tag: "1.4.0"
     pullPolicy: "Always"
   backEnd:
     # Used only when serviceType is NodePort. The browser reaches the backend through the frontend, so the backend is
@@ -47,7 +47,7 @@ UI:
     # default: trust the header only when serviceType is ClusterIP. Combine with networkPolicy to also exclude other pods.
     trustedProxyCIDRs: ""
     repository: ghcr.io/splunk/sc4snmp-ui/backend/container
-    tag: "1.4.0-beta.3"
+    tag: "1.4.0"
     pullPolicy: "Always"
   # Base container that sets permissions for folders mounted to UI containers
   init:
