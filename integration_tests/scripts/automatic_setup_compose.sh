@@ -198,6 +198,10 @@ sudo docker run -d -p 1165:161/udp tandrup/snmpsim
 sudo docker run -d -p 1166:161/udp -v $(pwd)/snmpsim/data:/usr/local/snmpsim/data -e EXTRA_FLAGS="--variation-modules-dir=/usr/local/snmpsim/variation --data-dir=/usr/local/snmpsim/data" tandrup/snmpsim
 
 if [[ "$AUTODISCOVERY_ENABLED" == "true" ]]; then
+  echo $(green "Preparing Docker Compose networking before SNMP simulators")
+  sudo docker compose \
+    -f "$COMPOSE_FILE" \
+    --env-file "$ENV_FILE" create || exit 1
   "$SCRIPT_DIR/setup_simulator.sh" docker || exit 1
 else
   echo $(green "Skipping shared SNMP simulators and autodiscovery services for this test part")

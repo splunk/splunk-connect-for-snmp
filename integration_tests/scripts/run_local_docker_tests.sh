@@ -154,6 +154,12 @@ start_compose() {
 
   sleep 3
 
+  info "Preparing Docker Compose networking before SNMP simulators"
+  $COMPOSE \
+    -f "$COMPOSE_FILE" \
+    --env-file "$ENV_FILE" create
+  "${SCRIPT_DIR}/setup_simulator.sh" docker
+
   info "Starting stack..."
   $COMPOSE \
     -f "$COMPOSE_FILE" \
@@ -251,7 +257,6 @@ main() {
     validate_paths
     update_env "$token"
     start_snmp
-    "${SCRIPT_DIR}/setup_simulator.sh" docker
     start_compose
   fi
   ensure_python
