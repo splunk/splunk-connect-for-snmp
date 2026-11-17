@@ -900,6 +900,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#running-the-gui-behind-a-reverse-proxy" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Running the GUI behind a reverse proxy
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#enabling-authentication-and-authorisation" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2729,6 +2740,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#running-the-gui-behind-a-reverse-proxy" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Running the GUI behind a reverse proxy
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#enabling-authentication-and-authorisation" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2838,7 +2860,11 @@
 <span class="w">  </span><span class="nt">keepSectionFiles</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
 <ul>
-<li><code>NodePort</code>: port number on which GUI will be accessible. It has to be from a range <code>30000-32767</code>.</li>
+<li><code>NodePort</code>: port number on which GUI will be accessible. It has to be from a range <code>30000-32767</code>. The browser talks only to the
+frontEnd: it forwards API calls to the backEnd inside the cluster, so by default the backEnd is not exposed outside the cluster
+(<code>backEnd.serviceType</code> is <code>ClusterIP</code>). <code>backEnd.NodePort</code> is used only if you set <code>backEnd.serviceType: NodePort</code>.</li>
+<li><code>serviceType</code>: <code>NodePort</code> (default for <code>frontEnd</code>) or <code>ClusterIP</code> (default for <code>backEnd</code>). See
+<a href="#running-the-gui-behind-a-reverse-proxy">Running the GUI behind a reverse proxy</a>.</li>
 <li><code>pullPolicy</code>: <a href="https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy">kubernetes pull policy</a>.</li>
 <li><code>valuesFileDirectory</code>: this is an obligatory field if UI is used. It is an absolute directory path on the host machine 
 where configuration files from the GUI will be generated. It is used to keep all the changes from the GUI so that users can 
@@ -2872,6 +2898,67 @@ was NOT provided, then those files are created regardless of this variable.</li>
 </ul>
 <p>To access the GUI, in the browser type the IP address of your Microk8s cluster followed by the NodePort number from the 
 frontEnd section, e.g. <code>192.168.123.13:30001</code>.</p>
+<h2 id="running-the-gui-behind-a-reverse-proxy">Running the GUI behind a reverse proxy<a class="headerlink" href="#running-the-gui-behind-a-reverse-proxy" title="Permanent link">&para;</a></h2>
+<p>To serve the GUI over HTTPS, or under a hostname, put a reverse proxy (for example nginx or an Ingress controller) in front
+of it. The browser only talks to the GUI frontend: the frontend forwards API calls (<code>/api/...</code>) to the backend inside the
+cluster. The proxy therefore needs a single route to the frontend Service and no special handling of API paths or websockets.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">UI</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">enable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">frontEnd</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">NodePort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30001</span>
+<span class="w">    </span><span class="nt">serviceType</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterIP</span>
+<span class="w">    </span><span class="nt">trustedProxyCIDRs</span><span class="p">:</span><span class="w"> </span><span class="s">"10.1.0.0/16"</span>
+<span class="w">  </span><span class="nt">allowedOrigins</span><span class="p">:</span><span class="w"> </span><span class="s">"https://snmp-ui.example.com"</span>
+<span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">"sc4snmp-ui-auth"</span>
+<span class="w">    </span><span class="nt">secureCookies</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
+<ul>
+<li><code>frontEnd.serviceType</code>: set to <code>ClusterIP</code> when only the proxy should reach the GUI. The proxy must run inside the cluster
+(or be an Ingress controller), because a <code>ClusterIP</code> Service is not reachable from outside it. <code>frontEnd.NodePort</code> still sets the
+port the frontend listens on, which is the port the proxy connects to.</li>
+<li><code>frontEnd.trustedProxyCIDRs</code>: comma-separated IPs or CIDRs of the proxy pods. When a request comes from one of them, the
+client address is taken from <code>X-Forwarded-For</code>. This keeps the login rate limit (5 attempts per minute) per client. Without
+it, every user behind the proxy shares one limit. Only list addresses you control, because anyone in this range can set the
+client address.</li>
+<li><code>auth.secureCookies</code>: set to <code>true</code> so that the session cookie is only sent over HTTPS (see
+<a href="#enabling-authentication-and-authorisation">Enabling authentication and authorisation</a>).</li>
+<li><code>allowedOrigins</code>: the GUI calls the API on its own address, so CORS is not involved when using the GUI. Set it only if another
+origin needs to call the API.</li>
+</ul>
+<p>Example nginx server block that terminates TLS and forwards everything to the GUI frontend (replace <code>&lt;namespace&gt;</code> and, if
+changed, <code>30001</code> with <code>frontEnd.NodePort</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="k">server</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kn">listen</span><span class="w"> </span><span class="mi">443</span><span class="w"> </span><span class="s">ssl</span><span class="p">;</span>
+<span class="w">    </span><span class="kn">server_name</span><span class="w"> </span><span class="s">snmp-ui.example.com</span><span class="p">;</span>
+<span class="w">    </span><span class="c1"># ssl_certificate and ssl_certificate_key go here</span>
+
+<span class="w">    </span><span class="kn">add_header</span><span class="w"> </span><span class="s">Strict-Transport-Security</span><span class="w"> </span><span class="s">"max-age=31536000</span><span class="p">;</span><span class="w"> </span><span class="kn">includeSubDomains"</span><span class="w"> </span><span class="s">always</span><span class="p">;</span>
+<span class="w">    </span><span class="kn">client_max_body_size</span><span class="w"> </span><span class="mi">10m</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://ui-frontend-entrypoint.&lt;namespace&gt;.svc.cluster.local:30001</span><span class="p">;</span>
+<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Host</span><span class="w"> </span><span class="nv">$host</span><span class="p">;</span>
+<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Forwarded-For</span><span class="w"> </span><span class="nv">$remote_addr</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The frontend resolves the backend Service name when it starts. If you delete and recreate the <code>ui-backend-entrypoint</code> Service,
+restart the frontend pod. Anyone who can reach the backend Service from inside the cluster can call the API directly. 
+Set <code>UI.backEnd.networkPolicy.enabled: true</code> to have the chart create a NetworkPolicy that only allows the frontend pods to 
+connect to the backend on port 5000. It applies only when <code>UI.backEnd.serviceType</code> is <code>ClusterIP</code>, and it has an effect only 
+if the cluster&rsquo;s network plugin enforces NetworkPolicy.</p>
+<p>Set <code>UI.backEnd.trustedProxyCIDRs</code> (for example the pod network CIDR, <code>10.1.0.0/16</code> on microk8s) so the backend trusts
+<code>X-Forwarded-For</code> only from callers inside those ranges and rate limits everyone else by their real address. This keeps
+per-client login limits correct for a <code>NodePort</code> backend too. A pod network CIDR still includes every pod, so combine it
+with the NetworkPolicy to exclude other pods.</p>
+</div>
+<p>If you connect straight to the NodePort without a proxy, Kubernetes usually replaces the client address with the node address
+(<code>externalTrafficPolicy: Cluster</code>). All users then share one login rate limit. Use a reverse proxy with <code>trustedProxyCIDRs</code>,
+or set <code>externalTrafficPolicy: Local</code> on the Service, if you need a limit per client.</p>
 <h2 id="enabling-authentication-and-authorisation">Enabling authentication and authorisation<a class="headerlink" href="#enabling-authentication-and-authorisation" title="Permanent link">&para;</a></h2>
 <p>Starting with the UI authentication feature, SC4SNMP-UI can require users to log in with a username and password before 
 any configuration is viewed or changed. </p>
@@ -2941,7 +3028,7 @@ SC4SNMP release (typically <code>sc4snmp</code>). The Secret must expose exactly
 <div class="highlight"><pre><span></span><code><span class="nt">UI</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">enable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">  </span><span class="c1"># CORS allow-list for the backend (comma-separated scheme+host[+port]).</span>
-<span class="w">  </span><span class="c1"># REQUIRED in production when authentication is enabled.</span>
+<span class="w">  </span><span class="c1"># Set it to the exact URL(s) of any other origin that must call the API directly.</span>
 <span class="w">  </span><span class="nt">allowedOrigins</span><span class="p">:</span><span class="w"> </span><span class="s">"https://snmp-ui.example.com"</span>
 
 <span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
@@ -2988,13 +3075,13 @@ SC4SNMP release (typically <code>sc4snmp</code>). The Secret must expose exactly
 </tr>
 <tr>
 <td><code>UI.auth.secureCookies</code></td>
-<td>When <code>true</code>, the session cookie is issued with the <code>Secure</code> flag and is only transmitted over HTTPS. Requires an HTTPS-terminating reverse proxy (e.g. nginx) in front of the NodePorts - the Helm chart serves plain HTTP only. Set to <code>false</code> for plain HTTP deployments; browsers will silently drop the cookie otherwise.</td>
+<td>When <code>true</code>, the session cookie is issued with the <code>Secure</code> flag and is only transmitted over HTTPS. Requires an HTTPS-terminating reverse proxy (e.g. nginx) in front of the GUI - the Helm chart serves plain HTTP only (see <a href="#running-the-gui-behind-a-reverse-proxy">Running the GUI behind a reverse proxy</a>). Set to <code>false</code> for plain HTTP deployments; browsers will silently drop the cookie otherwise.</td>
 <td><code>false</code></td>
 <td>no</td>
 </tr>
 <tr>
 <td><code>UI.allowedOrigins</code></td>
-<td>Comma-separated list of origins allowed to call the UI backend (e.g. <code>http://localhost:30001</code>). If empty and <code>auth.enabled=true</code>, the backend defaults to <code>http://localhost:8080</code>. Set explicitly in production to the exact URL(s) a browser will use to reach the UI - otherwise login requests will be rejected by CORS.</td>
+<td>Comma-separated list of origins allowed to call the UI backend directly (e.g. <code>https://snmp-ui.example.com</code>). The GUI itself calls the API on its own address, so this matters only for other origins that call the API. If empty and <code>auth.enabled=true</code>, the backend defaults to <code>http://localhost:8080</code>.</td>
 <td><code>""</code></td>
 <td>recommended in production</td>
 </tr>
@@ -3005,12 +3092,12 @@ SC4SNMP release (typically <code>sc4snmp</code>). The Secret must expose exactly
 <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--namespace<span class="w"> </span>sc4snmp<span class="w"> </span>--create-namespace
 </code></pre></div>
-<p>Open the UI in a browser (<code>https://&lt;ui-host&gt;:&lt;frontEnd.NodePort&gt;</code>). You will be redirected to a login screen; authenticate 
+<p>Open the UI in a browser (<code>http://&lt;node-ip&gt;:&lt;frontEnd.NodePort&gt;</code>, or the HTTPS address of your reverse proxy). You will be redirected to a login screen; authenticate 
 with the username and password used when generating the Secret. Inactivity beyond <code>idleTimeoutMinutes</code> or sessions older 
 than <code>jwtExpiryHours</code> will require a fresh login.</p>
 <h3 id="operational-guidance">Operational guidance<a class="headerlink" href="#operational-guidance" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Serve the UI over HTTPS (TLS 1.2+). Because the JWT cookie is <code>HttpOnly</code> and <code>Secure</code>, authenticated access over plain 
+<li>Serve the UI over HTTPS (TLS 1.2+) through a reverse proxy (see <a href="#running-the-gui-behind-a-reverse-proxy">Running the GUI behind a reverse proxy</a>). Because the JWT cookie is <code>HttpOnly</code> and <code>Secure</code>, authenticated access over plain 
   HTTP is intentionally broken outside <code>localhost</code>.</li>
 <li>Keep <code>UI.allowedOrigins</code> as tight as possible - ideally a single production URL. Wildcards are not supported when 
   authentication is enabled.</li>

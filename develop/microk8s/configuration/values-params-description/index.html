@@ -3783,8 +3783,28 @@ change those settings.</p>
 </tr>
 <tr>
 <td><code>NodePort</code></td>
-<td>Port number for accessing UI</td>
+<td>Port number for accessing UI. For the backEnd it is used only when <code>serviceType</code> is <code>NodePort</code></td>
 <td><code>frontEnd - 30001</code>, <code>backend - 30002</code></td>
+</tr>
+<tr>
+<td><code>serviceType</code></td>
+<td>Kubernetes Service type (<code>NodePort</code> or <code>ClusterIP</code>), set separately in <code>frontEnd</code> and <code>backEnd</code></td>
+<td><code>frontEnd - NodePort</code>, <code>backEnd - ClusterIP</code></td>
+</tr>
+<tr>
+<td><code>trustedProxyCIDRs</code></td>
+<td><code>frontEnd</code> only. Comma-separated IPs/CIDRs of reverse proxies whose <code>X-Forwarded-For</code> is trusted</td>
+<td><code>""</code></td>
+</tr>
+<tr>
+<td><code>networkPolicy.enabled</code></td>
+<td><code>backEnd</code> only. Creates a NetworkPolicy allowing ingress to the backend only from the frontend pods. Needs <code>serviceType: ClusterIP</code> and a network plugin that enforces NetworkPolicy</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>trustedProxyCIDRs</code> (backEnd)</td>
+<td>IPs/CIDRs of the frontend pods (e.g. the pod network CIDR). The backend trusts <code>X-Forwarded-For</code> only from callers inside them; others are rate limited by their real address</td>
+<td><code>""</code></td>
 </tr>
 <tr>
 <td><code>image</code></td>
