@@ -6,9 +6,11 @@ metadata:
 spec:
   selector:
     app: ui-backend
-  type: NodePort
+  type: {{ .Values.UI.backEnd.serviceType | default "ClusterIP" }}
   ports:
   - port: 5000
     targetPort: 5000
+    {{- if eq (.Values.UI.backEnd.serviceType | default "ClusterIP") "NodePort" }}
     nodePort: {{ .Values.UI.backEnd.NodePort }}
+    {{- end }}
 {{- end }}

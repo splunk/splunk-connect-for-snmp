@@ -212,16 +212,20 @@ change those settings.
 
 Detailed documentation about configuring UI can be found in [Enable GUI](../gui/enable-gui.md).
 
-| Variable              | Description                                                                                          | Default                               |
-|-----------------------|------------------------------------------------------------------------------------------------------|---------------------------------------|
-| `enable`              | Enabling GUI for user                                                                                | `false`                               |
-| `frontEnd`            | Section with configuration for frontEnd image                                                        |                                       |
-| `backEnd`             | Section with configuration for backEnd image                                                         |                                       |
-| `NodePort`            | Port number for accessing UI                                                                         | `frontEnd - 30001`, `backend - 30002` |
-| `image`               | Refer to [Image Section](./#image-section)                                                           |                                       |
-| `valuesFileDirectory` | Absolute directory path on the host machine where configuration files from the GUI will be generated |                                       |
-| `valuesFileName`      | Full name of the file with configuration, stored inside the `valuesFileDirectory`                    |                                       |
-| `keepSectionFiles`    | Decides if additional configuration files should be generated                                        | `true`                                |
+| Variable                      | Description                                                                                                                                                                          | Default                                      |
+|-------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------|
+| `enable`                      | Enabling GUI for user                                                                                                                                                                | `false`                                      |
+| `frontEnd`                    | Section with configuration for frontEnd image                                                                                                                                        |                                              |
+| `backEnd`                     | Section with configuration for backEnd image                                                                                                                                         |                                              |
+| `NodePort`                    | Port number for accessing UI. For the backEnd it is used only when `serviceType` is `NodePort`                                                                                       | `frontEnd - 30001`, `backend - 30002`        |
+| `serviceType`                 | Kubernetes Service type (`NodePort` or `ClusterIP`), set separately in `frontEnd` and `backEnd`                                                                                      | `frontEnd - NodePort`, `backEnd - ClusterIP` |
+| `trustedProxyCIDRs`           | `frontEnd` only. Comma-separated IPs/CIDRs of reverse proxies whose `X-Forwarded-For` is trusted                                                                                     | `""`                                         |
+| `networkPolicy.enabled`       | `backEnd` only. Creates a NetworkPolicy allowing ingress to the backend only from the frontend pods. Needs `serviceType: ClusterIP` and a network plugin that enforces NetworkPolicy | `false`                                      |
+| `trustedProxyCIDRs` (backEnd) | IPs/CIDRs of the frontend pods (e.g. the pod network CIDR). The backend trusts `X-Forwarded-For` only from callers inside them; others are rate limited by their real address        | `""`                                         |
+| `image`                       | Refer to [Image Section](./#image-section)                                                                                                                                           |                                              |
+| `valuesFileDirectory`         | Absolute directory path on the host machine where configuration files from the GUI will be generated                                                                                 |                                              |
+| `valuesFileName`              | Full name of the file with configuration, stored inside the `valuesFileDirectory`                                                                                                    |                                              |
+| `keepSectionFiles`            | Decides if additional configuration files should be generated                                                                                                                        | `true`                                       |
 
 ## Sim section
 

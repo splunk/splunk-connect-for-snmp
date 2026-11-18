@@ -58,7 +58,7 @@ def wait_for_poll_policy(live, frequency, window):
     )
 
 
-@pytest.mark.part9
+@pytest.mark.part13
 @pytest.mark.parametrize(
     "old_enabled,old_window,new_enabled,new_window",
     [
@@ -171,7 +171,7 @@ def test_overlapping_normal_inventory_jobs_preserve_first_registration(
     assert_indexed_for_all(live, setup_splunk, started, kinds=("metrics",))
 
 
-@pytest.mark.part9
+@pytest.mark.part13
 def test_reenable_after_completed_disable(jitter_live, setup_splunk):
     live = jitter_live
 
@@ -220,7 +220,7 @@ def test_reenable_after_completed_disable(jitter_live, setup_splunk):
     assert_indexed_for_all(live, setup_splunk, enabled_at, kinds=("metrics",))
 
 
-@pytest.mark.part11
+@pytest.mark.part9
 @pytest.mark.long_interval
 def test_beat_restart_continues_partial_policy_adoption(jitter_live, setup_splunk):
     live = jitter_live
@@ -271,7 +271,7 @@ def test_beat_restart_continues_partial_policy_adoption(jitter_live, setup_splun
     assert_indexed_for_all(live, setup_splunk, restarted_at)
 
 
-@pytest.mark.part11
+@pytest.mark.part16
 @pytest.mark.long_interval
 def test_later_walk_refresh_runs_existing_long_poll_before_initial_deadline(
     jitter_live, setup_splunk
@@ -368,7 +368,7 @@ def test_later_walk_refresh_runs_existing_long_poll_before_initial_deadline(
     )
 
 
-@pytest.mark.part11
+@pytest.mark.part16
 @pytest.mark.long_interval
 def test_delayed_inventory_request_survives_disable(jitter_live, setup_splunk):
     live = jitter_live

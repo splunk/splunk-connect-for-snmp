@@ -10,7 +10,7 @@ from integration_tests.tests.jitter.delivery import (
 )
 from integration_tests.utils.polling import short_profiles, wait_for
 
-pytestmark = pytest.mark.part11
+pytestmark = pytest.mark.part16
 
 
 @pytest.mark.parametrize("missing", ["walk", "poll", "both"])
