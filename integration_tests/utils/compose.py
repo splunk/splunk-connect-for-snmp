@@ -3,7 +3,6 @@ import logging
 import os
 import re
 from pathlib import Path
-from uuid import uuid4
 
 import yaml
 
@@ -55,8 +54,6 @@ def run_compose(target, *arguments):
         "Owned Compose command",
         timeout=600,
         env=compose_environment(target),
-        error_file=Path(target["compose_file"]).parent
-        / f"compose-failure-{uuid4().hex}.txt",
     )
 
 

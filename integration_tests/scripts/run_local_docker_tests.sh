@@ -177,9 +177,15 @@ start_compose() {
 
     if [[ $i -eq 60 ]]; then
       error "Containers failed to start"
+      info "============================================================"
+      info "DOCKER COMPOSE LOGS (last 50 lines)"
+      info "============================================================"
       $COMPOSE \
         -f "$COMPOSE_FILE" \
-        --env-file "$ENV_FILE" logs --tail=50
+        --env-file "$ENV_FILE" logs --tail=50 || true
+      info "============================================================"
+      info "END OF DOCKER COMPOSE LOGS"
+      info "============================================================"
       exit 1
     fi
 
@@ -195,7 +201,6 @@ run_tests() {
 
   local trap_ip
   trap_ip=$(ip addr show docker0 2>/dev/null | grep "inet " | awk '{print $2}' | cut -d/ -f1 || echo "172.17.0.1")
-  info "Using trap_external_ip: $trap_ip"
   info "Running filter: ${TEST_FILTER}"
 
   local -a pytest_arguments=()
@@ -238,6 +243,10 @@ main() {
   sudo docker build -t snmp-local .
 
   if [[ "$TEST_FILTER" == "tests/jitter" ]]; then
+    ensure_python
+    deploy_poetry
+    export SIMULATOR_PYTHON
+    SIMULATOR_PYTHON="$(poetry env info --executable)"
     umask 077
     printf '%s\n' "$token" > "${INT_TEST_DIR}/hec_token"
     export SIMULATOR_NAMESPACE="${SIMULATOR_NAMESPACE:-jitter-docker-agent-simulator}"
@@ -258,9 +267,10 @@ main() {
     update_env "$token"
     start_snmp
     start_compose
+    ensure_python
+    deploy_poetry
+    wait_for_microk8s_api 180 5
   fi
-  ensure_python
-  deploy_poetry
   run_tests
 }
 

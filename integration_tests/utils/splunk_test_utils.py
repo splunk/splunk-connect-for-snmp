@@ -312,7 +312,6 @@ def update_inventory_compose(records):
             fp.write(result)
 
         logger.info(f"Inventory updated: {INVENTORY_FILE}")
-        logger.debug(f"Inventory content:\n{result}")
 
     except FileNotFoundError:
         logger.error(f"Inventory file path not found: {INVENTORY_FILE}", exc_info=True)
@@ -341,7 +340,6 @@ def update_profiles_compose(profiles):
             yaml.dump(scheduler_config, file)
 
         logger.info(" Profiles updated successfully")
-        logger.debug(f"Profiles: {profiles}")
 
     except FileNotFoundError:
         logger.error(
@@ -372,7 +370,6 @@ def update_groups_compose(groups):
             yaml.dump(scheduler_config, file)
 
         logger.info(" Groups updated successfully")
-        logger.debug(f"Groups: {groups}")
 
     except FileNotFoundError:
         logger.error(
@@ -391,7 +388,7 @@ def upgrade_env_compose(variable, new_value, env_path=None):
         if not variable:
             raise ValueError("Variable name cannot be empty")
 
-        logger.info(f"Updating ENV → {variable}={new_value}")
+        logger.info(f"Updating ENV → {variable}")
 
         lines = []
         found = False

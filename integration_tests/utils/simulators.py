@@ -119,7 +119,6 @@ def capture_simulators(mode, namespace, manifest_path, credentials):
                 "json",
             ],
             "Reading the job's simulator pods",
-            error_file=directory / "simulator-command-error.log",
         )
     )["items"]
     devices = []

@@ -2,7 +2,6 @@ import csv
 import io
 import json
 import logging
-import os
 import subprocess
 import threading
 import time
@@ -55,12 +54,11 @@ def wait_for(predicate, description, timeout, interval=0.5):
 
 
 class LiveJitter:
-    def __init__(self, target, manifest, directory, timeout):
+    def __init__(self, target, manifest, timeout):
         self.target = target
         self.devices = sorted(
             manifest["devices"], key=lambda device: int(device["label"][2:])
         )
-        self.directory = Path(directory)
         self.timeout = timeout
         self.mode = target["mode"]
         self.started_at = time.time()
@@ -120,7 +118,6 @@ class LiveJitter:
             timeout=timeout or self.timeout,
             content=content,
             env=self.command_environment(),
-            error_file=self.directory / f"command-failure-{uuid4().hex}.txt",
         )
 
     def kube_json(self, *arguments):
@@ -155,9 +152,6 @@ class LiveJitter:
             "action": action,
             "duration": max(3600, self.timeout * 8),
         }
-        name = "event" if action == "events" else "schedule"
-        errors = (self.directory / f"{name}-observer-errors.txt").open("a")
-        os.chmod(errors.name, 0o600)
         prefix = self.context.get("observer_prefix")
         if prefix is None:
             prefix = self.exec_prefix("worker-sender")
@@ -171,11 +165,9 @@ class LiveJitter:
             ],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
-            stderr=errors,
             text=True,
             env=self.command_environment(),
         )
-        errors.close()
         # Keep stdin open so cleanup can send the remote observer a stop line.
         process.stdin.write(json.dumps(probe_program(request)) + "\n")
         process.stdin.flush()
@@ -205,7 +197,6 @@ class LiveJitter:
         close_observer(self.event_process)
         if self.event_reader:
             self.event_reader.join(timeout=5)
-        write_private(self.directory / "task-events.json", json.dumps(self.events))
         logger.info(f"Celery event observer stopped: events={len(self.events)}")
 
     def snapshot(self):
@@ -230,7 +221,6 @@ class LiveJitter:
 
     def drained(self):
         state = self.probe("drained")
-        write_private(self.directory / "drain-state.json", json.dumps(state))
         logger.debug(
             f"Published-work accounting: workers={state['workers']} "
             f"complete={state['worker_replies_complete']} queued={state['queued']} "
@@ -298,18 +288,6 @@ class LiveJitter:
             if self.observer.is_alive():
                 logger.error("Redis schedule observer did not stop")
                 raise RuntimeError("The Redis schedule observer did not stop")
-        write_private(
-            self.directory / "observations.json", json.dumps(self.observations)
-        )
-        write_private(
-            self.directory / "observation-gaps.json",
-            json.dumps(
-                {
-                    "interrupted": bool(self.observer_gaps),
-                    "gaps": self.observer_gaps,
-                }
-            ),
-        )
         logger.info(
             f"Redis schedule observer stopped: snapshots={len(self.observations)} "
             f"gaps={len(self.observer_gaps)}"
@@ -397,7 +375,9 @@ class LiveJitter:
             if from_mongo:
                 self.probe("configure_mongo", rows=inventory_rows, config=config)
             if self.mode == "microk8s":
-                override = self.directory / "values-jitter.yaml"
+                override = (
+                    Path(self.target["values_file"]).parent / "values-jitter.yaml"
+                )
                 write_private(
                     override,
                     yaml.safe_dump(
@@ -602,7 +582,6 @@ class LiveJitter:
             project=self.target.get("project"),
             docker=DOCKER,
             env=self.command_environment(),
-            error_file=self.directory / f"restart-failure-{uuid4().hex}.txt",
             restart_only=True,
         )
         logger.info(f"Polling component restarted: component={component}")

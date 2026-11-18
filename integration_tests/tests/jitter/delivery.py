@@ -1,11 +1,9 @@
 import json
 import math
 import re
-from uuid import uuid4
 
 from splunklib.results import JSONResultsReader
 
-from integration_tests.utils.files import write_private
 from integration_tests.utils.polling import short_profiles, wait_for
 
 
@@ -38,12 +36,7 @@ def wait_indexed(live, service, search, devices, description):
             return {label: counts[host] for host, label in expected.items()}
         return None
 
-    result = wait_for(indexed, description, live.timeout, interval=2)
-    write_private(
-        live.directory / f"ingestion-{uuid4().hex}.json",
-        json.dumps({"check": description, "counts": result}),
-    )
-    return result
+    return wait_for(indexed, description, live.timeout, interval=2)
 
 
 def search_scope(live, started, kind, labels=None):

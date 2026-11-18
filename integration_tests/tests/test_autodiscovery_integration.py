@@ -106,7 +106,14 @@ def simulator_profile(deployment):
     profile = SIMULATOR_PROFILES[deployment]
     return {
         **profile,
-        "namespace": os.getenv("SIMULATOR_NAMESPACE", profile["namespace"]),
+        "namespace": os.getenv("SIMULATOR_NAMESPACE") or profile["namespace"],
+        "prefixes": {
+            name: os.getenv(variable) or profile["prefixes"][name]
+            for name, variable in (
+                ("integration_v2c", "SIMULATOR_V2C_PREFIX"),
+                ("integration_v3", "SIMULATOR_V3_PREFIX"),
+            )
+        },
     }
 
 

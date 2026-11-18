@@ -28,55 +28,57 @@ from integration_tests.utils.splunk_test_utils import splunk_test_configuration
 logger = logging.getLogger(__name__)
 
 
-def dump_all_docker_logs(tail_lines: int = 60):
-    """Dump last N lines from all running Docker containers"""
+def dump_docker_logs(project=None):
     logger.info("=" * 60)
-    logger.info("DOCKER LOGS (last %s lines)", tail_lines)
+    logger.info("DOCKER CONTAINER LOGS (Last 60 lines)")
     logger.info("=" * 60)
-
-    result = subprocess.run(
-        ["docker", "ps", "--format", "{{.Names}}"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-    )
-
-    containers = result.stdout.splitlines()
-
-    if not containers:
-        logger.info("No running containers found")
-        return
-
-    for container in containers:
-        logger.info("\nContainer: %s", container)
-        logger.info("--" * 60)
-
-        logs = subprocess.run(
-            ["docker", "logs", "--tail", str(tail_lines), container],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
+    try:
+        command = ["docker", "ps", "-a", "--format", "{{.Names}}\t{{.Status}}"]
+        if project:
+            command.extend(["--filter", f"label=com.docker.compose.project={project}"])
+        result = subprocess.run(
+            command,
+            capture_output=True,
             text=True,
-            check=False,
+            timeout=30,
         )
-
-        if logs.stdout:
-            for line in logs.stdout.splitlines():
-                logger.info(line)
+        if result.returncode == 0:
+            logger.info(f"Docker container status:\n{result.stdout}")
+            for row in result.stdout.splitlines():
+                if not row.strip():
+                    continue
+                container = row.split()[0]
+                logger.info(f"Container: {container}")
+                try:
+                    logs = subprocess.run(
+                        ["docker", "logs", "--tail", "60", container],
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT,
+                        text=True,
+                        timeout=30,
+                    )
+                    logger.info(logs.stdout)
+                    if logs.returncode:
+                        logger.warning("Docker container logs are unavailable")
+                except (OSError, subprocess.SubprocessError):
+                    logger.warning("Docker container logs could not be collected")
         else:
-            logger.info("No logs available")
-
-    logger.info("=" * 60)
-    logger.info("END OF DOCKER LOGS")
-    logger.info("=" * 60)
+            logger.warning("Docker container status is unavailable")
+    except (OSError, subprocess.SubprocessError):
+        logger.warning("Docker diagnostic collection could not finish")
+    finally:
+        logger.info("=" * 60)
+        logger.info("END DOCKER CONTAINER LOGS")
+        logger.info("=" * 60)
 
 
 def dump_kubernetes_logs(namespaces=("sc4snmp",)):
     logger.info("=" * 60)
     logger.info("KUBERNETES POD LOGS (Last 50 lines)")
     logger.info("=" * 60)
-
     try:
         for namespace in namespaces:
+            logger.info(f"Namespace: {namespace}")
             result = subprocess.run(
                 [
                     "sudo",
@@ -86,54 +88,53 @@ def dump_kubernetes_logs(namespaces=("sc4snmp",)):
                     "pods",
                     "-n",
                     namespace,
+                    "--no-headers",
                     "-o",
-                    "name",
+                    "custom-columns=NAME:.metadata.name,PHASE:.status.phase",
                 ],
                 capture_output=True,
                 text=True,
                 check=False,
+                timeout=30,
             )
-
-            if result.returncode != 0:
-                logger.error("Could not get pods from %s: %s", namespace, result.stderr)
-                continue
-
-            pod_names = result.stdout.strip().split("\n")
-
-            for pod_name in pod_names:
-                if pod_name:
-                    pod_name = pod_name.replace("pod/", "")
-                    logger.info("-" * 60)
-                    logger.info("Pod: %s/%s", namespace, pod_name)
-                    logger.info("-" * 60)
-
-                    logs = subprocess.run(
-                        [
-                            "sudo",
-                            "microk8s",
-                            "kubectl",
-                            "logs",
-                            "--tail=50",
-                            pod_name,
-                            "-n",
-                            namespace,
-                        ],
-                        capture_output=True,
-                        text=True,
-                        check=False,
-                    )
-
-                    if logs.stdout:
-                        logger.info("\n%s", logs.stdout)
-                    else:
-                        logger.info("No logs for pod %s/%s", namespace, pod_name)
-
-    except Exception as e:
-        logger.exception("Error getting K8s logs: %s", e)
-
-    logger.info("=" * 60)
-    logger.info("END OF KUBERNETES LOGS")
-    logger.info("=" * 60)
+            if result.returncode == 0:
+                logger.info(f"Kubernetes pod status:\n{result.stdout}")
+                for row in result.stdout.splitlines():
+                    if not row.strip():
+                        continue
+                    pod = row.split()[0]
+                    logger.info(f"Pod: {pod}")
+                    try:
+                        logs = subprocess.run(
+                            [
+                                "sudo",
+                                "microk8s",
+                                "kubectl",
+                                "logs",
+                                "-n",
+                                namespace,
+                                pod,
+                                "--all-containers=true",
+                                "--tail=50",
+                            ],
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT,
+                            text=True,
+                            timeout=30,
+                        )
+                        logger.info(logs.stdout)
+                        if logs.returncode:
+                            logger.warning("Kubernetes pod logs are unavailable")
+                    except (OSError, subprocess.SubprocessError):
+                        logger.warning("Kubernetes pod logs could not be collected")
+            else:
+                logger.warning("Kubernetes pod status is unavailable")
+    except (OSError, subprocess.SubprocessError):
+        logger.warning("Kubernetes diagnostic collection could not finish")
+    finally:
+        logger.info("=" * 60)
+        logger.info("END KUBERNETES POD LOGS")
+        logger.info("=" * 60)
 
 
 def pytest_addoption(parser):
@@ -209,7 +210,7 @@ def setup_splunk(request):
 
 
 @pytest.fixture
-def jitter_live(request, tmp_path_factory):
+def jitter_live(request):
     from integration_tests.utils.polling import LiveJitter
 
     manifest, target = request.getfixturevalue("jitter_environment")
@@ -217,12 +218,10 @@ def jitter_live(request, tmp_path_factory):
         assert target.get("ha") is True, "Failover requires Redis and MongoDB replicas"
     assert target["mode"] == request.config.getoption("sc4snmp_deployment")
     service = request.getfixturevalue("setup_splunk")
-    directory = tmp_path_factory.mktemp("jitter-evidence-")
-    os.chmod(directory, 0o700)
     timeout = INTEGRATION_TEST_TIMEOUT
     if request.node.get_closest_marker("long_interval"):
         timeout = max(timeout, 660)
-    live = LiveJitter(target, manifest, directory, timeout)
+    live = LiveJitter(target, manifest, timeout)
     try:
         live.start_observing()
         yield live
@@ -284,40 +283,39 @@ def jitter_environment(request, tmp_path_factory):
     try:
         yield read_private_json(directory / "simulators/endpoints.json"), target
     finally:
-        environment.remove_application(directory, target)
+        environment.remove_application(target)
 
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_runtest_makereport(item, call):
-    """Auto dump logs when any test fails"""
-    if "jitter_live" in item.fixturenames:
-        if call.when == "call":
-            item.jitter_passed = call.excinfo is None
-        # Jitter evidence stays in its protected run directory. Broad container
-        # logs can contain unrelated credentials and device addresses.
-        return
+    if "jitter_live" in item.fixturenames and call.when == "call":
+        item.jitter_passed = call.excinfo is None
     if call.when != "call":
         return
 
     if call.excinfo is not None:
         logger.error("\n" + "!" * 60)
-        logger.error("TEST FAILED - DUMPING LOGS")
+        logger.error("TEST FAILED - COLLECTING DEPLOYMENT LOGS")
         logger.error("!" * 60)
 
         try:
             deployment = item.config.getoption("sc4snmp_deployment")
+            target = getattr(item.funcargs.get("jitter_live"), "target", {})
 
             is_autodiscovery_test = item.get_closest_marker("part8") is not None
             if str(deployment) == "microk8s":
-                namespaces = ["sc4snmp"]
+                namespaces = [target.get("namespace", "sc4snmp")]
                 if is_autodiscovery_test:
                     namespaces.append("microk8s-agent-simulator")
                 dump_kubernetes_logs(namespaces)
             else:
-                dump_all_docker_logs()
+                dump_docker_logs(project=target.get("project"))
                 if is_autodiscovery_test:
                     dump_kubernetes_logs(("docker-agent-simulator",))
 
-        except Exception as e:
-            logger.exception("Could not determine deployment: %s", e)
-            dump_all_docker_logs()
+        except Exception:
+            logger.warning("Failure diagnostics could not be collected")
+        finally:
+            logger.info("=" * 60)
+            logger.info("END FAILURE DIAGNOSTICS")
+            logger.info("=" * 60)

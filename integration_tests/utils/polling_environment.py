@@ -30,21 +30,20 @@ logger = logging.getLogger(__name__)
 ROOT = BASE_DIR.parent
 
 
-def run(directory, arguments, content=None, timeout=600, env=None):
+def run(arguments, content=None, timeout=600, env=None):
     return _run_integration_command(
         arguments,
         "Application setup command",
         content=content,
         timeout=timeout,
         env=env,
-        error_file=directory / "setup-failure.txt",
     )
 
 
-def wait_for_application(directory, target, manifest):
+def wait_for_application(target, manifest):
     logger.info(f"Waiting for an empty isolated application: backend={target['mode']}")
     env = compose_environment(target) if target["mode"] == "docker-compose" else None
-    execute = partial(run, directory, timeout=45, env=env)
+    execute = partial(run, timeout=45, env=env)
     deadline = time.monotonic() + 600
     snapshot = {}
     while time.monotonic() < deadline:
@@ -81,7 +80,7 @@ def prepare_kubernetes(
     namespace_name = target["namespace"]
     kube = [*MICROK8S, "kubectl", "-n", namespace_name]
     helm = [*MICROK8S, "helm3", "-n", namespace_name]
-    execute = partial(run, directory)
+    execute = run
     release = manifest["run_id"]
     secret_name = f"{release}-snmpv3"
     hec_secret = f"{release}-hec"
@@ -281,7 +280,7 @@ def prepare(
             ha=ha,
             mongo_inventory=mongo_inventory,
         )
-    wait_for_application(directory, target, manifest)
+    wait_for_application(target, manifest)
     write_private(directory / "target.json", json.dumps(target))
     logger.info(
         f"Isolated polling environment prepared: backend={mode}, "
@@ -289,13 +288,12 @@ def prepare(
     )
 
 
-def remove_application(directory, target):
+def remove_application(target):
     logger.info(f"Removing disposable test application: backend={target['mode']}")
     if target["mode"] == "docker-compose":
         run_compose(target, "down")
     else:
         run(
-            directory,
             [
                 *MICROK8S,
                 "helm3",

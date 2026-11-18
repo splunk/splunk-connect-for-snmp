@@ -1,4 +1,3 @@
-import json
 import time
 from copy import deepcopy
 
@@ -9,7 +8,6 @@ from integration_tests.tests.jitter.delivery import (
     assert_indexed_for_all,
     wait_successful_polls,
 )
-from integration_tests.utils.files import write_private
 from integration_tests.utils.polling import short_profiles, wait_for
 
 pytestmark = pytest.mark.part11
@@ -116,10 +114,6 @@ def test_owned_schedule_loss_recovers_through_inventory_and_walk(
             assert initial_walk["fingerprint"] is None
             assert not initial_walk["first_run_kwargs"]
             assert initial_walk["immediate"]
-        write_private(
-            live.directory / "recovery-walk-observation.json",
-            json.dumps({"initial_state_captured": initial_walk is not None}),
-        )
         device = next(device for device in live.devices if device["label"] == "IP1")
         if enabled:
             # The recovery WALK ran without an initial offset. Its reservation

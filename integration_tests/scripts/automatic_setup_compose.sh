@@ -74,8 +74,10 @@ function define_python() {
 }
 
 deploy_poetry() {
-  sudo apt -y install python3-venv
-  curl -sSL https://install.python-poetry.org | $PYTHON -
+  sudo apt -y install python3-venv || return 1
+  (set -o pipefail
+    curl -fsSL https://install.python-poetry.org | "$PYTHON" -
+  ) || return 1
   export PATH="/home/ubuntu/.local/bin:$PATH"
   poetry install
 }
@@ -106,9 +108,9 @@ wait_for_containers_to_be_up() {
 sudo apt-get update -y
 sudo apt-get install snmpd -y
 sudo sed -i -E 's/agentaddress[[:space:]]+127.0.0.1,\[::1\]/#agentaddress  127.0.0.1,\[::1\]\nagentaddress udp:1161,udp6:[::1]:1161/g' /etc/snmp/snmpd.conf
-echo "" | sudo tee -a /etc/snmp/snmpd.conf
-echo "createUser r-wuser SHA admin1234 AES admin1234" | sudo tee -a /etc/snmp/snmpd.conf
-echo "rwuser r-wuser priv" | sudo tee -a /etc/snmp/snmpd.conf
+echo "" | sudo tee -a /etc/snmp/snmpd.conf >/dev/null
+echo "createUser r-wuser SHA admin1234 AES admin1234" | sudo tee -a /etc/snmp/snmpd.conf >/dev/null
+echo "rwuser r-wuser priv" | sudo tee -a /etc/snmp/snmpd.conf >/dev/null
 sudo systemctl restart snmpd
 
 echo "Show working directory:"
@@ -129,11 +131,11 @@ cd "$INT_TEST_DIR"
 
 chmod u+x "$SCRIPT_DIR/prepare_splunk.sh"
 "$SCRIPT_DIR/prepare_splunk.sh"
-if [[ ${1:-} == 'integration' ]]; then
+if [[ "${JITTER_ENABLED:-false}" == "true" ]]; then
   define_python
   deploy_poetry || exit 1
-fi
-if [[ "${JITTER_ENABLED:-false}" == "true" ]]; then
+  export SIMULATOR_PYTHON
+  SIMULATOR_PYTHON="$(poetry env info --executable)" || exit 1
   export SIMULATOR_NAMESPACE="${SIMULATOR_NAMESPACE:-jitter-docker-agent-simulator}"
   export SIMULATOR_MANIFEST="${SIMULATOR_MANIFEST:-${INT_TEST_DIR}/.simulators/docker-compose/endpoints.json}"
   "$SCRIPT_DIR/setup_simulator.sh" docker || exit 1
@@ -210,8 +212,15 @@ fi
 echo $(green "Running up Docker Compose environment")
 sudo docker compose \
   -f "$COMPOSE_FILE" \
-  --env-file "$ENV_FILE" up -d
+  --env-file "$ENV_FILE" up -d || exit 1
 wait_for_containers_to_be_up
 
 sudo docker ps
-sudo docker exec sc4snmp-inventory printenv
+
+if [[ ${1:-} == 'integration' ]]; then
+  define_python
+  deploy_poetry || exit 1
+fi
+if [[ "$AUTODISCOVERY_ENABLED" == "true" ]]; then
+  wait_for_microk8s_api 180 5 || exit 1
+fi

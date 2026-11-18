@@ -5,8 +5,6 @@ import subprocess
 from pathlib import Path
 from uuid import uuid4
 
-from integration_tests.utils.files import write_private
-
 logger = logging.getLogger(__name__)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -243,7 +241,6 @@ def _run_integration_command(
     include_stderr=False,
     content=None,
     env=None,
-    error_file=None,
 ):
     options = {}
     if content is not None:
@@ -260,37 +257,19 @@ def _run_integration_command(
             timeout=timeout,
             **options,
         )
-    except subprocess.TimeoutExpired as exc:
+    except subprocess.TimeoutExpired:
         logger.warning(f"Integration command timed out after {timeout} seconds")
-        if error_file is None:
-            raise
-        result = exc
-        failure = "timed out"
-    else:
-        if result.returncode == 0:
-            logger.debug(
-                f"Integration command completed with return_code={result.returncode}"
-            )
-            if include_stderr:
-                return result.stdout + result.stderr
-            return result.stdout
+        raise
+    if result.returncode != 0:
         logger.warning(
             f"Integration command failed with return_code={result.returncode}"
         )
-        if error_file is None:
-            details = (result.stderr or result.stdout).strip()
-            raise RuntimeError(f"{description} failed: {details[-2000:]}")
-        failure = "failed"
-    output = result.stdout or ""
-    errors = result.stderr or ""
-    if isinstance(output, bytes):
-        output = output.decode(errors="replace")
-    if isinstance(errors, bytes):
-        errors = errors.decode(errors="replace")
-    write_private(error_file, output + "\n" + errors)
-    raise RuntimeError(
-        f"{description} {failure}. Protected evidence was retained"
-    ) from None
+        details = (result.stderr or result.stdout).strip()
+        raise RuntimeError(f"{description} failed: {details[-2000:]}")
+    logger.debug(f"Integration command completed with return_code={result.returncode}")
+    if include_stderr:
+        return result.stdout + result.stderr
+    return result.stdout
 
 
 def _sc4snmp_compose_command(
@@ -321,7 +300,6 @@ def wait_for_microk8s_rollout(
     namespace="sc4snmp",
     timeout=INTEGRATION_TEST_TIMEOUT,
     kubectl=None,
-    error_file=None,
 ):
     logger.info("Waiting for Kubernetes rollout")
     _run_integration_command(
@@ -336,7 +314,6 @@ def wait_for_microk8s_rollout(
         ],
         f"waiting for the {description} Kubernetes rollout",
         timeout=timeout,
-        error_file=error_file,
     )
     logger.info("Kubernetes rollout completed")
 
@@ -354,7 +331,6 @@ def restart_sc4snmp_component(
     project=None,
     docker=None,
     env=None,
-    error_file=None,
     restart_only=False,
 ) -> None:
     logger.info("Restarting application component")
@@ -370,7 +346,6 @@ def restart_sc4snmp_component(
             ],
             f"restarting the {compose_service} Kubernetes resource",
             timeout=timeout,
-            error_file=error_file,
         )
         wait_for_microk8s_rollout(
             kubernetes_resource,
@@ -378,7 +353,6 @@ def restart_sc4snmp_component(
             namespace=namespace,
             timeout=timeout,
             kubectl=kubectl,
-            error_file=error_file,
         )
     elif deployment == "docker-compose":
         arguments = (
@@ -398,7 +372,6 @@ def restart_sc4snmp_component(
             "Docker Compose service",
             timeout=timeout,
             env=env,
-            error_file=error_file,
         )
     else:
         raise ValueError(f"Unsupported SC4SNMP deployment: {deployment}")

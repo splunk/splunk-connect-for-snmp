@@ -84,32 +84,6 @@ handle_error() {
 
 trap 'handle_error "$?" "$LINENO"' ERR
 
-wait_for_microk8s_api() {
-  local timeout_seconds="${1:-180}"
-  local required_successes="${2:-5}"
-  local deadline=$((SECONDS + timeout_seconds))
-  local consecutive_successes=0
-  local attempt=0
-
-  while (( SECONDS < deadline )); do
-    attempt=$((attempt + 1))
-    if timeout 15s sudo microk8s kubectl get --raw=/readyz >/dev/null 2>&1; then
-      consecutive_successes=$((consecutive_successes + 1))
-      if (( consecutive_successes >= required_successes )); then
-        green "[DONE] MicroK8s API remained ready for ${required_successes} consecutive checks"
-        return 0
-      fi
-    else
-      consecutive_successes=0
-      yellow "[INFO] MicroK8s API is not ready (attempt ${attempt}); retrying"
-    fi
-    sleep 3
-  done
-
-  red "[ERROR] MicroK8s API did not become stable within ${timeout_seconds} seconds"
-  return 1
-}
-
 apply_k8s_manifest() {
   local description="$1"
   local manifest
