@@ -17,14 +17,21 @@ import logging
 from datetime import timezone
 from typing import List, Set
 
-from redbeat.schedulers import RedBeatSchedulerEntry, get_redis
+from redbeat.schedulers import (
+    EntryAlreadyExists,
+    EntryPolicyChanged,
+    RedBeatSchedulerEntry,
+    get_redis,
+)
 
 from .common import polling_jitter
 from .common.polling_jitter import (
     INITIAL_REGISTRATION,
     SCHEDULE_CONTEXT,
-    calculate_offset,
+    applied_settings,
+    effective_window_seconds,
     first_due,
+    schedule_phase,
 )
 from .poller import app
 
@@ -33,6 +40,10 @@ logger = logging.getLogger(__name__)
 WALK_TASK = "splunk_connect_for_snmp.snmp.tasks.walk"
 POLL_TASK = "splunk_connect_for_snmp.snmp.tasks.poll"
 DISCOVERY_TASK = "splunk_connect_for_snmp.discovery.tasks.discovery"
+
+# Beat can change saved jitter settings while inventory prepares an update.
+# Allow two reloads before reporting that the update could not be saved.
+JITTER_POLICY_UPDATE_MAX_ATTEMPTS = 3
 
 # RedBeatSchedulerEntry cannot be constructed without these. A partial
 # definition (e.g. only name + run_immediately) can only update an entry that
@@ -128,44 +139,40 @@ class CustomPeriodicTaskManager:
     def delete_all_tasks_of_host(self, target):
         RedBeatSchedulerEntry.delete_schedules_by_target(target, app=app)
 
-    def manage_task(self, *, initial_registration=False, **task_data) -> None:
+    def manage_task(
+        self, *, initial_registration=False, inventory_update=False, **task_data
+    ) -> None:
         """
-        Create or update the existing recurring entry for one polling task.
+        Create a missing recurring task or update one already saved.
 
-        Only confirmed initial registration may phase a new WALK or POLL.
-        Existing execution requests keep their current behavior in this stage.
-        A managed definition-only update preserves its saved due time.
+        With jitter enabled, confirmed first registration adds an offset to a
+        new WALK or POLL. Existing phased WALKs use their saved offset for
+        inventory refreshes only while jitter remains enabled. Rebuilding a
+        missing schedule keeps its usual recovery timing. Urgent requests stay
+        due now.
+
+        Phased entries keep their saved timing for definition-only updates.
+        If another writer creates the same WALK or POLL first, update that
+        entry instead of interrupting setup of the remaining POLLs.
+        Existing entries go to update_task(), which reloads changed policies
+        and refuses deleted or replaced entries.
 
         :param initial_registration: Whether the caller confirmed first setup
-        :param task_data: Existing task definition or partial execution request
+        :param inventory_update: Whether changed inventory requested this WALK
+        :param task_data: Full task definition or partial execution request
 
         :return: None
-        :raises PollingJitterError: If initial phasing rejects the device address
-        :raises ValueError: If a port, interval or saved schedule state is invalid
+        :raises KeyError: If a loaded entry disappears or is replaced
+        :raises PollingJitterError: If phased timing or identity is invalid
+        :raises ValueError: If a numeric scheduling value is invalid
+        :raises EntryPolicyChanged: If the policy keeps changing during update
         """
         task_name = task_data.get("name")
-        # When task is updated, we don't want to change existing schedules.
-        # If task interval is very long, running walk process in between would result in calculating
-        # next execution again.
+        creation_conflict = False
         try:
             periodic_document = RedBeatSchedulerEntry.from_key(
                 f"redbeat:{task_name}", app=app
             )
-            args_list = [
-                "target",
-                "args",
-                "kwargs",
-                "run_immediately",
-                "schedule",
-                "enabled",
-            ]
-            update_log = f"Updated task: {task_name}. Updated arguments: "
-            logger.info(f"Updating a task: {task_name}")
-            for arg in args_list:
-                if arg in task_data:
-                    update_log += f"{arg}={task_data.get(arg)}  |  "
-                    setattr(periodic_document, arg, task_data.get(arg))
-            logger.info(update_log)
         except KeyError:
             missing_fields = [
                 field
@@ -183,63 +190,214 @@ class CustomPeriodicTaskManager:
             periodic_document = RedBeatSchedulerEntry(**task_data)
             settings = polling_jitter.JITTER_SETTINGS
             polling_task = task_data.get("task") in (WALK_TASK, POLL_TASK)
-            if initial_registration and polling_task and settings.enabled:
-                self._save_initial_phase(periodic_document, settings)
+            # Spread the first polling load for a new device. A missing schedule
+            # for an existing device keeps its usual recovery timing.
+            try:
+                if initial_registration and polling_task and settings.enabled:
+                    self._save_initial_phase(periodic_document, settings)
+                    return
+                if polling_task:
+                    # Another inventory worker may have created this schedule
+                    # after our missing-entry check. Never replace its entry.
+                    periodic_document.save_guarded(create=True)
+                else:
+                    periodic_document.save()
+                # Guarded creation already stores the initial timing and immediate
+                # flag together. A second write could replace a newer schedule.
+                if not polling_task and task_data.get("run_immediately"):
+                    periodic_document.reschedule()
                 return
-            periodic_document.save()
-            if task_data.get("run_immediately"):
-                periodic_document.reschedule()
-            return
-        if periodic_document.jitter_fingerprint:
-            if not task_data.get("run_immediately"):
-                periodic_document.update_definition()
+            except EntryAlreadyExists:
+                creation_conflict = True
+                logger.debug(
+                    f"Another worker created the schedule first. Reloading it "
+                    f"instead of replacing it: task={periodic_document.task}"
+                )
+                periodic_document = RedBeatSchedulerEntry.from_key(
+                    f"redbeat:{task_name}", app=app
+                )
+
+        if (
+            initial_registration
+            and periodic_document.jitter_fingerprint
+            and periodic_document.total_run_count == 0
+            and (
+                (creation_conflict and periodic_document.task == POLL_TASK)
+                or (
+                    periodic_document.task == WALK_TASK
+                    and periodic_document.first_run_kwargs.get(SCHEDULE_CONTEXT)
+                    == INITIAL_REGISTRATION
+                )
+            )
+        ):
+            # Two loaders can both identify a new device before either saves it.
+            # Finding the other loader's first WALK is not an urgent refresh.
+            # POLLs keep this protection only for a competing creation attempt.
+            logger.debug(
+                f"Keeping the first run at its saved due time while "
+                f"applying the update: task={periodic_document.task} "
+                f"entry_id={periodic_document.entry_id}"
+            )
+            task_data = dict(task_data)
+            task_data.pop("run_immediately", None)
+
+        self.update_task(
+            periodic_document, task_data, inventory_update=inventory_update
+        )
+
+    def update_task(
+        self,
+        periodic_document: RedBeatSchedulerEntry,
+        task_data: dict,
+        *,
+        inventory_update: bool = False,
+    ) -> None:
+        """
+        Apply caller changes to an existing recurring task without creating one.
+
+        For entries with applied jitter, definition-only changes keep stored
+        timing and pending run requests. While jitter is enabled, an inventory
+        WALK refresh requests now plus its saved offset. Restart WALKs and
+        refreshes of existing POLLs above 300 seconds after a WALK remain
+        urgent. Entries without an applied policy keep ordinary timing, with
+        guarded writes for WALKs and POLLs.
+
+        If Beat changes the applied policy during the write, reload the entry
+        and reapply the caller's changes using that policy. Allow three total
+        write attempts for this conflict only. Other errors pass to the caller.
+        If the entry disappears during reload, do not recreate it.
+
+        :param periodic_document: Existing recurring entry already loaded from Redis
+        :param task_data: Fields or a partial run request including the entry name
+        :param inventory_update: Whether changed inventory requested this WALK
+
+        :return: None
+        :raises KeyError: If the entry disappears or is replaced before saving
+        :raises PollingJitterError: If the polling identity or timing is invalid
+        :raises ValueError: If a numeric value or stored scheduling state is invalid
+        :raises EntryPolicyChanged: If all three attempts encounter a policy change
+        """
+        task_name = task_data.get("name")
+        entry_id = periodic_document.entry_id
+        for attempt in range(JITTER_POLICY_UPDATE_MAX_ATTEMPTS):
+            previous_schedule = periodic_document.schedule
+            args_list = [
+                "target",
+                "args",
+                "kwargs",
+                "run_immediately",
+                "schedule",
+                "enabled",
+            ]
+            update_log = f"Updated task: {task_name}. Updated arguments: "
+            logger.info(f"Updating a task: {task_name}")
+            for arg in args_list:
+                if arg in task_data:
+                    update_log += f"{arg}={task_data.get(arg)}  |  "
+                    setattr(periodic_document, arg, task_data.get(arg))
+            logger.info(update_log)
+
+            try:
+                if periodic_document.jitter_fingerprint:
+                    if (
+                        inventory_update
+                        and periodic_document.task == WALK_TASK
+                        and polling_jitter.JITTER_SETTINGS.enabled
+                    ):
+                        # For example, settings now say 120s but this WALK still
+                        # uses a 60s window. Refresh it using the saved 60s window
+                        # until Beat applies the change to a following run.
+                        settings = applied_settings(
+                            periodic_document.jitter_fingerprint
+                        )
+                        _, offset, fingerprint = schedule_phase(
+                            periodic_document, settings
+                        )
+                        periodic_document.request_run(
+                            first_due(app.now().astimezone(timezone.utc), offset),
+                            fingerprint=fingerprint,
+                            # A second inventory load can arrive before the first
+                            # WALK. Keep its setup context so new POLLs get jitter.
+                            preserve_first_run_kwargs=True,
+                        )
+                        return
+                    if not task_data.get("run_immediately"):
+                        # A POLL of 300 seconds or less can receive new profiles
+                        # without running early. Keep its saved due time and any
+                        # refresh already requested.
+                        periodic_document.update_definition()
+                        return
+                    # Changing a WALK from 30 to 15 minutes changes its SHA-256
+                    # input. Recalculate its marker with the same saved window.
+                    # An unchanged interval uses None to keep the current marker.
+                    request_fingerprint = None
+                    if periodic_document.schedule != previous_schedule:
+                        _, _, request_fingerprint = schedule_phase(
+                            periodic_document,
+                            applied_settings(periodic_document.jitter_fingerprint),
+                        )
+                    # Restart WALKs run now so recovery starts promptly. Existing
+                    # POLLs above 300 seconds also run now after each WALK.
+                    periodic_document.request_run(
+                        app.now().astimezone(timezone.utc).replace(microsecond=0),
+                        run_immediately=True,
+                        fingerprint=request_fingerprint,
+                    )
+                    return
+                if periodic_document.task in (WALK_TASK, POLL_TASK):
+                    # Inventory may read an entry before Beat enables jitter on it.
+                    # Do not let this older copy put the previous timing back.
+                    periodic_document.save_guarded()
+                else:
+                    periodic_document.save()
                 return
-            periodic_document.first_run_kwargs = {}
-        periodic_document.save()
+            except EntryPolicyChanged:
+                # Beat enabled, disabled or changed jitter after this entry was
+                # read. Reload it and apply this update using the saved policy.
+                if attempt == JITTER_POLICY_UPDATE_MAX_ATTEMPTS - 1:
+                    # Let the caller report this unsaved update after three conflicts.
+                    raise
+                periodic_document = RedBeatSchedulerEntry.from_key(
+                    f"redbeat:{task_name}", app=app
+                )
+                # A device deleted and added again has a new schedule. Do not
+                # apply the old inventory update to that replacement.
+                if periodic_document.entry_id != entry_id:
+                    raise KeyError(periodic_document.key)
 
     def _save_initial_phase(
         self, entry: RedBeatSchedulerEntry, settings: polling_jitter.JitterSettings
     ) -> None:
         """
-        Save a new device schedule using its normal baseline plus one offset.
-
-        The WALK/POLL generators supply an interval schedule and address string.
-        The target key is split at its last colon, preserving an IPv6 address.
-        The resulting identity is validated without changing the schedule key.
-        After saving, a debug message records the offset and selected first due
-        without including credentials or the task payload.
+        Save a new WALK or POLL with one offset and an unchanged interval.
 
         :param entry: New WALK or POLL entry that has not been saved
         :param settings: Validated jitter settings
 
         :return: None
-        :raises PollingJitterError: If identity validation rejects the device address
-        :raises ValueError: If the port or interval is invalid, or the entry
-            fails validation when saved
+        :raises PollingJitterError: If the polling identity or timing is invalid
+        :raises ValueError: If a numeric scheduling value is invalid
         """
-        # Inventory and profile validation supply whole-second intervals.
-        interval = entry.schedule.run_every
-        seconds = interval.days * 86400 + interval.seconds
-        # TaskGenerator pairs address:port with matching interval/frequency values.
-        target = entry.kwargs.get("address")
-        # Only the final colon separates the port, including for IPv6 targets.
-        address, port = target.rsplit(":", 1)
+        seconds, offset, fingerprint = schedule_phase(entry, settings)
         task_type = "walk" if entry.task == WALK_TASK else "poll"
-        offset, fingerprint = calculate_offset(
-            address, port, seconds, task_type, settings
-        )
         baseline = entry.app.now().astimezone(timezone.utc)
+        # A new 60s POLL already waits 60s, so add its offset after that wait.
+        # WALKs and POLLs above 300s would start now, so they wait only the offset.
         if task_type == "poll" and seconds <= 300:
-            baseline += interval
+            baseline += entry.schedule.run_every
+        # Mark the first outgoing WALK so profile setup also phases its new
+        # POLLs. Later recurring WALKs omit this marker.
         first_run_kwargs = (
             {SCHEDULE_CONTEXT: INITIAL_REGISTRATION} if task_type == "walk" else {}
         )
         due = first_due(baseline, offset)
+        # Redis and the interval check must agree on this first scheduled time.
+        # Ordinary save() can choose a different time for a newly created entry.
         entry.save_with_first_due(due, fingerprint, first_run_kwargs=first_run_kwargs)
         logger.debug(
             f"Applied polling jitter: schedule={entry.name} interval_seconds={seconds} "
             f"window_seconds={settings.window_seconds} "
-            f"effective_window_seconds={min(settings.window_seconds, seconds)} "
+            f"effective_window_seconds={effective_window_seconds(settings, seconds)} "
             f"offset_seconds={offset} first_due_utc={due.isoformat()}"
         )
 

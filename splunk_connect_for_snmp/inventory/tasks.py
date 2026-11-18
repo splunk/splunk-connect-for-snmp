@@ -61,6 +61,8 @@ POLL_BASE_PROFILES = human_bool(os.getenv("POLL_BASE_PROFILES", "true"))
 
 @shared_task
 def inventory_setup_poller(work):
+    # The first WALK carries this marker so its new POLLs also get an offset.
+    # Recovery WALKs omit it and rebuild missing POLLs with their usual timing.
     initial_registration = (
         polling_jitter.JITTER_SETTINGS.enabled
         and work.get(SCHEDULE_CONTEXT) == INITIAL_REGISTRATION
@@ -110,6 +112,7 @@ def inventory_setup_poller(work):
         )
     logger.debug(f"Profiles Assigned for host {address}: {assigned_profiles}")
     active_schedules: list[str] = []
+    # Profiles with the same frequency share one POLL entry and one offset.
     for period in assigned_profiles:
         task_config = generate_poll_task_definition(
             active_schedules,
@@ -119,10 +122,9 @@ def inventory_setup_poller(work):
             chain_of_tasks_expiry_time,
             group,
         )
-        if initial_registration:
-            periodic_obj.manage_task(initial_registration=True, **task_config)
-        else:
-            periodic_obj.manage_task(**task_config)
+        periodic_obj.manage_task(
+            initial_registration=initial_registration, **task_config
+        )
 
     periodic_obj.delete_unused_poll_tasks(f"{address}", active_schedules)
 

@@ -30,14 +30,8 @@ NOW = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
 
 @pytest.fixture
 def app(monkeypatch):
-    """
-    Create a fixed-clock app without a real broker or storage connection.
-
-    :return: Test Celery app with jitter enabled
-    """
     monkeypatch.setattr(polling_jitter, "JITTER_SETTINGS", JitterSettings(True, 60))
-    # Older tests patch __new__, which can leave Python's allocation slot
-    # altered even after restoration. Isolate our real-constructor checks.
+    # Reset __new__ so earlier constructor mocks cannot affect these entries.
     monkeypatch.setattr(
         RedBeatSchedulerEntry,
         "__new__",
@@ -52,15 +46,6 @@ def app(monkeypatch):
 
 
 def definition(app, kind, interval):
-    """
-    Generate the existing full task definition for a dummy device.
-
-    :param app: Isolated Celery app
-    :param kind: Either walk or poll
-    :param interval: Interval in seconds
-
-    :return: Ordinary task definition including its full callback chain
-    """
     if kind == "walk":
         return WalkTaskGenerator(
             "router-01:161", interval, app, None, "WalkProfile"
@@ -74,7 +59,7 @@ def definition(app, kind, interval):
     "kind,interval,offset",
     [
         ("walk", 1800, 35),
-        ("poll", 60, 42),
+        ("poll", 60, 47),
         ("poll", 300, 56),
         ("poll", 301, None),
         ("poll", 600, 22),
@@ -101,7 +86,7 @@ def test_new_entry_uses_correct_first_run_baseline(app, kind, interval, offset):
     baseline = NOW + timedelta(
         seconds=interval if kind == "poll" and interval <= 300 else 0
     )
-    assert 1 <= (due - baseline).total_seconds() <= 60
+    assert 1 <= (due - baseline).total_seconds() <= min(60, interval - 1)
     if offset is not None:
         assert due == baseline + timedelta(seconds=offset)
     assert fingerprint.startswith("sha256-v1:60:")
@@ -126,7 +111,7 @@ def test_disabled_or_recovery_creation_stays_legacy(
     initial = RedBeatSchedulerEntry(**data)
     with patch.object(
         customtaskmanager, "RedBeatSchedulerEntry"
-    ) as entry_class, patch.object(initial, "save") as save, patch.object(
+    ) as entry_class, patch.object(initial, "save_guarded") as save, patch.object(
         initial, "reschedule"
     ) as reschedule, patch.object(
         initial, "save_with_first_due"
@@ -136,10 +121,53 @@ def test_disabled_or_recovery_creation_stays_legacy(
         customtaskmanager.CustomPeriodicTaskManager().manage_task(
             initial_registration=confirmed, **data
         )
-    save.assert_called_once()
-    reschedule.assert_called_once()
+    save.assert_called_once_with(create=True)
+    reschedule.assert_not_called()
     exact.assert_not_called()
     assert SCHEDULE_CONTEXT not in initial.kwargs
+
+
+@pytest.mark.parametrize("initial_registration", [False, True])
+def test_creation_does_not_treat_other_value_errors_as_a_collision(
+    app, initial_registration
+):
+    data = definition(app, "walk", 1800)
+    initial = RedBeatSchedulerEntry(**data)
+    method = "save_with_first_due" if initial_registration else "save_guarded"
+    with patch.object(
+        customtaskmanager, "RedBeatSchedulerEntry"
+    ) as entry_class, patch.object(
+        initial, method, side_effect=ValueError("Invalid scheduling state")
+    ):
+        entry_class.from_key.side_effect = KeyError
+        entry_class.return_value = initial
+        with pytest.raises(ValueError, match="Invalid scheduling state"):
+            customtaskmanager.CustomPeriodicTaskManager().manage_task(
+                initial_registration=initial_registration, **data
+            )
+        entry_class.from_key.assert_called_once_with(f"redbeat:{data['name']}", app=app)
+
+
+def test_update_task_uses_loaded_entry_without_another_lookup(app):
+    data = definition(app, "poll", 60)
+    existing = RedBeatSchedulerEntry(**data)
+    existing.jitter_fingerprint = "sha256-v1:60:" + "a" * 64
+    changes = {"name": data["name"], "kwargs": {"profile": ["UpdatedProfile"]}}
+    manager = customtaskmanager.CustomPeriodicTaskManager()
+    with patch.object(
+        customtaskmanager.RedBeatSchedulerEntry, "from_key"
+    ) as load, patch.object(existing, "update_definition") as update, patch.object(
+        existing, "save"
+    ) as save, patch.object(
+        existing, "request_run"
+    ) as request:
+        manager.update_task(existing, changes)
+
+    load.assert_not_called()
+    update.assert_called_once_with()
+    save.assert_not_called()
+    request.assert_not_called()
+    assert existing.kwargs == changes["kwargs"]
 
 
 @pytest.mark.parametrize("interval", [60, 300, 600])
@@ -153,18 +181,22 @@ def test_existing_phased_poll_keeps_threshold(app, interval):
         existing, "save"
     ) as save, patch.object(
         existing, "save_with_first_due"
-    ) as exact:
+    ) as exact, patch.object(
+        existing, "request_run"
+    ) as request:
         customtaskmanager.CustomPeriodicTaskManager().manage_task(
             initial_registration=True, **data
         )
     exact.assert_not_called()
     if interval > 300:
-        save.assert_called_once()
+        request.assert_called_once_with(NOW, run_immediately=True, fingerprint=None)
+        save.assert_not_called()
         update.assert_not_called()
         assert existing.run_immediately is True
     else:
         update.assert_called_once()
         save.assert_not_called()
+        request.assert_not_called()
 
 
 def test_operational_walk_request_clears_initial_note(app):
@@ -174,40 +206,38 @@ def test_operational_walk_request_clears_initial_note(app):
     existing.jitter_fingerprint = "sha256-v1:60:" + "a" * 64
     with patch.object(
         customtaskmanager.RedBeatSchedulerEntry, "from_key", return_value=existing
-    ), patch.object(existing, "save") as save:
+    ), patch.object(existing, "save") as save, patch.object(
+        existing, "request_run"
+    ) as request:
         customtaskmanager.CustomPeriodicTaskManager().manage_task(
             name=data["name"], run_immediately=True
         )
     assert existing.run_immediately is True
     assert SCHEDULE_CONTEXT not in existing.kwargs
-    assert existing.first_run_kwargs == {}
-    save.assert_called_once()
+    request.assert_called_once_with(NOW, run_immediately=True, fingerprint=None)
+    save.assert_not_called()
 
 
-def test_global_rewalk_preserves_immediate_and_reschedule_calls(app):
-    existing = RedBeatSchedulerEntry(**definition(app, "walk", 1800))
-    existing.jitter_fingerprint = "sha256-v1:60:" + "a" * 64
+def test_inventory_refresh_preserves_pending_initial_walk_context(app):
+    data = definition(app, "walk", 1800)
+    existing = RedBeatSchedulerEntry(**data)
     existing.first_run_kwargs = {SCHEDULE_CONTEXT: INITIAL_REGISTRATION}
-    with patch.object(
-        customtaskmanager, "_get_all_schedules", return_value=[existing]
-    ), patch.object(existing, "save") as save, patch.object(
-        existing, "reschedule"
-    ) as reschedule, patch.object(
-        existing, "save_with_first_due"
-    ) as exact:
-        customtaskmanager.CustomPeriodicTaskManager().rerun_all_walks()
-    assert existing.run_immediately is True
-    assert SCHEDULE_CONTEXT not in existing.kwargs
-    assert existing.first_run_kwargs == {}
-    save.assert_called_once()
-    reschedule.assert_called_once()
-    exact.assert_not_called()
+    _, offset, fingerprint = customtaskmanager.schedule_phase(
+        existing, polling_jitter.JITTER_SETTINGS
+    )
+    existing.jitter_fingerprint = fingerprint
+    with patch.object(existing, "request_run") as request:
+        customtaskmanager.CustomPeriodicTaskManager().update_task(
+            existing, data, inventory_update=True
+        )
+    request.assert_called_once_with(
+        NOW + timedelta(seconds=offset),
+        fingerprint=fingerprint,
+        preserve_first_run_kwargs=True,
+    )
 
 
 def test_shared_celery_config_does_not_load_polling_jitter():
-    """
-    Load shared worker configuration without parsing polling-only settings.
-    """
     environment = dict(
         os.environ, POLLING_JITTER_ENABLED="false", POLLING_JITTER_WINDOW_SECONDS="0"
     )
@@ -291,6 +321,18 @@ with patch("pymongo.MongoClient", side_effect=AssertionError("Unexpected storage
     assert result.returncode == 0, result.stderr
 
 
+@pytest.mark.parametrize("kind", ["walk", "poll"])
+@pytest.mark.parametrize("interval", [0.5, 60.000001, 60.5, -0.5])
+def test_fractional_interval_cannot_be_phased(app, kind, interval):
+    initial = RedBeatSchedulerEntry(**definition(app, kind, interval))
+    with patch.object(initial, "save_with_first_due") as exact:
+        with pytest.raises(PollingJitterError, match="whole-second interval"):
+            customtaskmanager.CustomPeriodicTaskManager()._save_initial_phase(
+                initial, JitterSettings(True)
+            )
+    exact.assert_not_called()
+
+
 @pytest.mark.parametrize("interval", [0, -1])
 def test_invalid_interval_cannot_be_phased(app, interval):
     initial = RedBeatSchedulerEntry(**definition(app, "walk", interval))
@@ -300,6 +342,31 @@ def test_invalid_interval_cannot_be_phased(app, interval):
                 initial, JitterSettings(True)
             )
     assert type(error.value) is ValueError
+    exact.assert_not_called()
+
+
+@pytest.mark.parametrize("kind", ["walk", "poll"])
+@pytest.mark.parametrize(
+    "address_kwargs",
+    [
+        {},
+        {"address": None},
+        {"address": ""},
+        {"address": "router-01"},
+        {"address": 161},
+        {"address": b"router-01:161"},
+    ],
+)
+def test_missing_or_malformed_address_cannot_be_phased(app, kind, address_kwargs):
+    data = definition(app, kind, 1800)
+    data["kwargs"].pop("address")
+    data["kwargs"].update(address_kwargs)
+    initial = RedBeatSchedulerEntry(**data)
+    with patch.object(initial, "save_with_first_due") as exact:
+        with pytest.raises(PollingJitterError, match="device address with a port"):
+            customtaskmanager.CustomPeriodicTaskManager()._save_initial_phase(
+                initial, JitterSettings(True)
+            )
     exact.assert_not_called()
 
 
@@ -408,7 +475,7 @@ def test_credential_and_profile_changes_are_not_hash_inputs(app):
         data = manager.manage_task.call_args.kwargs
         assert community not in json.dumps(data["kwargs"])
         assert not data.get("initial_registration")
-    assert calculate_offset("router-01", 161, 60, "poll", JitterSettings(True))[0] == 42
+    assert calculate_offset("router-01", 161, 60, "poll", JitterSettings(True))[0] == 47
 
 
 @pytest.mark.parametrize(

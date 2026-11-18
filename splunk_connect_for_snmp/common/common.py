@@ -170,13 +170,14 @@ def wait_for_mongodb_replicaset(logger=None, max_retries=120, retry_interval=5):
 
 def positive_integer(value: object, name: str, maximum: int | None = None) -> int:
     """
-    Read a positive whole number from an integer or decimal text.
+    Read a positive whole number from an integer or ASCII digit string.
 
-    :param value: Integer or decimal text to validate
+    :param value: Integer or ASCII digit string to validate
     :param name: Field name included in an error message
     :param maximum: Optional inclusive upper limit
 
     :return: Validated positive integer
+    :raises ValueError: If the value is invalid or exceeds the maximum
     """
     if isinstance(value, str) and value.isascii() and value.isdecimal():
         value = int(value)

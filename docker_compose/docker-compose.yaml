@@ -168,6 +168,8 @@ services:
     environment:
       <<: *general_sc4snmp_data
       LOG_LEVEL: ${SCHEDULER_LOG_LEVEL:-INFO}
+      POLLING_JITTER_ENABLED: ${POLLING_JITTER_ENABLED:-false}
+      POLLING_JITTER_WINDOW_SECONDS: ${POLLING_JITTER_WINDOW_SECONDS:-60}
     volumes:
     - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
     - scheduler-pysnmp-cache-volume:/.pysnmp/:rw

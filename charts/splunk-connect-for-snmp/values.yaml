@@ -245,13 +245,15 @@ scheduler:
   #      - ['IF-MIB', 'ifOutDiscards']
   profiles: ""
 
-  # Spread new-device WALK and initial POLL schedules over time using
-  # a repeatable offset. Normal recurring polling intervals stay unchanged.
+  # Spread new-device WALKs and their initial POLLs using repeatable offsets.
+  # Later runs keep their configured interval without adding the offset again.
+  # Enabling, disabling or changing the window keeps each existing next run.
+  # Beat applies the change to the following run when it reserves that entry.
   pollingJitter:
     enabled: false
-    # Window for selecting the offset, in whole seconds. Valid range: 1–86400.
-    # Each schedule receives an offset from 1 through the smaller of this
-    # window and its polling interval, including the upper bound.
+    # Maximum offset in whole seconds, validated when enabled. Range: 1–86400.
+    # Offset is 1 through min(windowSeconds, polling interval - 1), inclusive.
+    # It is never zero or a full interval, for intervals greater than 1 second.
     windowSeconds: 60
 
   # mapping MIB fields to custom names

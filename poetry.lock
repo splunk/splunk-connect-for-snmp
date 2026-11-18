@@ -2,14 +2,14 @@
 
 [[package]]
 name = "amqp"
-version = "5.4.1"
+version = "5.4.2"
 description = "Low-level AMQP client for Python (fork of amqplib)."
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "amqp-5.4.1-py3-none-any.whl", hash = "sha256:ac2b816a14a380ed10c5ebbf85a334fd68111fa476496867a5ccd2fd09926d5e"},
-    {file = "amqp-5.4.1.tar.gz", hash = "sha256:79a9c0ab70e71745667f127ff80666894a734c26236b6f33149c964b096f0b20"},
+    {file = "amqp-5.4.2-py3-none-any.whl", hash = "sha256:e6e756b15c89c86818b48a4947a424706238afbf67d457428d3269bc4590db9e"},
+    {file = "amqp-5.4.2.tar.gz", hash = "sha256:9362660c4a31150cf18e78cae2ce8aa1e929fc6c6739e69f6dd5dbea9c3edc82"},
 ]
 
 [package.dependencies]
@@ -920,39 +920,41 @@ referencing = ">=0.31.0"
 
 [[package]]
 name = "kombu"
-version = "5.6.2"
+version = "5.7.0"
 description = "Messaging library for Python."
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "kombu-5.6.2-py3-none-any.whl", hash = "sha256:efcfc559da324d41d61ca311b0c64965ea35b4c55cc04ee36e55386145dace93"},
-    {file = "kombu-5.6.2.tar.gz", hash = "sha256:8060497058066c6f5aed7c26d7cd0d3b574990b09de842a8c5aaed0b92cc5a55"},
+    {file = "kombu-5.7.0-py3-none-any.whl", hash = "sha256:dede73bff4c89175be382c4203d2f167cf7017c384396ec75c36a1b5678f1587"},
+    {file = "kombu-5.7.0.tar.gz", hash = "sha256:31e62fdfd2381caa3422f8e02b84a491d9a2180ddda74507b57f4cb1e1c2c2c9"},
 ]
 
 [package.dependencies]
-amqp = ">=5.1.1,<6.0.0"
-packaging = "*"
-tzdata = ">=2025.2"
+amqp = ">=5.4.2"
+packaging = {version = "26.3", optional = true, markers = "extra == \"redis\""}
+redis = {version = ">=6.4.0,<9.0.0", optional = true, markers = "extra == \"redis\""}
+tzdata = {version = ">=2026.2", markers = "sys_platform == \"win32\""}
 vine = "5.1.0"
 
 [package.extras]
-azureservicebus = ["azure-servicebus (>=7.10.0)"]
-azurestoragequeues = ["azure-identity (>=1.12.0)", "azure-storage-queue (>=12.6.0)"]
-confluentkafka = ["confluent-kafka (>=2.2.0)"]
+azureservicebus = ["azure-servicebus (==7.15.0)"]
+azurestoragequeues = ["azure-identity (==1.27.0)", "azure-storage-queue (==12.18.0)"]
+confluentkafka = ["confluent-kafka (==2.15.1)"]
 consul = ["python-consul2 (==0.1.5)"]
-gcpubsub = ["google-cloud-monitoring (>=2.16.0)", "google-cloud-pubsub (>=2.18.4)", "grpcio (==1.75.1)", "protobuf (==6.32.1)"]
+gcpubsub = ["google-cloud-monitoring (==2.32.0)", "google-cloud-pubsub (==2.43.0)", "grpcio (==1.85.1)", "protobuf (==7.36.2)"]
 librabbitmq = ["librabbitmq (>=2.0.0) ; python_version < \"3.11\""]
-mongodb = ["pymongo (==4.15.3)"]
-msgpack = ["msgpack (==1.1.2)"]
+mongodb = ["pymongo (==4.18.3)"]
+msgpack = ["msgpack (==1.2.3)"]
+pgmq = ["pgmq (==1.1.4)"]
 pyro = ["pyro4 (==4.82)"]
 qpid = ["qpid-python (==1.36.0-1)", "qpid-tools (==1.36.0-1)"]
-redis = ["redis (>=4.5.2,!=4.5.5,!=5.0.2,<6.5)"]
+redis = ["packaging (==26.3)", "redis (>=6.4.0,<9.0.0)"]
 slmq = ["softlayer_messaging (>=1.0.3)"]
-sqlalchemy = ["sqlalchemy (>=1.4.48,<2.1)"]
+sqlalchemy = ["sqlalchemy (>=1.4.54,<2.2)"]
 sqs = ["boto3 (>=1.26.143)", "pycurl (>=7.43.0.5) ; sys_platform != \"win32\" and platform_python_implementation == \"CPython\"", "urllib3 (>=1.26.16)"]
-yaml = ["PyYAML (>=3.10)"]
-zookeeper = ["kazoo (>=2.8.0)"]
+yaml = ["PyYAML (==6.0.3)"]
+zookeeper = ["kazoo (==2.11.0)"]
 
 [[package]]
 name = "lark"
@@ -2386,6 +2388,7 @@ description = "Provider of IANA time zone data"
 optional = false
 python-versions = ">=2"
 groups = ["main"]
+markers = "sys_platform == \"win32\" or platform_system == \"Windows\""
 files = [
     {file = "tzdata-2026.5-py2.py3-none-any.whl", hash = "sha256:b683bd1b6659ddcd810ff02ad09ba821d4bf1065072805063eb35c49617905ac"},
     {file = "tzdata-2026.5.tar.gz", hash = "sha256:8cc73c0a0bfca7dbfa59235d60b2eff82231dee33f53d206db1acd9173cfc0a7"},
@@ -2690,4 +2693,4 @@ tomli = ">=2.4.0"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<3.15"
-content-hash = "b559a87354e1e6c014c8555120c41038612bcdf0f61cc31a1c6ec163de7d3f24"
+content-hash = "6ba0224b6ec47e95786196bcd16ee323872f4d53ff5bbacb23bb74e7f12c350f"

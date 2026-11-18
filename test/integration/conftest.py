@@ -1,5 +1,3 @@
-"""Fixtures for SC4SNMP integration tests using an explicitly selected local Redis."""
-
 import os
 import shutil
 import subprocess
@@ -15,18 +13,7 @@ from redis.exceptions import ConnectionError
 
 @pytest.fixture
 def app(tmp_path, monkeypatch):
-    """
-    Start a private Redis process for application scheduling checks.
-
-    No shared Redis, MongoDB, SNMP device or output endpoint is contacted.
-    The process has only a Unix socket and is removed after the test.
-
-    :param tmp_path: Temporary directory for this test's Redis socket
-    :param monkeypatch: Fixture restoring the constructor isolation
-
-    :return: Celery app using private Redis storage and a memory broker
-    """
-    # Constructor mocks in other tests can change Python's allocation slot.
+    # Reset __new__ so earlier constructor mocks cannot affect these entries.
     monkeypatch.setattr(
         RedBeatSchedulerEntry,
         "__new__",

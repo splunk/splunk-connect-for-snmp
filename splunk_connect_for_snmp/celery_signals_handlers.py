@@ -57,9 +57,26 @@ def close_process_mongo_client(*args, **kwargs):
 
 
 @signals.beat_init.connect(weak=False)
-def init_celery_beat_tracing(*args, **kwargs):
+def init_celery_beat_tracing(sender=None, *args, **kwargs):
+    """
+    Configure Beat tracing and its polling jitter policy callback.
+
+    Register the callback only when Beat starts. Keep it registered when jitter
+    is disabled so phased schedules can return to a UTC interval boundary after
+    their next reserved run.
+
+    :param sender: Celery Beat service being initialized
+
+    :return: None
+    """
     CeleryInstrumentor().instrument()
     LoggingInstrumentor().instrument()
+    # Beat must apply disabling as well as enabling. The callback changes the
+    # run following a reservation, while the selected run keeps its timing.
+    if sender is not None:
+        from splunk_connect_for_snmp.jitter_reconcile import apply_entry_policy
+
+        sender.app.conf.redbeat_entry_policy = apply_entry_policy
 
 
 @signals.after_setup_task_logger.connect

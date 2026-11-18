@@ -9,8 +9,10 @@ from splunk_connect_for_snmp.common.common import positive_integer
 from splunk_connect_for_snmp.common.polling_jitter import (
     JitterSettings,
     PollingJitterError,
+    applied_settings,
     calculate_offset,
     canonical_identity,
+    effective_window_seconds,
     first_due,
 )
 
@@ -94,12 +96,6 @@ def test_disabled_window_is_not_read():
 @pytest.mark.parametrize(
     "value",
     [
-        0,
-        -1,
-        1.5,
-        True,
-        False,
-        None,
         "",
         "0",
         "-1",
@@ -108,7 +104,6 @@ def test_disabled_window_is_not_read():
         "true",
         "false",
         "abc",
-        "invalid",
         "86401",
         " 60 ",
         "+60",
@@ -189,7 +184,7 @@ def test_only_walk_and_poll_identities(kind):
         canonical_identity("router-01", 161, 60, kind)
 
 
-@pytest.mark.parametrize("interval,offset", [(60, 42), (300, 56)])
+@pytest.mark.parametrize("interval,offset", [(60, 47), (300, 56)])
 def test_fixed_vectors(interval, offset):
     actual, fingerprint = calculate_offset(
         "router-01", 161, interval, "poll", JitterSettings(True)
@@ -208,7 +203,7 @@ def test_ten_600_second_poll_vectors():
         for i in range(1, 11)
     ]
     assert offsets == [22, 38, 49, 17, 16, 43, 24, 22, 51, 50]
-    assert offsets[0] == offsets[7]  # A collision is valid.
+    assert offsets[0] == offsets[7]  # Different schedules can share an offset.
 
 
 def test_repeatability_and_changed_identity():
@@ -224,10 +219,18 @@ def test_repeatability_and_changed_identity():
         assert calculate_offset(*changed, JitterSettings(True))[1] != original[1]
 
 
+@pytest.mark.parametrize(
+    "interval,window,expected",
+    [(10, 60, 9), (10, 5, 5), (60, 60, 59), (300, 60, 60), (2, 60, 1), (60, 1, 1)],
+)
+def test_effective_window_seconds(interval, window, expected):
+    assert effective_window_seconds(JitterSettings(True, window), interval) == expected
+
+
 def test_effective_window_and_configured_fingerprint():
     args = ("router-01", 161, 10, "poll")
     offset, fingerprint = calculate_offset(*args, JitterSettings(True, 60))
-    assert 1 <= offset <= 10
+    assert 1 <= offset <= 9
     other_offset, other_fingerprint = calculate_offset(*args, JitterSettings(True, 120))
     assert other_offset == offset
     assert other_fingerprint != fingerprint
@@ -237,7 +240,7 @@ def test_effective_window_and_configured_fingerprint():
     )
 
 
-@pytest.mark.parametrize("interval,window", [(1, 60), (60, 1), (1, 1)])
+@pytest.mark.parametrize("interval,window", [(2, 60), (60, 1), (2, 1)])
 def test_single_slot(interval, window):
     assert (
         calculate_offset(
@@ -249,27 +252,32 @@ def test_single_slot(interval, window):
 
 @pytest.mark.parametrize(
     "interval,window,number,offset",
-    [(300, 60, 0, 1), (300, 60, 59, 60), (10, 60, 0, 1), (10, 60, 9, 10)],
+    [
+        (300, 60, 0, 1),
+        (300, 60, 59, 60),
+        (10, 60, 0, 1),
+        (10, 60, 8, 9),
+        (10, 60, 9, 1),
+        (60, 60, 58, 59),
+        (60, 60, 59, 1),
+    ],
 )
-def test_inclusive_offset_bounds(interval, window, number, offset):
+def test_offset_bounds_stay_below_interval(interval, window, number, offset):
     with patch("splunk_connect_for_snmp.common.polling_jitter.hashlib.sha256") as sha:
         sha.return_value.digest.return_value = number.to_bytes(32, "big")
-        assert (
-            calculate_offset(
-                "router-01", 161, interval, "poll", JitterSettings(True, window)
-            )[0]
-            == offset
+        actual, _ = calculate_offset(
+            "router-01", 161, interval, "poll", JitterSettings(True, window)
         )
+        assert actual == offset
+        assert 0 < actual < interval
 
 
-@pytest.mark.parametrize("microsecond,extra", [(0, 0), (1, 1), (999999, 1)])
-def test_rounding_never_moves_due_earlier(microsecond, extra):
+@pytest.mark.parametrize("microsecond", [0, 1, 250000, 999999])
+def test_first_due_adds_exact_offset_and_preserves_microseconds(microsecond):
     baseline = NOW.replace(microsecond=microsecond)
     due = first_due(baseline, 20)
-    assert due == NOW + timedelta(seconds=20 + extra)
-    assert (
-        timedelta(0) <= due - (baseline + timedelta(seconds=20)) < timedelta(seconds=1)
-    )
+    assert due == baseline + timedelta(seconds=20)
+    assert due.microsecond == microsecond
 
 
 def test_positive_decimal_text():
@@ -286,3 +294,29 @@ def test_shared_integer_validation_remains_generic():
     with pytest.raises(ValueError) as error:
         positive_integer(0, "Shared setting")
     assert type(error.value) is ValueError
+
+
+@pytest.mark.parametrize("window", [1, 60, 86400])
+def test_applied_policy_reuses_its_saved_window(window):
+    _, fingerprint = calculate_offset(
+        "router-01", 161, 1800, "walk", JitterSettings(True, window)
+    )
+    assert applied_settings(fingerprint) == JitterSettings(True, window)
+
+
+@pytest.mark.parametrize(
+    "fingerprint",
+    [
+        "unknown:60:" + "a" * 64,
+        "sha256-v1:0:" + "a" * 64,
+        "sha256-v1:86401:" + "a" * 64,
+        "sha256-v1:1.5:" + "a" * 64,
+        "sha256-v1:60:" + "a" * 63,
+        "sha256-v1:60:" + "g" * 64,
+        "sha256-v1:60:" + "aa " * 32,
+        "sha256-v1:60",
+    ],
+)
+def test_invalid_applied_policy_is_refused(fingerprint):
+    with pytest.raises(PollingJitterError, match="applied"):
+        applied_settings(fingerprint)

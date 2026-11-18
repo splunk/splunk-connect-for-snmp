@@ -98,6 +98,8 @@ async def walk_async_wrapper(self: Poller, **kwargs):
     if group:
         work["group"] = group
 
+    # Pass the first-registration marker to profile setup so it can phase new
+    # POLLs. The marker stays in task data and does not affect the SNMP query.
     if kwargs.get("_schedule_context") == "initial_registration":
         work["_schedule_context"] = "initial_registration"
 
