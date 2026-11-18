@@ -149,6 +149,11 @@ class ProfilesManager(CollectionManager):
         schemas = get_all_profile_schemas()
         invalid_profiles = []
         for profile_name, profile_body in elements.items():
+            if isinstance(profile_body, dict) and isinstance(
+                profile_body.get("frequency"), float
+            ):
+                invalid_profiles.append(profile_name)
+                continue
             valid = False
             for schema in schemas:
                 try:
@@ -164,7 +169,7 @@ class ProfilesManager(CollectionManager):
         if invalid_profiles:
             logger.error(
                 f"The following profiles have invalid configuration and won't be used: {invalid_profiles}. Please check "
-                f"indentation and keywords spelling inside inside mentioned profiles configuration."
+                f"indentation and keyword spelling. Profile frequency must be an integer greater than or equal to 5 seconds."
             )
 
     def gather_elements(self):

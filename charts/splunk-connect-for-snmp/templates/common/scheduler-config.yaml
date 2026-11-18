@@ -1,3 +1,25 @@
+{{- if (.Values.scheduler).profiles -}}
+{{- $config := fromYaml (printf "profiles:\n%s" (.Values.scheduler.profiles | indent 2)) -}}
+{{- if hasKey $config "Error" -}}
+{{- fail "scheduler.profiles must contain valid YAML profile mappings" -}}
+{{- end -}}
+{{- $profiles := get $config "profiles" -}}
+{{- if not (kindIs "map" $profiles) -}}
+{{- fail "scheduler.profiles must be a YAML mapping" -}}
+{{- end -}}
+{{- range $name, $profile := $profiles -}}
+{{- if not (kindIs "map" $profile) -}}
+{{- fail (printf "scheduler.profiles.%s must be a YAML mapping" $name) -}}
+{{- end -}}
+{{- if hasKey $profile "frequency" -}}
+{{- $frequency := get $profile "frequency" -}}
+{{- $numeric := or (kindIs "float64" $frequency) (kindIs "int" $frequency) (kindIs "int64" $frequency) (kindIs "uint64" $frequency) -}}
+{{- if or (not $numeric) (lt (float64 $frequency) 5.0) (ne (float64 $frequency) (floor $frequency)) -}}
+{{- fail (printf "scheduler.profiles.%s.frequency must be an integer greater than or equal to 5" $name) -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
