@@ -138,9 +138,6 @@ start_snmp() {
 start_compose() {
   step "Starting SC4SNMP via Docker Compose"
 
-  info "Building snmp-local image..."
-  sudo docker build -t snmp-local .
-
   cd "${DOCKER_COMPOSE_LOCAL}"
 
   COMPOSE="sudo docker compose"
@@ -156,6 +153,12 @@ start_compose() {
   fi
 
   sleep 3
+
+  info "Preparing Docker Compose networking before SNMP simulators"
+  $COMPOSE \
+    -f "$COMPOSE_FILE" \
+    --env-file "$ENV_FILE" create
+  "${SCRIPT_DIR}/setup_simulator.sh" docker
 
   info "Starting stack..."
   $COMPOSE \
@@ -174,39 +177,22 @@ start_compose() {
 
     if [[ $i -eq 60 ]]; then
       error "Containers failed to start"
+      info "============================================================"
+      info "DOCKER COMPOSE LOGS (last 50 lines)"
+      info "============================================================"
       $COMPOSE \
         -f "$COMPOSE_FILE" \
-        --env-file "$ENV_FILE" logs --tail=50
+        --env-file "$ENV_FILE" logs --tail=50 || true
+      info "============================================================"
+      info "END OF DOCKER COMPOSE LOGS"
+      info "============================================================"
       exit 1
     fi
 
     sleep 5
   done
 
-  step "Waiting for first poll cycle (up to 3 minutes)"
-
-  local waited=0
-
-  while [[ $waited -lt 180 ]]; do
-    local count
-    count=$(curl -sk -u "${SPLUNK_USER}:${SPLUNK_PASSWORD}" \
-      "${SPLUNK_API}/services/search/jobs" \
-      -d "search=search index=netops sourcetype=\"sc4snmp:event\" earliest=-10m" \
-      -d exec_mode=oneshot 2>/dev/null \
-      | grep -c "<s:key name=\"count\">" || true)
-
-    if [[ "$count" -gt 0 ]]; then
-      info "Data confirmed in Splunk after ${waited}s"
-      break
-    fi
-
-    info "No data yet... ${waited}s elapsed"
-
-    sleep 20
-    (( waited += 20 ))
-  done
-
-  [[ $waited -ge 180 ]] && warn "Timeout waiting for data — running tests anyway"
+  wait_for_initial_poll
 }
 
 # ===== RUN TESTS =====
@@ -215,8 +201,13 @@ run_tests() {
 
   local trap_ip
   trap_ip=$(ip addr show docker0 2>/dev/null | grep "inet " | awk '{print $2}' | cut -d/ -f1 || echo "172.17.0.1")
-  info "Using trap_external_ip: $trap_ip"
   info "Running filter: ${TEST_FILTER}"
+
+  local -a pytest_arguments=()
+  if [[ "$TEST_FILTER" == "tests/" ]]; then
+    info "Jitter needs its isolated environment. Run it separately with --test jitter"
+    pytest_arguments+=(--ignore=tests/jitter)
+  fi
 
   cd "${INT_TEST_DIR}"
   poetry run pytest \
@@ -227,6 +218,7 @@ run_tests() {
     --trap_external_ip="${trap_ip}" \
     --sc4snmp_deployment="docker-compose" \
     -v \
+    "${pytest_arguments[@]}" \
     ${TEST_FILTER}
 }
 
@@ -240,30 +232,45 @@ main() {
   info "ENV_FILE:             $ENV_FILE"
   info "COMPOSE_FILE:         $COMPOSE_FILE"
 
-  step "Copying docker_compose directory for local use"
-  if [[ ! -d "$DOCKER_COMPOSE_ORIG" ]]; then
-    error "Source directory not found: $DOCKER_COMPOSE_ORIG"
-    exit 1
-  fi
-  rm -rf "$DOCKER_COMPOSE_LOCAL"
-  cp -r "$DOCKER_COMPOSE_ORIG" "$DOCKER_COMPOSE_LOCAL"
-  info "Copied $DOCKER_COMPOSE_ORIG -> $DOCKER_COMPOSE_LOCAL"
-
-  install_snmpd
   start_splunk
-  validate_paths
   check_splunk
   create_indexes
   [[ "$CLEAN_INDEXES" == true ]] && clean_indexes
 
   token=$(get_hec_token)
 
-  update_env "$token"
-  start_snmp
-  "${SCRIPT_DIR}/setup_autodiscovery_simulators.sh" docker
-  start_compose
-  ensure_python
-  deploy_poetry
+  info "Building snmp-local image..."
+  sudo docker build -t snmp-local .
+
+  if [[ "$TEST_FILTER" == "tests/jitter" ]]; then
+    ensure_python
+    deploy_poetry
+    export SIMULATOR_PYTHON
+    SIMULATOR_PYTHON="$(poetry env info --executable)"
+    umask 077
+    printf '%s\n' "$token" > "${INT_TEST_DIR}/hec_token"
+    export SIMULATOR_NAMESPACE="${SIMULATOR_NAMESPACE:-jitter-docker-agent-simulator}"
+    export SIMULATOR_MANIFEST="${SIMULATOR_MANIFEST:-${INT_TEST_DIR}/.simulators/docker-compose/endpoints.json}"
+    "${SCRIPT_DIR}/setup_simulator.sh" docker
+  else
+    step "Copying docker_compose directory for local use"
+    if [[ ! -d "$DOCKER_COMPOSE_ORIG" ]]; then
+      error "Source directory not found: $DOCKER_COMPOSE_ORIG"
+      exit 1
+    fi
+    rm -rf "$DOCKER_COMPOSE_LOCAL"
+    cp -r "$DOCKER_COMPOSE_ORIG" "$DOCKER_COMPOSE_LOCAL"
+    info "Copied $DOCKER_COMPOSE_ORIG -> $DOCKER_COMPOSE_LOCAL"
+
+    install_snmpd
+    validate_paths
+    update_env "$token"
+    start_snmp
+    start_compose
+    ensure_python
+    deploy_poetry
+    wait_for_microk8s_api 180 5
+  fi
   run_tests
 }
 

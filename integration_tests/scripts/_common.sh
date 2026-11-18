@@ -60,16 +60,17 @@ parse_common_args() {
         ;;
       --test)
         if [[ -z "${2:-}" ]]; then
-          error "--test requires argument: traps | poller | discovery | all"
+          error "--test requires argument: traps | poller | discovery | jitter | all"
           exit 1
         fi
         case "$2" in
           traps)  TEST_FILTER="tests/test_trap_integration.py" ;;
           poller) TEST_FILTER="tests/test_poller_integration.py" ;;
           discovery) TEST_FILTER="tests/test_autodiscovery_integration.py" ;;
+          jitter) TEST_FILTER="tests/jitter" ;;
           all)    TEST_FILTER="tests/" ;;
           *)
-            error "Invalid test type: $2 (allowed: traps | poller | discovery | all)"
+            error "Invalid test type: $2 (allowed: traps | poller | discovery | jitter | all)"
             exit 1
             ;;
         esac
@@ -93,7 +94,7 @@ set_env_var() {
   grep -v "^${key}=" "$file" > "${file}.tmp" || true
   echo "${key}=${val}" >> "${file}.tmp"
   mv "${file}.tmp" "$file"
-  info "  ${key}=${val}"
+  info "  Updated ${key}"
 }
 
 # ===== INSTALL DOCKER + DOCKER COMPOSE =====
@@ -164,7 +165,7 @@ install_docker() {
 # ===== START SPLUNK =====
 start_splunk() {
   if [[ "$SPLUNK_HOST_PROVIDED" == "true" ]]; then
-    info "External Splunk host specified (${SPLUNK_HOST}) — skipping local Splunk startup"
+    info "External Splunk host specified — skipping local Splunk startup"
     return 0
   fi
 
@@ -218,9 +219,9 @@ check_splunk() {
   step "Checking Splunk connection"
   if curl -sk -u "${SPLUNK_USER}:${SPLUNK_PASSWORD}" \
       "${SPLUNK_API}/services/server/info" | grep -q "build"; then
-    info "Splunk reachable at ${SPLUNK_HOST}:${SPLUNK_PORT}"
+    info "Splunk connection is ready"
   else
-    error "Cannot connect to Splunk at ${SPLUNK_API}"
+    error "Cannot connect to Splunk"
     error "Check --host and --password args"
     exit 1
   fi
@@ -274,6 +275,27 @@ get_hec_token() {
   fi
 
   echo "$token"
+}
+
+wait_for_initial_poll() {
+  step "Waiting for first poll cycle (up to 3 minutes)"
+  local waited=0 count
+
+  while [[ $waited -lt 180 ]]; do
+    count=$(curl -sk -u "${SPLUNK_USER}:${SPLUNK_PASSWORD}" \
+      "${SPLUNK_API}/services/search/jobs" \
+      -d "search=search index=netops sourcetype=\"sc4snmp:event\" earliest=-10m" \
+      -d exec_mode=oneshot 2>/dev/null \
+      | grep -c "<s:key name=\"count\">" || true)
+    if [[ "$count" -gt 0 ]]; then
+      info "Data confirmed in Splunk after ${waited}s"
+      return 0
+    fi
+    info "No data yet... ${waited}s elapsed"
+    sleep 20
+    waited=$((waited + 20))
+  done
+  warn "Timeout waiting for data — running tests anyway"
 }
 
 # ===== CLEAN INDEXES =====
@@ -349,7 +371,43 @@ deploy_poetry() {
 
 }
 
+wait_for_microk8s_api() {
+  local timeout_seconds="${1:-180}"
+  local required_successes="${2:-5}"
+  local deadline=$((SECONDS + timeout_seconds))
+  local consecutive_successes=0
+  local attempt=0
+  local remaining
+
+  while (( SECONDS < deadline )); do
+    attempt=$((attempt + 1))
+    remaining=$((deadline - SECONDS))
+    (( remaining > 0 )) || break
+    if timeout "$((remaining < 15 ? remaining : 15))s" sudo microk8s kubectl \
+        --request-timeout=10s get --raw=/readyz >/dev/null 2>&1; then
+      consecutive_successes=$((consecutive_successes + 1))
+      if (( consecutive_successes >= required_successes )); then
+        green "[DONE] MicroK8s API remained ready for ${required_successes} consecutive checks"
+        return 0
+      fi
+    else
+      consecutive_successes=0
+      yellow "[INFO] MicroK8s API is not ready (attempt ${attempt}). Retrying"
+    fi
+    remaining=$((deadline - SECONDS))
+    if (( remaining > 0 )); then
+      sleep "$((remaining < 3 ? remaining : 3))"
+    fi
+  done
+
+  red "[ERROR] MicroK8s API did not become stable within ${timeout_seconds} seconds"
+  return 1
+}
+
 dump_docker_diagnostics() {
+  info "============================================================"
+  info "DOCKER DIAGNOSTICS"
+  info "============================================================"
   local container
 
   info "Docker containers at failure:"
@@ -360,9 +418,15 @@ dump_docker_diagnostics() {
     info "Recent logs for Docker container ${container}:"
     timeout 30s sudo docker logs --tail=50 "$container" || true
   done < <(timeout 20s sudo docker ps -a --format '{{.Names}}' 2>/dev/null || true)
+  info "============================================================"
+  info "END OF DOCKER DIAGNOSTICS"
+  info "============================================================"
 }
 
 dump_microk8s_diagnostics() {
+  info "============================================================"
+  info "MICROK8S DIAGNOSTICS"
+  info "============================================================"
   local namespace
   local pod
   local -a namespaces=("$@")
@@ -383,7 +447,7 @@ dump_microk8s_diagnostics() {
   for namespace in "${namespaces[@]}"; do
     if ! timeout 15s sudo microk8s kubectl get namespace \
         "$namespace" >/dev/null 2>&1; then
-      info "Namespace ${namespace} is not available; skipping it"
+      info "Namespace ${namespace} is not available, skipping it"
       continue
     fi
 
@@ -409,4 +473,7 @@ dump_microk8s_diagnostics() {
     --no-pager --full || true
   timeout 20s sudo journalctl -u snap.microk8s.daemon-kubelite \
     --no-pager -n 150 || true
+  info "============================================================"
+  info "END OF MICROK8S DIAGNOSTICS"
+  info "============================================================"
 }

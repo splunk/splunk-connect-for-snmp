@@ -153,6 +153,19 @@ chmod +x "$SCRIPT_DIR/prepare_splunk.sh"
 chmod +x "$SCRIPT_DIR/install_sck.sh"
 
 "$SCRIPT_DIR/prepare_splunk.sh"
+if [[ ${1:-} == 'integration' ]]; then
+  define_python
+  deploy_poetry || exit 1
+fi
+if [[ "${JITTER_ENABLED:-false}" == "true" ]]; then
+  sudo microk8s enable dns hostpath-storage helm3
+  sudo microk8s status --wait-ready
+  sudo microk8s helm3 dependency update "$CHART_DIR"
+  export SIMULATOR_NAMESPACE="${SIMULATOR_NAMESPACE:-jitter-microk8s-agent-simulator}"
+  export SIMULATOR_MANIFEST="${SIMULATOR_MANIFEST:-${INT_TEST_DIR}/.simulators/microk8s/endpoints.json}"
+  "$SCRIPT_DIR/setup_simulator.sh" microk8s || exit 1
+  exit 0
+fi
 "$SCRIPT_DIR/install_sck.sh"
 
 
@@ -193,13 +206,13 @@ fi
 echo $(green "[DONE] MicroK8s API passed five consecutive readiness checks")
 
 if [[ "$AUTODISCOVERY_ENABLED" == "true" ]]; then
-  green "[STEP] Running setup_autodiscovery_simulators.sh with the MicroK8s backend"
-  if "$SCRIPT_DIR/setup_autodiscovery_simulators.sh" microk8s; then
-    echo $(green "[DONE] setup_autodiscovery_simulators.sh completed successfully")
+  green "[STEP] Running setup_simulator.sh with the MicroK8s backend"
+  if "$SCRIPT_DIR/setup_simulator.sh" microk8s; then
+    echo $(green "[DONE] setup_simulator.sh completed successfully")
   else
     simulator_setup_exit=$?
     if timeout 15s sudo microk8s kubectl get --raw=/readyz >/dev/null 2>&1; then
-      echo $(red "Autodiscovery simulator setup failed while the MicroK8s API remained healthy")
+      echo $(red "Simulator setup failed while the MicroK8s API remained healthy")
       exit "${simulator_setup_exit}"
     fi
 
@@ -207,12 +220,12 @@ if [[ "$AUTODISCOVERY_ENABLED" == "true" ]]; then
     sudo snap restart microk8s
     sudo microk8s status --wait-ready
     wait_for_microk8s_api 180
-    echo $(green "[INFO] Running setup_autodiscovery_simulators.sh again after MicroK8s recovery")
-    "$SCRIPT_DIR/setup_autodiscovery_simulators.sh" microk8s
-    echo $(green "[DONE] setup_autodiscovery_simulators.sh completed after MicroK8s recovery")
+    echo $(green "[INFO] Running setup_simulator.sh again after MicroK8s recovery")
+    "$SCRIPT_DIR/setup_simulator.sh" microk8s
+    echo $(green "[DONE] setup_simulator.sh completed after MicroK8s recovery")
   fi
 else
-  echo $(green "[INFO] Skipping autodiscovery simulators for this test part")
+  echo $(green "[INFO] Skipping shared SNMP simulators for this test part")
 fi
 
 
@@ -237,8 +250,3 @@ wait_for_pod_initialization
 wait_for_sc4snmp_pods_to_be_up
 check_metallb_status
 echo $(green "[DONE] SC4SNMP pods and load-balancer service are ready")
-
-if [[ ${1:-} == 'integration' ]]; then
-  define_python
-  deploy_poetry
-fi

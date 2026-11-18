@@ -26,6 +26,15 @@ from typing import Callable, Iterable
 
 import ruamel.yaml
 
+from integration_tests.utils.deployment import (
+    INTEGRATION_TEST_TIMEOUT,
+    _run_integration_command,
+    _sc4snmp_compose_command,
+    restart_sc4snmp_component,
+    wait_for_microk8s_rollout,
+)
+from integration_tests.utils.files import read_private_json
+
 logger = logging.getLogger(__name__)
 BASE_DIR = Path(__file__).resolve().parent.parent
 CONFIG_DIR = BASE_DIR / "configs"
@@ -35,10 +44,36 @@ INVENTORY_FILE = CONFIG_DIR / "inventory-tests.csv"
 LOCAL_MIB_DIR = BASE_DIR / "mibs"
 MIB_INDEX_REFRESH_MIB = LOCAL_MIB_DIR / "HVRVENDOR" / "HVR-MIB"
 MIB_INDEX_REFRESH_ROW = "HVR-MIB,1.3.6.1.4.1.42705"
-INTEGRATION_TEST_TIMEOUT = 180
 # Last INFO line traps.main() logs before binding UDP 2162.
 TRAP_RECEIVER_STARTUP_LOG = "Engine ID sync:"
 TRAP_RECEIVER_KUBERNETES_RESOURCE = "deployment/snmp-splunk-connect-for-snmp-trap"
+
+
+def splunk_test_configuration(pytestconfig):
+    config_path = os.getenv("SPLUNK_TEST_CONFIG")
+    if config_path:
+        return {
+            "port": 8089,
+            "verify": True,
+            "timeout": 30,
+            **read_private_json(config_path),
+        }
+    config = {
+        "host": pytestconfig.getoption("splunk_host"),
+        "port": int(pytestconfig.getoption("splunk_port")),
+        "username": pytestconfig.getoption("splunk_user"),
+        "password": pytestconfig.getoption("splunk_password"),
+    }
+    token_path = BASE_DIR / "hec_token"
+    if token_path.exists():
+        config["hec"] = {
+            "host": pytestconfig.getoption("trap_external_ip"),
+            "port": 8088,
+            "scheme": "https",
+            "token": token_path.read_text().strip(),
+            "verify": False,
+        }
+    return config
 
 
 def splunk_single_search(service, search, timeout=300, max_retries=5):
@@ -277,7 +312,6 @@ def update_inventory_compose(records):
             fp.write(result)
 
         logger.info(f"Inventory updated: {INVENTORY_FILE}")
-        logger.debug(f"Inventory content:\n{result}")
 
     except FileNotFoundError:
         logger.error(f"Inventory file path not found: {INVENTORY_FILE}", exc_info=True)
@@ -306,7 +340,6 @@ def update_profiles_compose(profiles):
             yaml.dump(scheduler_config, file)
 
         logger.info(" Profiles updated successfully")
-        logger.debug(f"Profiles: {profiles}")
 
     except FileNotFoundError:
         logger.error(
@@ -337,7 +370,6 @@ def update_groups_compose(groups):
             yaml.dump(scheduler_config, file)
 
         logger.info(" Groups updated successfully")
-        logger.debug(f"Groups: {groups}")
 
     except FileNotFoundError:
         logger.error(
@@ -356,7 +388,7 @@ def upgrade_env_compose(variable, new_value, env_path=None):
         if not variable:
             raise ValueError("Variable name cannot be empty")
 
-        logger.info(f"Updating ENV → {variable}={new_value}")
+        logger.info(f"Updating ENV → {variable}")
 
         lines = []
         found = False
@@ -772,59 +804,6 @@ def get_mibserver_logs_microk8s(tail_lines=200):
     return result.stdout + result.stderr
 
 
-def _run_integration_command(
-    command,
-    description,
-    timeout=INTEGRATION_TEST_TIMEOUT,
-    *,
-    include_stderr=False,
-):
-    result = subprocess.run(
-        command,
-        capture_output=True,
-        text=True,
-        check=False,
-        timeout=timeout,
-    )
-    if result.returncode != 0:
-        details = (result.stderr or result.stdout).strip()
-        raise RuntimeError(f"{description} failed: {details[-2000:]}")
-    if include_stderr:
-        return result.stdout + result.stderr
-    return result.stdout
-
-
-def _sc4snmp_compose_command(*arguments):
-    compose_dir = BASE_DIR / "docker_compose"
-    return [
-        "sudo",
-        "docker",
-        "compose",
-        "-f",
-        str(compose_dir / "docker-compose.yaml"),
-        "--env-file",
-        str(compose_dir / ".env"),
-        *arguments,
-    ]
-
-
-def wait_for_microk8s_rollout(kubernetes_resource, description):
-    _run_integration_command(
-        [
-            "sudo",
-            "microk8s",
-            "kubectl",
-            "rollout",
-            "status",
-            kubernetes_resource,
-            "-n",
-            "sc4snmp",
-            "--timeout=180s",
-        ],
-        f"waiting for the {description} Kubernetes rollout",
-    )
-
-
 def wait_for_mib_refresh_cleanup_microk8s():
     """Wait until the previous local-MIB test release is fully restored."""
     wait_for_microk8s_rollout("deployment/snmp-mibserver", "snmp-mibserver")
@@ -843,42 +822,6 @@ def wait_for_mib_refresh_cleanup_microk8s():
         ],
         "waiting for the local-MIB test storage to be removed",
     )
-
-
-def restart_sc4snmp_component(
-    deployment: str,
-    *,
-    compose_service: str,
-    kubernetes_resource: str,
-) -> None:
-    if deployment == "microk8s":
-        _run_integration_command(
-            [
-                "sudo",
-                "microk8s",
-                "kubectl",
-                "rollout",
-                "restart",
-                kubernetes_resource,
-                "-n",
-                "sc4snmp",
-            ],
-            f"restarting the {compose_service} Kubernetes resource",
-        )
-        wait_for_microk8s_rollout(kubernetes_resource, compose_service)
-    elif deployment == "docker-compose":
-        _run_integration_command(
-            _sc4snmp_compose_command(
-                "up",
-                "-d",
-                "--force-recreate",
-                "--no-deps",
-                compose_service,
-            ),
-            f"recreating the {compose_service} Docker Compose service",
-        )
-    else:
-        raise ValueError(f"Unsupported SC4SNMP deployment: {deployment}")
 
 
 def _fetch_mib_refresh_index(deployment):
