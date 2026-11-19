@@ -81,6 +81,10 @@ spec:
             items:
               - key: job_config
                 path: job_config.yaml
+              {{- if eq (include "splunk-connect-for-snmp.discovery.enable" .) "true" }}
+              - key: discovery_job_config
+                path: discovery_job_config.yaml
+              {{- end }}
         - name: tmp
           emptyDir: {}
 {{- end }}

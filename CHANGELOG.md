@@ -3,17 +3,22 @@
 ## Unreleased
 
 ### Changed
-- `UI.frontEnd.serviceType` and `UI.backEnd.serviceType` to choose the Kubernetes Service type of the UI, and `UI.frontEnd.trustedProxyCIDRs` to run the UI behind a reverse proxy while keeping per-client login rate limiting. See [Running the GUI behind a reverse 
+- **UI proxy**
+  - `UI.frontEnd.serviceType` and `UI.backEnd.serviceType` to choose the Kubernetes Service type of the UI, and `UI.frontEnd.trustedProxyCIDRs` to run the UI behind a reverse proxy while keeping per-client login rate limiting. See [Running the GUI behind a reverse 
   proxy](docs/microk8s/gui/enable-gui.md#running-the-gui-behind-a-reverse-proxy).
-- `UI.backEnd.trustedProxyCIDRs`: the backend trusts `X-Forwarded-For` only from callers inside these ranges (the frontend pods), so login rate limiting stays per client for any backend Service type and cannot be spoofed by callers outside them.
-- Optional `UI.backEnd.networkPolicy.enabled` creates a NetworkPolicy that allows ingress to the UI backend only from the UI frontend pods (requires a network plugin that enforces NetworkPolicy and `UI.backEnd.serviceType: ClusterIP`).
-- Inventory job now takes its log level from `poller.logLevel` instead of `scheduler.logLevel`, defaulting to `INFO`.
-- The UI frontend is now served by nginx instead of the webpack development server, and the browser reaches the backend through the frontend under `/api`. `UI.backEnd.serviceType` defaults to `ClusterIP`, so the backend NodePort (`30002`) is no longer exposed unless `serviceType: NodePort` is set. Remove any manual patches that override the frontend container command or edit files inside the frontend pod.
+  - `UI.backEnd.trustedProxyCIDRs`: the backend trusts `X-Forwarded-For` only from callers inside these ranges (the frontend pods), so login rate limiting stays per client for any backend Service type and cannot be spoofed by callers outside them.
+  - Optional `UI.backEnd.networkPolicy.enabled` creates a NetworkPolicy that allows ingress to the UI backend only from the UI frontend pods (requires a network plugin that enforces NetworkPolicy and `UI.backEnd.serviceType: ClusterIP`).
+  - Inventory job now takes its log level from `poller.logLevel` instead of `scheduler.logLevel`, defaulting to `INFO`.
+  - The UI frontend is now served by nginx instead of the webpack development server, and the browser reaches the backend through the frontend under `/api`. `UI.backEnd.serviceType` defaults to `ClusterIP`, so the backend NodePort (`30002`) is no longer exposed unless `serviceType: NodePort` is set. Remove any manual patches that override the frontend container command or edit files inside the frontend pod.
 - The MIB server is now sourced from [`splunk/mibs`](https://github.com/splunk/mibs) instead of `pysnmp/mibs`.
 - Add minimal polling frequency for profiles. Automatically set polling profile frequencies below 5 seconds to 5 seconds.
+- **Discovery page**
+  - Load Discovery entries from MongoDB when the UI is enabled, seeding missing entries from YAML on first use. Disabling the UI returns Discovery to YAML and removes the UI-managed Discovery collection.
+  - Add a Discovery Kubernetes Job manifest to the UI backend and worker when the UI and Discovery are enabled. This lets **Apply changes** reload Discovery independently of Inventory.
 
 ### Fixed
 - A value whose SNMP type differs from the type declared in its MIB no longer drops the whole poll. When `prettyPrint()` fails, the raw value is used and a warning with the OID, class, tag set and raw value is logged.
+- Validate Discovery ports as integers from 1 to 65535.
 
 ## [1.18.1]
 
