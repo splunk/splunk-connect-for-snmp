@@ -9,7 +9,7 @@
 - Optional `UI.backEnd.networkPolicy.enabled` creates a NetworkPolicy that allows ingress to the UI backend only from the UI frontend pods (requires a network plugin that enforces NetworkPolicy and `UI.backEnd.serviceType: ClusterIP`).
 - Inventory job now takes its log level from `poller.logLevel` instead of `scheduler.logLevel`, defaulting to `INFO`.
 - The UI frontend is now served by nginx instead of the webpack development server, and the browser reaches the backend through the frontend under `/api`. `UI.backEnd.serviceType` defaults to `ClusterIP`, so the backend NodePort (`30002`) is no longer exposed unless `serviceType: NodePort` is set. Remove any manual patches that override the frontend container command or edit files inside the frontend pod.
-- The MIB server is now sourced from [`splunk/mibs`](https://github.com/splunk/mibs) instead of `pysnmp/mibs`. The initial version stays at `1.17.0`.
+- The MIB server is now sourced from [`splunk/mibs`](https://github.com/splunk/mibs) instead of `pysnmp/mibs`.
 
 ### Fixed
 - A value whose SNMP type differs from the type declared in its MIB no longer drops the whole poll. When `prettyPrint()` fails, the raw value is used and a warning with the OID, class, tag set and raw value is logged.
