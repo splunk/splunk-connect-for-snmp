@@ -229,7 +229,7 @@ Docs: [general issues](https://splunk.github.io/splunk-connect-for-snmp/main/tro
 
 **Ask for:** the OID or MIB name that is not translated, and mibserver logs since its last restart.
 
-1. Check whether the MIB is in the public MIB repository index (`https://pysnmp.github.io/mibs/index.csv`, or `https://pysnmp.github.io/mibs/asn1/<MIB-NAME>`). If not, load it as a local MIB.
+1. Check whether the MIB is in the public MIB repository index (`https://splunk.github.io/mibs/index.csv`, or `https://splunk.github.io/mibs/asn1/<MIB-NAME>`). If not, load it as a local MIB.
 2. For local MIBs, check the [MIB server](operator-commands.md#mib-server) logs:
    - `No local mibs. Skipping...` has three causes:
      - `mibserver.localMibs.pathToMibs` / `LOCAL_MIBS_PATH` is not set.
