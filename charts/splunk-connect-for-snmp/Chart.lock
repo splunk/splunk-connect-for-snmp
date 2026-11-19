@@ -1,6 +1,6 @@
 dependencies:
 - name: mibserver
   repository: https://splunk.github.io/mibs/charts/
-  version: 1.17.0
-digest: sha256:a60d0c4b7cd47f45f9c3a52e1c6a4a7fe932ef4fed8b10f55b2b1e07801385bb
-generated: "2026-11-19T12:03:17.76778+01:00"
+  version: 1.17.1
+digest: sha256:b17e24b7ae24b223d9d661d2459bded51c47246b6abbdd7fee501f3396e6eaa3
+generated: "2026-11-19T15:52:28.191549+01:00"
