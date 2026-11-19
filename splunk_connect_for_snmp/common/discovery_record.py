@@ -58,7 +58,11 @@ class DiscoveryRecord(BaseModel):
     def port_validator(cls, value):
         if value is None:
             return 161
-        if isinstance(value, int) and value >= 1 or value <= 65535:
+        if (
+            isinstance(value, int)
+            and not isinstance(value, bool)
+            and 1 <= value <= 65535
+        ):
             return value
         else:
             raise ValueError("field port must be an integer between 1 and 65535")

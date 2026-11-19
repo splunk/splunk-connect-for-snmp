@@ -107,3 +107,60 @@ Return full image for thr UI back end.
 {{- define "splunk-connect-for-snmp-ui.hostMountPath" -}}
 /var/values_dir
 {{- end }}
+{{/*
+Create a discovery job config template which will be included in configMap for UI backend. It is rendered only
+when discovery is enabled. The UI backend builds a kubernetes Job from it, so keep it in sync with
+templates/discovery/job.yaml (the UI job builder supports only the fields used here, e.g. no securityContext).
+*/}}
+{{- define "splunk-connect-for-snmp.discovery-job-config" -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "splunk-connect-for-snmp.discovery.fullname" . }}
+  labels:
+    {{- include "splunk-connect-for-snmp.discovery.labels" . | nindent 4 }}
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    metadata:
+      labels:
+        {{- include "splunk-connect-for-snmp.discovery.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-discovery
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: ["discovery"]
+          env:
+            {{- include "splunk-connect-for-snmp.redis-env" . | nindent 12 }}
+            {{- include "splunk-connect-for-snmp.mongodb-env" . | nindent 12 }}
+            - name: DISCOVERY_CONFIG_PATH
+              value: /app/discovery/discovery-config.yaml
+            - name: LOG_LEVEL
+              value: {{ .Values.discovery.logLevel | default "INFO" }}
+            - name: CHAIN_OF_TASKS_EXPIRY_TIME
+              value: {{ .Values.scheduler.tasksExpiryTime | quote }}
+            - name: CONFIG_FROM_MONGO
+              value: {{ quote .Values.UI.enable | default "false" }}
+          volumeMounts:
+            - name: discovery-config
+              mountPath: /app/discovery
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp/
+              readOnly: false
+      volumes:
+        - name: discovery-config
+          configMap:
+            name: {{ include "splunk-connect-for-snmp.name" . }}-discovery-config
+            items:
+              - key: discovery-config.yaml
+                path: discovery-config.yaml
+        - name: tmp
+          emptyDir: {}
+      restartPolicy: OnFailure
+{{- end }}

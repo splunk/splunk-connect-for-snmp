@@ -8,4 +8,8 @@ metadata:
 data:
   job_config: |
     {{- include "splunk-connect-for-snmp.job-config" . | nindent 4 }}
+  {{- if eq (include "splunk-connect-for-snmp.discovery.enable" .) "true" }}
+  discovery_job_config: |
+    {{- include "splunk-connect-for-snmp.discovery-job-config" . | nindent 4 }}
+  {{- end }}
 {{- end }}
