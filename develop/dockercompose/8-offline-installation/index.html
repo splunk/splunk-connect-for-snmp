@@ -2696,7 +2696,7 @@ SC4SNMP_TAG=latest
 COREDNS_IMAGE=coredns/coredns
 COREDNS_TAG=1.11.1
 
-MIBSERVER_IMAGE=ghcr.io/pysnmp/mibs/container
+MIBSERVER_IMAGE=ghcr.io/splunk/mibs/container
 MIBSERVER_TAG=latest
 
 REDIS_IMAGE=docker.io/redis
@@ -2708,14 +2708,14 @@ MONGO_TAG=latest
 <p>They must be downloaded in the online environment by following commands:</p>
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>pull<span class="w"> </span>ghcr.io/splunk/splunk-connect-for-snmp/container:latest
 docker<span class="w"> </span>pull<span class="w"> </span>coredns/coredns:1.11.1
-docker<span class="w"> </span>pull<span class="w"> </span>ghcr.io/pysnmp/mibs/container:latest
+docker<span class="w"> </span>pull<span class="w"> </span>ghcr.io/splunk/mibs/container:latest
 docker<span class="w"> </span>pull<span class="w"> </span>docker.io/redis:latest
 docker<span class="w"> </span>pull<span class="w"> </span>docker.io/mongodb:latest
 </code></pre></div>
 <p>Next step is to save them to <code>sc4snmp_offline_images.tar</code> archive:
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>save<span class="w"> </span>ghcr.io/splunk/splunk-connect-for-snmp/container:latest<span class="w"> </span><span class="se">\</span>
 coredns/coredns:1.11.1<span class="w"> </span><span class="se">\</span>
-ghcr.io/pysnmp/mibs/container:latest<span class="w"> </span><span class="se">\</span>
+ghcr.io/splunk/mibs/container:latest<span class="w"> </span><span class="se">\</span>
 docker.io/redis:latest<span class="w"> </span><span class="se">\</span>
 docker.io/mongodb:latest<span class="w"> </span>&gt;<span class="w"> </span>sc4snmp_offline_images.tar
 </code></pre></div></p>
