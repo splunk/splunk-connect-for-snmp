@@ -4,16 +4,16 @@ To achieve human-readable OIDs, the corresponding MIB files are necessary.
 They are stored in the MIB server, which is one of the components of SC4SNMP.
 
 See the following link for a list of currently available MIBs:
-[https://pysnmp.github.io/mibs/index.csv](https://pysnmp.github.io/mibs/index.csv)
+[https://splunk.github.io/mibs/index.csv](https://splunk.github.io/mibs/index.csv)
 
 An alternative way to check if the MIB you are interested in is being served is to check the following link:
-`https://pysnmp.github.io/mibs/asn1/@mib@` where `@mib@` is the name of MIB, for example, `IF-MIB`. If the file 
+`https://splunk.github.io/mibs/asn1/@mib@` where `@mib@` is the name of MIB, for example, `IF-MIB`. If the file 
 is downloading, that means the MIB file exists in the MIB server.
 
 ## Submit new MIB file
 
 In case you want to add a new MIB file to the MIB server, create an issue in the
-[Mibserver](https://github.com/pysnmp/mibs) repository, attaching the files and information about 
+[Mibserver](https://github.com/splunk/mibs) repository, attaching the files and information about 
 the vendor.
 
 ## MIB Error Handling Policy
@@ -25,7 +25,7 @@ We do not provide support for correcting the MIB files itself.
 ### Recommended Actions
 
 Contact the vendor to request a resolution or inquire about newer versions of the affected MIBs.
-If official updates are available from the vendor, you may open an [issue on GitHub](https://github.com/pysnmp/mibs/issues) and attach the updated files. 
+If official updates are available from the vendor, you may open an [issue on GitHub](https://github.com/splunk/mibs/issues) and attach the updated files. 
 We will review and, if appropriate, replace the files in our repository.
 
 If vendor fixes are unavailable, you may attempt to resolve the issues using AI-assisted tools 
@@ -44,7 +44,7 @@ mibserver:
   image:
     tag: "1.15.13"
 ```
-Check all the [MIB server releases](https://github.com/pysnmp/mibs/releases). 
+Check all the [MIB server releases](https://github.com/splunk/mibs/releases). 
 
 2. Run `microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace`.
 
@@ -61,7 +61,7 @@ microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-
 ```
 MIBSERVER_TAG=1.15.29
 ```
-Check all the [MIB server releases](https://github.com/pysnmp/mibs/releases). 
+Check all the [MIB server releases](https://github.com/splunk/mibs/releases). 
 
 2. Remove the container with old mibserver version and start the new one with commands:
 
@@ -106,7 +106,7 @@ microk8s kubectl logs -f deployments/snmp-mibserver -n sc4snmp
 ```
 
 This creates a Kubernetes pvc with MIB files inside and maps it to the MIB server pod.
-Also, you can change the storageClass and size of persistence according to the `mibserver` schema, see [values.yaml of the mibserver](https://github.com/pysnmp/mibs/blob/main/charts/mibserver/values.yaml).
+Also, you can change the storageClass and size of persistence according to the `mibserver` schema, see [values.yaml of the mibserver](https://github.com/splunk/mibs/blob/main/charts/mibserver/values.yaml).
 The default persistence size is 1 Gibibyte, so consider reducing or expanding it to the amount you actually need.
 
 Whenever you add new MIB files, rollout restart MIB server pods to compile them again, using the following command:

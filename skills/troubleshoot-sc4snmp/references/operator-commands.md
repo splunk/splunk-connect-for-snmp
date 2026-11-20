@@ -410,7 +410,7 @@ sudo docker logs --tail=300 snmp-mibserver
 sudo docker compose restart snmp-mibserver
 ```
 
-Check whether a MIB is in the public repository: `curl -s https://pysnmp.github.io/mibs/index.csv | grep -i '<MIB-NAME>'`.
+Check whether a MIB is in the public repository: `curl -s https://splunk.github.io/mibs/index.csv | grep -i '<MIB-NAME>'`.
 
 **Expected:** the logs list the compiled local MIBs and contain no `No local mibs. Skipping...` or `Illegal character` lines.
 

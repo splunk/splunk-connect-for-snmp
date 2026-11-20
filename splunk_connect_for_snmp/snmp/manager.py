@@ -57,9 +57,9 @@ from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 from splunk_connect_for_snmp.snmp.mib_index_validator import MibIndexResponseValidator
 from splunk_connect_for_snmp.snmp.multi_bulk_walk_cmd import multi_bulk_walk_cmd
 
-MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@")
-MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index.csv")
-MIB_STANDARD = os.getenv("MIB_STANDARD", "https://pysnmp.github.io/mibs/standard.txt")
+MIB_SOURCES = os.getenv("MIB_SOURCES", "https://splunk.github.io/mibs/asn1/@mib@")
+MIB_INDEX = os.getenv("MIB_INDEX", "https://splunk.github.io/mibs/index.csv")
+MIB_STANDARD = os.getenv("MIB_STANDARD", "https://splunk.github.io/mibs/standard.txt")
 HOSTS_TO_IGNORE_NOT_INCREASING_OIDS = os.getenv("IGNORE_NOT_INCREASING_OIDS", "").split(
     ","
 )

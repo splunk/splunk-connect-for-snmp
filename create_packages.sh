@@ -160,7 +160,7 @@ pull_custom_chart_images(){
 
 rm -rf /tmp/package
 mkdir -p /tmp/package
-helm repo add pysnmp-mibs https://pysnmp.github.io/mibs/charts
+helm repo add splunk-mibs https://splunk.github.io/mibs/charts
 helm dependency update charts/splunk-connect-for-snmp
 helm package charts/splunk-connect-for-snmp -d /tmp/package
 cd /tmp/package || exit
@@ -188,7 +188,7 @@ mkdir -p /tmp/package/packages
 
 # Export script to pull mibserver
 MIBSERVER_VERSION=$(grep -A2 'mibserver' Chart.lock | grep version | cut -d : -f2 | xargs)
-MIBSERVER_IMAGE="ghcr.io/pysnmp/mibs/container:$MIBSERVER_VERSION"
+MIBSERVER_IMAGE="ghcr.io/splunk/mibs/container:$MIBSERVER_VERSION"
 echo "docker pull $MIBSERVER_IMAGE" > pull_mibserver.sh
 echo "docker save $MIBSERVER_IMAGE > mibserver.tar" >> pull_mibserver.sh
 cp pull_mibserver.sh /tmp/package/packages
