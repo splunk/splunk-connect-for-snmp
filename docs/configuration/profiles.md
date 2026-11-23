@@ -9,7 +9,7 @@ There are two types of profiles in general:
 
 ## Polling frequency
 
-Profile `frequency` must be a whole number of at least 5 seconds. Frequencies below 5 seconds are rejected.
+Polling profile frequencies below 5 seconds are automatically set to 5 seconds.
 
 ## varBinds configuration
 

@@ -42,25 +42,27 @@ def return_not_existing_file(*args):
 
 
 @pytest.mark.parametrize(
-    "frequency,valid",
+    "frequency,expected_frequency",
     [
-        (-1, False),
-        (0, False),
-        (1, False),
-        (3, False),
-        (4, False),
-        (4.9, False),
-        (5.5, False),
-        ("5", False),
-        (True, False),
-        (False, False),
-        (None, False),
-        ([], False),
-        ({}, False),
-        (5, True),
-        (5.0, True),
-        (6, True),
-        (6.0, True),
+        (-1, 5),
+        (0, 5),
+        (1, 5),
+        (3, 5),
+        (4, 5),
+        (4.0, 5),
+        (4.9, None),
+        (5.5, None),
+        ("3", None),
+        ("5", None),
+        (True, None),
+        (False, None),
+        (None, None),
+        ([], None),
+        ({}, None),
+        (5, 5),
+        (5.0, 5.0),
+        (6, 6),
+        (6.0, 6.0),
     ],
 )
 @pytest.mark.parametrize(
@@ -88,7 +90,7 @@ def return_not_existing_file(*args):
     ],
     ids=["standard", "base", "mandatory", "smart", "conditional"],
 )
-def test_profile_frequency_minimum(frequency, valid, profile_settings):
+def test_profile_frequency_minimum(frequency, expected_frequency, profile_settings):
     profile = {
         "frequency": frequency,
         "varBinds": [["SNMPv2-MIB", "sysUpTime", 0]],
@@ -100,14 +102,12 @@ def test_profile_frequency_minimum(frequency, valid, profile_settings):
     ProfilesManager.validate_elements(profiles)
 
     expected = {"valid": valid_profile}
-    if valid:
-        expected["selected"] = profile
+    if expected_frequency is not None:
+        expected["selected"] = {**valid_profile, "frequency": expected_frequency}
     assert profiles == expected
 
 
-@pytest.mark.parametrize(
-    "frequency", [-1, 0, 1, 3, 4, 4.9, 5.5, "5", True, False, None, [], {}]
-)
+@pytest.mark.parametrize("frequency", [4.9, 5.5, "3", "5", True, False, None, [], {}])
 def test_update_profiles_excludes_invalid_frequency_without_failing(frequency):
     valid_profile = {
         "frequency": 5,
@@ -121,6 +121,8 @@ def test_update_profiles_excludes_invalid_frequency_without_failing(frequency):
     manager.gather_elements = Mock(
         return_value={
             "invalid": {**valid_profile, "frequency": frequency},
+            "malformed": {"frequency": 4},
+            "below_minimum": {**valid_profile, "frequency": 3},
             "valid": valid_profile,
             "walk": walk_profile,
         }
@@ -130,7 +132,7 @@ def test_update_profiles_excludes_invalid_frequency_without_failing(frequency):
     manager.update_all()
 
     manager.update_collection.assert_called_once_with(
-        {"valid": valid_profile, "walk": walk_profile}
+        {"below_minimum": valid_profile, "valid": valid_profile, "walk": walk_profile}
     )
 
 

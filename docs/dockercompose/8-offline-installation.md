@@ -25,7 +25,7 @@ SC4SNMP_TAG=latest
 COREDNS_IMAGE=coredns/coredns
 COREDNS_TAG=1.11.1
 
-MIBSERVER_IMAGE=ghcr.io/pysnmp/mibs/container
+MIBSERVER_IMAGE=ghcr.io/splunk/mibs/container
 MIBSERVER_TAG=latest
 
 REDIS_IMAGE=docker.io/redis
@@ -40,7 +40,7 @@ They must be downloaded in the online environment by following commands:
 ```shell
 docker pull ghcr.io/splunk/splunk-connect-for-snmp/container:latest
 docker pull coredns/coredns:1.11.1
-docker pull ghcr.io/pysnmp/mibs/container:latest
+docker pull ghcr.io/splunk/mibs/container:latest
 docker pull docker.io/redis:latest
 docker pull docker.io/mongodb:latest
 ```
@@ -49,7 +49,7 @@ Next step is to save them to `sc4snmp_offline_images.tar` archive:
 ```shell
 docker save ghcr.io/splunk/splunk-connect-for-snmp/container:latest \
 coredns/coredns:1.11.1 \
-ghcr.io/pysnmp/mibs/container:latest \
+ghcr.io/splunk/mibs/container:latest \
 docker.io/redis:latest \
 docker.io/mongodb:latest > sc4snmp_offline_images.tar
 ```

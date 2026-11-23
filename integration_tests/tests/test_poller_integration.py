@@ -467,7 +467,7 @@ def setup_smart_profiles(request):
 @pytest.mark.part1
 class TestSmartProfiles:
     def test_smart_profiles_field(self, setup_splunk):
-        search_string = """| mpreview index=netmetrics| spath profiles | search profiles=smart_profile_field | search icmpOutDestUnreachs """
+        search_string = """| mpreview index=netmetrics earliest=-30s | spath profiles | search profiles=smart_profile_field frequency=5 | search icmpOutDestUnreachs """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
         )
@@ -510,7 +510,7 @@ def setup_modify_profile(request):
     deployment = request.config.getoption("sc4snmp_deployment")
     profile = {
         "test_modify": {
-            "frequency": 5,
+            "frequency": 4,
             "varBinds": [yaml_escape_list(sq("UDP-MIB"))],
         },
     }
@@ -1961,7 +1961,7 @@ def setup_misconfigured_profiles(request):
             ],
         },
         "no_patterns_profile": {
-            "frequency": 5,
+            "frequency": 3,
             "condition": {
                 "type": "field",
                 "field": "SNMPv2-MIB.sysDescr",
