@@ -9,7 +9,7 @@ There are two types of profiles in general:
 
 ## Polling frequency
 
-Polling profile frequencies below 5 seconds are automatically set to 5 seconds.
+The minimum polling interval for profiles is 5 seconds. Any lower value is automatically set to 5 seconds.
 
 ## varBinds configuration
 
