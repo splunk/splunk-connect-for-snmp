@@ -2,6 +2,8 @@ import os
 from unittest import TestCase, mock
 from unittest.mock import Mock
 
+import pytest
+
 from splunk_connect_for_snmp.common.collection_manager import ProfilesManager
 
 
@@ -37,6 +39,99 @@ def return_disabled_config(*args):
 
 def return_not_existing_file(*args):
     return [return_mocked_path("runtime_config_that_doesnt_exist.yaml")]
+
+
+@pytest.mark.parametrize(
+    "frequency,valid",
+    [
+        (-1, False),
+        (0, False),
+        (1, False),
+        (3, False),
+        (4, False),
+        (4.9, False),
+        (5.5, False),
+        ("5", False),
+        (True, False),
+        (False, False),
+        (None, False),
+        ([], False),
+        ({}, False),
+        (5, True),
+        (5.0, True),
+        (6, True),
+        (6.0, True),
+    ],
+)
+@pytest.mark.parametrize(
+    "profile_settings",
+    [
+        {},
+        {"condition": {"type": "base"}},
+        {"condition": {"type": "mandatory"}},
+        {
+            "condition": {
+                "type": "field",
+                "field": "SNMPv2-MIB.sysDescr",
+                "patterns": ["Linux.*"],
+            }
+        },
+        {
+            "conditions": [
+                {
+                    "field": "IF-MIB.ifAdminStatus",
+                    "operation": "equals",
+                    "value": "up",
+                }
+            ]
+        },
+    ],
+    ids=["standard", "base", "mandatory", "smart", "conditional"],
+)
+def test_profile_frequency_minimum(frequency, valid, profile_settings):
+    profile = {
+        "frequency": frequency,
+        "varBinds": [["SNMPv2-MIB", "sysUpTime", 0]],
+        **profile_settings,
+    }
+    valid_profile = {**profile, "frequency": 10}
+    profiles = {"selected": profile, "valid": valid_profile}
+
+    ProfilesManager.validate_elements(profiles)
+
+    expected = {"valid": valid_profile}
+    if valid:
+        expected["selected"] = profile
+    assert profiles == expected
+
+
+@pytest.mark.parametrize(
+    "frequency", [-1, 0, 1, 3, 4, 4.9, 5.5, "5", True, False, None, [], {}]
+)
+def test_update_profiles_excludes_invalid_frequency_without_failing(frequency):
+    valid_profile = {
+        "frequency": 5,
+        "varBinds": [["SNMPv2-MIB", "sysUpTime", 0]],
+    }
+    walk_profile = {
+        "condition": {"type": "walk"},
+        "varBinds": [["SNMPv2-MIB"]],
+    }
+    manager = ProfilesManager(Mock())
+    manager.gather_elements = Mock(
+        return_value={
+            "invalid": {**valid_profile, "frequency": frequency},
+            "valid": valid_profile,
+            "walk": walk_profile,
+        }
+    )
+    manager.update_collection = Mock()
+
+    manager.update_all()
+
+    manager.update_collection.assert_called_once_with(
+        {"valid": valid_profile, "walk": walk_profile}
+    )
 
 
 class TestProfiles(TestCase):

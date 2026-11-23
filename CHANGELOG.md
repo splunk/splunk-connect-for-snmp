@@ -9,6 +9,7 @@
 - Optional `UI.backEnd.networkPolicy.enabled` creates a NetworkPolicy that allows ingress to the UI backend only from the UI frontend pods (requires a network plugin that enforces NetworkPolicy and `UI.backEnd.serviceType: ClusterIP`).
 
 ### Changed
+- Require whole-number polling frequencies of at least 5 seconds. Helm rejects invalid values. For Docker and MongoDB configurations, invalid profiles are logged and skipped without blocking startup.
 - Inventory job now takes its log level from `poller.logLevel` instead of `scheduler.logLevel`, defaulting to `INFO`.
 - The UI frontend is now served by nginx instead of the webpack development server, and the browser reaches the backend through the frontend under `/api`. `UI.backEnd.serviceType` defaults to `ClusterIP`, so the backend NodePort (`30002`) is no longer exposed unless `serviceType: NodePort` is set. Remove any manual patches that override the frontend container command or edit files inside the frontend pod.
 
