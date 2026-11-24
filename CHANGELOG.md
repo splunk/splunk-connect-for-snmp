@@ -10,6 +10,7 @@
 - Inventory job now takes its log level from `poller.logLevel` instead of `scheduler.logLevel`, defaulting to `INFO`.
 - The UI frontend is now served by nginx instead of the webpack development server, and the browser reaches the backend through the frontend under `/api`. `UI.backEnd.serviceType` defaults to `ClusterIP`, so the backend NodePort (`30002`) is no longer exposed unless `serviceType: NodePort` is set. Remove any manual patches that override the frontend container command or edit files inside the frontend pod.
 - The MIB server is now sourced from [`splunk/mibs`](https://github.com/splunk/mibs) instead of `pysnmp/mibs`.
+- Add minimal polling frequency for profiles. Automatically set polling profile frequencies below 5 seconds to 5 seconds.
 
 ### Fixed
 - A value whose SNMP type differs from the type declared in its MIB no longer drops the whole poll. When `prettyPrint()` fails, the raw value is used and a warning with the OID, class, tag set and raw value is logged.

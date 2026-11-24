@@ -159,6 +159,12 @@ class ProfilesManager(CollectionManager):
                     continue
             if not valid:
                 invalid_profiles.append(profile_name)
+            elif "frequency" in profile_body and profile_body["frequency"] < 5:
+                logger.info(
+                    f"Profile {profile_name} frequency {profile_body['frequency']}s is below "
+                    "the minimum of 5s. Setting it to 5s."
+                )
+                profile_body["frequency"] = 5
         for profile in invalid_profiles:
             del elements[profile]
         if invalid_profiles:

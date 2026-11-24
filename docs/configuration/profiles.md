@@ -7,6 +7,10 @@ There are two types of profiles in general:
 1. **Static profile**: Polling starts when the profile is added to the `profiles` field in the inventory of the device.
 2. **Smart profile**: Polling starts when configured conditions are fulfilled, and the device to poll from has `smart_profiles` enabled in inventory.
 
+## Polling frequency
+
+The minimum polling interval for profiles is 5 seconds. Any lower value is automatically set to 5 seconds.
+
 ## varBinds configuration
 
 `VarBinds` is short name for **variable binding** in the SNMP. It is the combination of an Object Identifier (OID) and a value.

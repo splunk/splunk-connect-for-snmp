@@ -428,7 +428,7 @@ def setup_smart_profiles(request):
     logger.info("Integration test for fields smart profiles")
     profile = {
         "smart_profile_field": {
-            "frequency": 3,
+            "frequency": 5,
             "condition": {
                 "type": "field",
                 "field": "SNMPv2-MIB.sysDescr",
@@ -467,7 +467,7 @@ def setup_smart_profiles(request):
 @pytest.mark.part1
 class TestSmartProfiles:
     def test_smart_profiles_field(self, setup_splunk):
-        search_string = """| mpreview index=netmetrics| spath profiles | search profiles=smart_profile_field | search icmpOutDestUnreachs """
+        search_string = """| mpreview index=netmetrics earliest=-30s | spath profiles | search profiles=smart_profile_field frequency=5 | search icmpOutDestUnreachs """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
         )
@@ -508,37 +508,70 @@ class TestSmartProfiles:
 def setup_modify_profile(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
+    profile_name, frequency, smart_profiles = getattr(
+        request, "param", ("test_modify", 5, False)
+    )
     profile = {
-        "test_modify": {
-            "frequency": 5,
+        profile_name: {
+            "frequency": frequency,
             "varBinds": [yaml_escape_list(sq("UDP-MIB"))],
         },
     }
-    if deployment == "microk8s":
-        update_profiles_microk8s(profile)
-        update_file_microk8s(
-            [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"], "inventory.yaml"
-        )
-        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
-    else:
-        update_profiles_compose(profile)
-        update_inventory_compose(
-            [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"]
-        )
-        upgrade_docker_compose()
-    time.sleep(30)
-    yield
-    if deployment == "microk8s":
-        update_file_microk8s(
-            [f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"], "inventory.yaml"
-        )
-        upgrade_helm_microk8s(["inventory.yaml"])
-    else:
-        update_inventory_compose(
-            [f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"]
-        )
-        upgrade_docker_compose()
-    time.sleep(20)
+    if smart_profiles:
+        profile[profile_name]["condition"] = {
+            "type": "field",
+            "field": "SNMPv2-MIB.sysDescr",
+            "patterns": [".*zeus.*"],
+        }
+    assigned_profile = "" if smart_profiles else profile_name
+    inventory_record = (
+        f"{trap_external_ip},,2c,public,,,600,{assigned_profile},"
+        f"{str(smart_profiles).lower()},"
+    )
+    earliest = int(time.time())
+    try:
+        if deployment == "microk8s":
+            update_profiles_microk8s(profile)
+            update_file_microk8s([inventory_record], "inventory.yaml")
+            upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+        else:
+            update_profiles_compose(profile)
+            update_inventory_compose([inventory_record])
+            upgrade_docker_compose()
+        time.sleep(30)
+        yield profile_name, earliest
+    finally:
+        if deployment == "microk8s":
+            update_file_microk8s([f"{inventory_record}t"], "inventory.yaml")
+            upgrade_helm_microk8s(["inventory.yaml"])
+        else:
+            update_inventory_compose([f"{inventory_record}t"])
+            upgrade_docker_compose()
+        time.sleep(20)
+
+
+@pytest.mark.part2
+@pytest.mark.parametrize(
+    "setup_modify_profile",
+    [
+        pytest.param(("minimum_frequency_normal", 4, False), id="normal"),
+        pytest.param(("minimum_frequency_smart", 4, True), id="smart"),
+    ],
+    indirect=True,
+)
+def test_profile_frequency_below_minimum_is_set_to_five_seconds(
+    setup_modify_profile, setup_splunk
+):
+    profile_name, earliest = setup_modify_profile
+    result_count, metric_count = wait_for_splunk_search(
+        setup_splunk,
+        f"| mpreview index=netmetrics earliest={earliest} | spath profiles "
+        f"| search profiles={profile_name} frequency=5 | search UDP-MIB",
+        f"{profile_name} metrics with frequency=5",
+        timeout=180,
+    )
+    assert result_count > 0
+    assert metric_count > 0
 
 
 @pytest.mark.usefixtures("setup_modify_profile")
