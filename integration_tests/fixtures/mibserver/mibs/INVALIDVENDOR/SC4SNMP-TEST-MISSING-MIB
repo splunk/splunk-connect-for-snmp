@@ -1,0 +1,16 @@
+SC4SNMP-TEST-MISSING-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY
+        FROM SNMPv2-SMI
+    sc4snmpAbsentRoot
+        FROM SC4SNMP-TEST-ABSENT-MIB;
+
+sc4snmpTestMissing MODULE-IDENTITY
+    LAST-UPDATED "202611230000Z"
+    ORGANIZATION "SC4SNMP integration tests"
+    CONTACT-INFO "SC4SNMP maintainers"
+    DESCRIPTION "A missing import must not become an indexed module."
+    ::= { sc4snmpAbsentRoot 1 }
+
+END

@@ -1,0 +1,47 @@
+SC4SNMP-TEST-V1-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    enterprises, Counter, Gauge, TimeTicks, IpAddress
+        FROM RFC1155-SMI
+    OBJECT-TYPE
+        FROM RFC-1212
+    TRAP-TYPE
+        FROM RFC-1215;
+
+sc4snmpTestV1 OBJECT IDENTIFIER ::= { enterprises 99997 }
+
+sc4snmpTestV1Counter OBJECT-TYPE
+    SYNTAX Counter
+    ACCESS read-only
+    STATUS mandatory
+    DESCRIPTION "A legacy counter."
+    ::= { sc4snmpTestV1 1 }
+
+sc4snmpTestV1Gauge OBJECT-TYPE
+    SYNTAX Gauge
+    ACCESS read-only
+    STATUS optional
+    DESCRIPTION "A legacy gauge."
+    ::= { sc4snmpTestV1 2 }
+
+sc4snmpTestV1Ticks OBJECT-TYPE
+    SYNTAX TimeTicks
+    ACCESS read-only
+    STATUS mandatory
+    DESCRIPTION "Legacy time ticks."
+    ::= { sc4snmpTestV1 3 }
+
+sc4snmpTestV1Address OBJECT-TYPE
+    SYNTAX IpAddress
+    ACCESS read-only
+    STATUS mandatory
+    DESCRIPTION "A legacy address."
+    ::= { sc4snmpTestV1 4 }
+
+sc4snmpTestV1Trap TRAP-TYPE
+    ENTERPRISE sc4snmpTestV1
+    VARIABLES { sc4snmpTestV1Counter, sc4snmpTestV1Gauge }
+    DESCRIPTION "A legacy trap converted to a notification."
+    ::= 7
+
+END

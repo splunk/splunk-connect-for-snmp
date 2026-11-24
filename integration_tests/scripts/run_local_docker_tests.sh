@@ -14,6 +14,7 @@ COMPOSE_FILE="${DOCKER_COMPOSE_LOCAL}/docker-compose.yaml"
 
 install_docker
 parse_common_args "$@"
+prepare_integration_test_config "$(hostname -I | awk '{print $1}')"
 
 # ===== INSTALL & CONFIGURE SNMPD (SNMPv3) =====
 install_snmpd() {
@@ -49,9 +50,9 @@ validate_paths() {
   info "Secret folder: $SECRET_FOLDER"
 
   for f in \
-    "${INT_TEST_DIR}/configs/scheduler-config.yaml" \
+    "$SCHEDULER_CONFIG_FILE" \
     "${INT_TEST_DIR}/configs/traps-config.yaml" \
-    "${INT_TEST_DIR}/configs/inventory-tests.csv" \
+    "$INVENTORY_FILE" \
     "${INT_TEST_DIR}/configs/discovery-config-docker.yaml" \
     "$ENV_FILE" \
     "${DOCKER_COMPOSE_LOCAL}/Corefile" \
@@ -74,6 +75,8 @@ update_env() {
 
   SECRET_FOLDER="${INT_TEST_DIR}/sample_v3_values"
 
+  mkdir -p "$LOCAL_MIBS_DIR"
+
   set_env_var "$ENV_FILE" "SC4SNMP_IMAGE"         "snmp-local"
   set_env_var "$ENV_FILE" "SC4SNMP_TAG"           "latest"
   set_env_var "$ENV_FILE" "SC4SNMP_VERSION"       "latest"
@@ -92,24 +95,34 @@ update_env() {
     "$(realpath "${DOCKER_COMPOSE_LOCAL}/Corefile")"
 
   set_env_var "$ENV_FILE" "SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
-    "$(realpath "${INT_TEST_DIR}/configs/scheduler-config.yaml")"
+    "$(realpath "$SCHEDULER_CONFIG_FILE")"
 
   set_env_var "$ENV_FILE" "TRAPS_CONFIG_FILE_ABSOLUTE_PATH" \
     "$(realpath "${INT_TEST_DIR}/configs/traps-config.yaml")"
 
   set_env_var "$ENV_FILE" "INVENTORY_FILE_ABSOLUTE_PATH" \
-    "$(realpath "${INT_TEST_DIR}/configs/inventory-tests.csv")"
+    "$(realpath "$INVENTORY_FILE")"
 
   set_env_var "$ENV_FILE" "DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH" \
     "$(realpath "${INT_TEST_DIR}/configs/discovery-config-docker.yaml")"
   set_env_var "$ENV_FILE" "DISCOVERY_PATH" "${INT_TEST_DIR}/discovery"
-  set_env_var "$ENV_FILE" "COMPOSE_PROFILES" "discovery"
+  set_env_var "$ENV_FILE" "LOCAL_MIBS_PATH" "$LOCAL_MIBS_DIR"
+  if [[ "${AUTODISCOVERY_ENABLED:-true}" == "true" ]]; then
+    set_env_var "$ENV_FILE" "COMPOSE_PROFILES" "discovery"
+  else
+    set_env_var "$ENV_FILE" "COMPOSE_PROFILES" ""
+  fi
+  if [[ "$INTEGRATION_TEST_PART" == "9" ]]; then
+    set_env_var "$ENV_FILE" "WORKER_POLLER_REPLICAS" "1"
+    set_env_var "$ENV_FILE" "WORKER_POLLER_CONCURRENCY" "1"
+    set_env_var "$ENV_FILE" "WORKER_TRAP_REPLICAS" "1"
+  fi
 
   set_env_var "$ENV_FILE" "IPv6_ENABLED"          "false"
   set_env_var "$ENV_FILE" "COREDNS_ADDRESS_IPv6"  ""
   set_env_var "$ENV_FILE" "ENABLE_FULL_WALK"      "true"
 
-  sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" "${INT_TEST_DIR}/configs/inventory-tests.csv"
+  sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" "$INVENTORY_FILE"
 }
 # ===== START SNMP SIMULATORS =====
 start_snmp() {
@@ -127,7 +140,7 @@ start_snmp() {
   done
   if ! sudo lsof -i :1166 >/dev/null 2>&1; then
     sudo docker run -d -p 1166:161/udp \
-      -v "$(pwd)/snmpsim/data:/usr/local/snmpsim/data" \
+      -v "$SNMPSIM_DATA_DIR:/usr/local/snmpsim/data" \
       -e "EXTRA_FLAGS=--variation-modules-dir=/usr/local/snmpsim/variation --data-dir=/usr/local/snmpsim/data" \
       tandrup/snmpsim >/dev/null
     echo "Custom simulator started on 1166"
@@ -227,7 +240,8 @@ run_tests() {
     --trap_external_ip="${trap_ip}" \
     --sc4snmp_deployment="docker-compose" \
     -v \
-    ${TEST_FILTER}
+    -m "$TEST_MARKER" \
+    "$TEST_FILTER"
 }
 
 # ===== MAIN =====
@@ -260,7 +274,9 @@ main() {
 
   update_env "$token"
   start_snmp
-  "${SCRIPT_DIR}/setup_autodiscovery_simulators.sh" docker
+  if [[ "${AUTODISCOVERY_ENABLED:-true}" == "true" ]]; then
+    "${SCRIPT_DIR}/setup_autodiscovery_simulators.sh" docker
+  fi
   start_compose
   ensure_python
   deploy_poetry

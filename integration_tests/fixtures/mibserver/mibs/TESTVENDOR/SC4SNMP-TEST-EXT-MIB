@@ -1,0 +1,52 @@
+SC4SNMP-TEST-EXT-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, Integer32, enterprises
+        FROM SNMPv2-SMI
+    TestName
+        FROM SC4SNMP-TEST-TC
+    sc4snmpTestEntry
+        FROM SC4SNMP-TEST-MIB;
+
+sc4snmpTestExt MODULE-IDENTITY
+    LAST-UPDATED "202611230000Z"
+    ORGANIZATION "SC4SNMP integration tests"
+    CONTACT-INFO "SC4SNMP maintainers"
+    DESCRIPTION "A separate local module augmenting an imported table."
+    ::= { enterprises 99996 }
+
+sc4snmpTestExtTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF Sc4snmpTestExtEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "An augmented table."
+    ::= { sc4snmpTestExt 1 }
+
+sc4snmpTestExtEntry OBJECT-TYPE
+    SYNTAX Sc4snmpTestExtEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "The base table supplies the index."
+    AUGMENTS { sc4snmpTestEntry }
+    ::= { sc4snmpTestExtTable 1 }
+
+Sc4snmpTestExtEntry ::= SEQUENCE {
+    sc4snmpTestExtra Integer32,
+    sc4snmpTestExtraLabel TestName
+}
+
+sc4snmpTestExtra OBJECT-TYPE
+    SYNTAX Integer32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "An additional column in the augmented table."
+    ::= { sc4snmpTestExtEntry 1 }
+
+sc4snmpTestExtraLabel OBJECT-TYPE
+    SYNTAX TestName
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "An augmented row label sharing the imported composite index."
+    ::= { sc4snmpTestExtEntry 2 }
+
+END

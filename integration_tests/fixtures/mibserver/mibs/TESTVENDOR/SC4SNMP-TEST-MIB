@@ -1,0 +1,210 @@
+SC4SNMP-TEST-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-IDENTITY, OBJECT-TYPE, NOTIFICATION-TYPE,
+    Integer32, Unsigned32, Counter32, Counter64, Gauge32, TimeTicks,
+    IpAddress, enterprises
+        FROM SNMPv2-SMI
+    OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+        FROM SNMPv2-CONF
+    TestName, TestLevel, TestState
+        FROM SC4SNMP-TEST-TC;
+
+sc4snmpTest MODULE-IDENTITY
+    LAST-UPDATED "202611230000Z"
+    ORGANIZATION "SC4SNMP integration tests"
+    CONTACT-INFO "SC4SNMP maintainers"
+    DESCRIPTION
+        "Local compilation fixture with multiline text and punctuation
+        to exercise description parsing."
+    REVISION "202611230000Z"
+    DESCRIPTION "Cover local MIB compilation and consumer loading."
+    ::= { enterprises 99999 }
+
+sc4snmpTestIdentity OBJECT-IDENTITY
+    STATUS current
+    DESCRIPTION "An identity indexed independently of the module root."
+    ::= { sc4snmpTest 100 }
+
+sc4snmp-test-hyphen OBJECT-IDENTITY
+    STATUS current
+    DESCRIPTION "A valid hyphenated descriptor retains its exported name."
+    ::= { sc4snmpTest 101 }
+
+sc4snmpTestObject OBJECT-TYPE
+    SYNTAX TestName
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "An imported textual convention with a size constraint."
+    DEFVAL { "ready" }
+    ::= { sc4snmpTest 1 }
+
+sc4snmpTestLevel OBJECT-TYPE
+    SYNTAX TestLevel
+    UNITS "percent"
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "An imported integer constraint."
+    DEFVAL { 1 }
+    ::= { sc4snmpTest 2 }
+
+sc4snmpTestState OBJECT-TYPE
+    SYNTAX TestState
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "Named numbers including legacy vendor syntax."
+    DEFVAL { up }
+    ::= { sc4snmpTest 3 }
+
+sc4snmpTestBits OBJECT-TYPE
+    SYNTAX BITS { first(0), fourth(3), ninth(8) }
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "Named bits crossing an octet boundary."
+    DEFVAL { { first, ninth } }
+    ::= { sc4snmpTest 4 }
+
+sc4snmpTestCounter OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "A 32 bit counter."
+    ::= { sc4snmpTest 5 }
+
+sc4snmpTestLargeCounter OBJECT-TYPE
+    SYNTAX Counter64
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "A counter larger than a 32 bit value."
+    ::= { sc4snmpTest 6 }
+
+sc4snmpTestGauge OBJECT-TYPE
+    SYNTAX Gauge32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "A gauge."
+    ::= { sc4snmpTest 7 }
+
+sc4snmpTestTicks OBJECT-TYPE
+    SYNTAX TimeTicks
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "An elapsed time value."
+    ::= { sc4snmpTest 8 }
+
+sc4snmpTestAddress OBJECT-TYPE
+    SYNTAX IpAddress
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "An address type."
+    ::= { sc4snmpTest 9 }
+
+sc4snmpTestOid OBJECT-TYPE
+    SYNTAX OBJECT IDENTIFIER
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "An object identifier value."
+    DEFVAL { sc4snmpTestIdentity }
+    ::= { sc4snmpTest 10 }
+
+sc4snmpTestUnsigned OBJECT-TYPE
+    SYNTAX Unsigned32 (0..100)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "A bounded unsigned value."
+    ::= { sc4snmpTest 11 }
+
+sc4snmpTestHex OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE (2))
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "A hexadecimal default."
+    DEFVAL { 'ABCD'H }
+    ::= { sc4snmpTest 12 }
+
+sc4snmpTestBinary OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE (1))
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "A binary default."
+    DEFVAL { '10101010'B }
+    ::= { sc4snmpTest 13 }
+
+sc4snmpTestTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF Sc4snmpTestEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "A table with a composite index."
+    ::= { sc4snmpTest 20 }
+
+sc4snmpTestEntry OBJECT-TYPE
+    SYNTAX Sc4snmpTestEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "An integer index followed by an implied string."
+    INDEX { sc4snmpTestIndex, IMPLIED sc4snmpTestLabel }
+    ::= { sc4snmpTestTable 1 }
+
+Sc4snmpTestEntry ::= SEQUENCE {
+    sc4snmpTestIndex Integer32,
+    sc4snmpTestLabel TestName,
+    sc4snmpTestValue Counter64,
+    sc4snmpTestDescription TestName
+}
+
+sc4snmpTestIndex OBJECT-TYPE
+    SYNTAX Integer32 (1..100)
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "An integer table index."
+    ::= { sc4snmpTestEntry 1 }
+
+sc4snmpTestLabel OBJECT-TYPE
+    SYNTAX TestName
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "An implied string table index."
+    ::= { sc4snmpTestEntry 2 }
+
+sc4snmpTestValue OBJECT-TYPE
+    SYNTAX Counter64
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "A table metric."
+    ::= { sc4snmpTestEntry 3 }
+
+sc4snmpTestDescription OBJECT-TYPE
+    SYNTAX TestName
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "A row label used to verify metric enrichment by composite index."
+    ::= { sc4snmpTestEntry 4 }
+
+sc4snmpTestNotifications OBJECT IDENTIFIER ::= { sc4snmpTest 0 }
+
+sc4snmpTestNotification NOTIFICATION-TYPE
+    OBJECTS { sc4snmpTestObject, sc4snmpTestState }
+    STATUS current
+    DESCRIPTION "A notification with typed varbind references."
+    ::= { sc4snmpTestNotifications 1 }
+
+sc4snmpTestGroup OBJECT-GROUP
+    OBJECTS { sc4snmpTestObject, sc4snmpTestLevel, sc4snmpTestState }
+    STATUS current
+    DESCRIPTION "An object conformance group."
+    ::= { sc4snmpTest 30 }
+
+sc4snmpTestNotificationGroup NOTIFICATION-GROUP
+    NOTIFICATIONS { sc4snmpTestNotification }
+    STATUS current
+    DESCRIPTION "A notification conformance group."
+    ::= { sc4snmpTest 31 }
+
+sc4snmpTestCompliance MODULE-COMPLIANCE
+    STATUS current
+    DESCRIPTION "A compliance declaration."
+    MODULE
+        MANDATORY-GROUPS { sc4snmpTestGroup, sc4snmpTestNotificationGroup }
+    ::= { sc4snmpTest 32 }
+
+END

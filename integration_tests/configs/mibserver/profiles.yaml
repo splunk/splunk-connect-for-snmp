@@ -1,0 +1,24 @@
+local_mib_scalar:
+  frequency: 5
+  varBinds:
+    - ['SC4SNMP-TEST-MIB', 'sc4snmpTestObject', 0]
+    - ['SC4SNMP-TEST-MIB', 'sc4snmpTestLevel', 0]
+    - ['SC4SNMP-TEST-MIB', 'sc4snmpTestState', 0]
+    - ['SC4SNMP-TEST-MIB', 'sc4snmpTestBits', 0]
+    - ['SC4SNMP-TEST-MIB', 'sc4snmpTestOid', 0]
+    - ['SC4SNMP-TEST-MIB', 'sc4snmpTestHex', 0]
+    - ['SC4SNMP-TEST-MIB', 'sc4snmpTestBinary', 0]
+local_mib_symbolic:
+  frequency: 7
+  varBinds:
+    - ['SC4SNMP-TEST-MIB']
+    - ['SC4SNMP-TEST-EXT-MIB']
+local_mib_discovered:
+  frequency: 11
+  varBinds:
+    - ['SNMPv2-SMI', 'enterprises']
+mib_index_refresh_profile:
+  frequency: 13
+  varBinds:
+    - ['SNMPv2-MIB', 'sysDescr', 0]
+    - ['SNMPv2-SMI', 'enterprises', 42705]

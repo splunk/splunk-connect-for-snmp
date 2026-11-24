@@ -1,0 +1,32 @@
+SC4SNMP-TEST-TC DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, Integer32, enterprises
+        FROM SNMPv2-SMI
+    TEXTUAL-CONVENTION
+        FROM SNMPv2-TC;
+
+sc4snmpTestTypes MODULE-IDENTITY
+    LAST-UPDATED "202611230000Z"
+    ORGANIZATION "SC4SNMP integration tests"
+    CONTACT-INFO "SC4SNMP maintainers"
+    DESCRIPTION "Local types imported by the compilation fixtures."
+    ::= { enterprises 99998 }
+
+TestName ::= TEXTUAL-CONVENTION
+    DISPLAY-HINT "32a"
+    STATUS current
+    DESCRIPTION "A bounded display string."
+    SYNTAX OCTET STRING (SIZE (1..32))
+
+TestLevel ::= TEXTUAL-CONVENTION
+    STATUS current
+    DESCRIPTION "A signed integer with disjoint ranges."
+    SYNTAX Integer32 (-10..-1 | 1..10)
+
+TestState ::= TEXTUAL-CONVENTION
+    STATUS current
+    DESCRIPTION "Named states with standard identifiers."
+    SYNTAX INTEGER { down(0), up(1), ready-state(5) }
+
+END

@@ -1,0 +1,21 @@
+SC4SNMP-TEST-BAD-ENUM-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, enterprises
+        FROM SNMPv2-SMI;
+
+sc4snmpBadEnum MODULE-IDENTITY
+    LAST-UPDATED "202611230000Z"
+    ORGANIZATION "SC4SNMP integration tests"
+    CONTACT-INFO "SC4SNMP maintainers"
+    DESCRIPTION "An invalid enum must fail the whole module compilation."
+    ::= { enterprises 99991 }
+
+sc4snmpBadEnumObject OBJECT-TYPE
+    SYNTAX INTEGER { invalid$name(0) }
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "A dollar sign is not part of the legacy underscore exception."
+    ::= { sc4snmpBadEnum 1 }
+
+END

@@ -1,0 +1,14 @@
+SC4SNMP-TEST-LEADING-UNDERSCORE-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, enterprises
+        FROM SNMPv2-SMI;
+
+_sc4snmpBadDescriptor MODULE-IDENTITY
+    LAST-UPDATED "202611230000Z"
+    ORGANIZATION "SC4SNMP integration tests"
+    CONTACT-INFO "SC4SNMP maintainers"
+    DESCRIPTION "A leading underscore must be rejected as an object descriptor."
+    ::= { enterprises 99992 }
+
+END
