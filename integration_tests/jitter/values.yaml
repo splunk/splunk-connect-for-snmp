@@ -1,0 +1,31 @@
+image:
+  pullPolicy: Never
+UI:
+  enable: false
+discovery:
+  enabled: false
+sim:
+  enabled: false
+flower:
+  enabled: false
+traps:
+  communities: {}
+  usernameSecrets: []
+worker:
+  profilesReloadDelay: 1
+scheduler:
+  pollingJitter:
+    enabled: false
+    windowSeconds: 60
+  profiles: "{}"
+  groups: "{}"
+poller:
+  metricsIndexingEnabled: true
+  pollBaseProfiles: false
+  enableFullWalk: false
+  inventory: |
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+redis:
+  architecture: standalone
+mongodb:
+  mode: standalone

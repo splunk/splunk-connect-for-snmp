@@ -239,7 +239,7 @@ def authenticated_replica_set(request):
             [
                 "--set",
                 f"image.repository={image_repository}",
-                "--set",
+                "--set-string",
                 f"image.tag={os.getenv('SC4SNMP_REPLICATION_TEST_IMAGE_TAG', 'latest')}",
                 "--set",
                 f"image.pullPolicy={os.getenv('SC4SNMP_REPLICATION_TEST_IMAGE_PULL_POLICY', 'Never')}",
@@ -503,7 +503,7 @@ def test_poller_works_after_authentication_transition(
     deployment = authenticated_replica_set
     search = (
         'search index="netops" sourcetype="sc4snmp:event" '
-        f'host="{deployment.poll_target}" earliest={deployment.transition_started_at} '
+        f'host="{deployment.poll_target}" earliest={int(time.time())} '
         '"SNMPv2-MIB.sysDescr.value"=* '
         "| head 1"
     )

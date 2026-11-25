@@ -6,7 +6,7 @@ varbinds_type = {
 standard_profile_schema = {
     "type": "object",
     "properties": {
-        "frequency": {"type": "integer"},
+        "frequency": {"type": "integer", "minimum": 5},
         "varBinds": varbinds_type,
     },
     "required": ["frequency", "varBinds"],
@@ -31,7 +31,7 @@ walk_profile_schema = {
 base_profile_schema = {
     "type": "object",
     "properties": {
-        "frequency": {"type": "integer"},
+        "frequency": {"type": "integer", "minimum": 5},
         "varBinds": varbinds_type,
         "condition": {
             "type": "object",
@@ -47,7 +47,7 @@ base_profile_schema = {
 smart_profile_schema = {
     "type": "object",
     "properties": {
-        "frequency": {"type": "integer"},
+        "frequency": {"type": "integer", "minimum": 5},
         "varBinds": varbinds_type,
         "condition": {
             "type": "object",
@@ -67,7 +67,7 @@ smart_profile_schema = {
 conditional_profile_schema = {
     "type": "object",
     "properties": {
-        "frequency": {"type": "integer"},
+        "frequency": {"type": "integer", "minimum": 5},
         "varBinds": varbinds_type,
         "conditions": {
             "type": "array",

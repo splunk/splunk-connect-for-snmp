@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 import time
+from unittest.mock import patch
 from uuid import uuid4
 
 import pytest
@@ -66,6 +67,13 @@ def app(tmp_path, monkeypatch):
             task_default_queue="jitter-" + uuid4().hex,
         )
         result.redbeat_redis = client
+        # Earlier tests can register SNMP tasks shared by every Celery app.
+        # Build this scheduler-only app without opening Mongo for those tasks.
+        # Restore their constructor before exercising Redis and Beat.
+        with patch(
+            "splunk_connect_for_snmp.snmp.manager.Poller.__init__", return_value=None
+        ):
+            result.finalize()
         yield result
     finally:
         if result is not None:

@@ -168,6 +168,8 @@ def calculate_offset(
     """
     identity = canonical_identity(address, port, interval, task_type)
     interval = int(interval)
+    # SHA-256 distributes polling schedules and is not used for security.
+    # nosemgrep: splunk.python-detect-crypto-imports
     digest = hashlib.sha256(identity.encode("utf-8")).digest()
     offset = 1 + int.from_bytes(digest, "big") % effective_window_seconds(
         settings, interval
