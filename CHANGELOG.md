@@ -13,6 +13,7 @@
 - Add minimal polling frequency for profiles. Automatically set polling profile frequencies below 5 seconds to 5 seconds.
 
 ### Fixed
+- Raise the minimum PySNMP version to 7.1.34 so SNMP engines can start after the signed 32-bit Unix timestamp limit.
 - A value whose SNMP type differs from the type declared in its MIB no longer drops the whole poll. When `prettyPrint()` fails, the raw value is used and a warning with the OID, class, tag set and raw value is logged.
 
 ## [1.18.1]
