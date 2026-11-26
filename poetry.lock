@@ -1653,14 +1653,14 @@ diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
 name = "pyrate-limiter"
-version = "4.5.0"
+version = "4.6.0"
 description = "Python rate limiter with pluggable algorithms and backends"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "pyrate_limiter-4.5.0-py3-none-any.whl", hash = "sha256:e7320a715adf404cb7b2f399e05ceb59cae165275b21f7708eb1b9fd9608e91c"},
-    {file = "pyrate_limiter-4.5.0.tar.gz", hash = "sha256:098345fff3a52b84dee9bcf6973f184c8b3ef8d34e1f4f781ac0773e3984598b"},
+    {file = "pyrate_limiter-4.6.0-py3-none-any.whl", hash = "sha256:d8275519d0c8466c6fec956d804d893355afce23ffeec2b21c88b8c9930941a6"},
+    {file = "pyrate_limiter-4.6.0.tar.gz", hash = "sha256:9530258e021193e776ff348a95106c88569e033fa43248e5fc484959ae9d4b40"},
 ]
 
 [package.extras]
