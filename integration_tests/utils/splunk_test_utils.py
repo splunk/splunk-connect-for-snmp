@@ -778,6 +778,7 @@ def _run_integration_command(
     timeout=INTEGRATION_TEST_TIMEOUT,
     *,
     include_stderr=False,
+    input_text=None,
 ):
     result = subprocess.run(
         command,
@@ -785,6 +786,7 @@ def _run_integration_command(
         text=True,
         check=False,
         timeout=timeout,
+        input=input_text,
     )
     if result.returncode != 0:
         details = (result.stderr or result.stdout).strip()
@@ -806,6 +808,42 @@ def _sc4snmp_compose_command(*arguments):
         str(compose_dir / ".env"),
         *arguments,
     ]
+
+
+def exec_sc4snmp_component(
+    deployment,
+    command,
+    description,
+    *,
+    compose_service,
+    kubernetes_resource,
+    timeout=INTEGRATION_TEST_TIMEOUT,
+    input_text=None,
+):
+    """Execute a command in an existing integration component."""
+    if deployment == "microk8s":
+        stdin_arguments = ("-i",) if input_text is not None else ()
+        backend_command = [
+            "sudo",
+            "microk8s",
+            "kubectl",
+            "exec",
+            *stdin_arguments,
+            kubernetes_resource,
+            "-n",
+            "sc4snmp",
+            "--",
+            *command,
+        ]
+    elif deployment == "docker-compose":
+        backend_command = _sc4snmp_compose_command(
+            "exec", "-T", compose_service, *command
+        )
+    else:
+        raise ValueError(f"Unsupported SC4SNMP deployment: {deployment}")
+    return _run_integration_command(
+        backend_command, description, timeout=timeout, input_text=input_text
+    )
 
 
 def wait_for_microk8s_rollout(kubernetes_resource, description):
@@ -850,6 +888,7 @@ def restart_sc4snmp_component(
     *,
     compose_service: str,
     kubernetes_resource: str,
+    reconfigure: bool = True,
 ) -> None:
     if deployment == "microk8s":
         _run_integration_command(
@@ -866,6 +905,11 @@ def restart_sc4snmp_component(
             f"restarting the {compose_service} Kubernetes resource",
         )
         wait_for_microk8s_rollout(kubernetes_resource, compose_service)
+    elif deployment == "docker-compose" and not reconfigure:
+        _run_integration_command(
+            _sc4snmp_compose_command("restart", compose_service),
+            f"restarting the {compose_service} Docker Compose service",
+        )
     elif deployment == "docker-compose":
         _run_integration_command(
             _sc4snmp_compose_command(

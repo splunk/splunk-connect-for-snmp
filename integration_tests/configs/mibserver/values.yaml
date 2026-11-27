@@ -1,0 +1,15 @@
+mibserver:
+  localMibs:
+    persistence:
+      storageClass: microk8s-hostpath
+      size: 1Gi
+worker:
+  readinessProbe:
+    enabled: true
+  poller:
+    replicaCount: 1
+    concurrency: 1
+  trap:
+    replicaCount: 1
+discovery:
+  enabled: false

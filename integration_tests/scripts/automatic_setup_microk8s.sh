@@ -156,7 +156,8 @@ chmod +x "$SCRIPT_DIR/install_sck.sh"
 "$SCRIPT_DIR/install_sck.sh"
 
 
-VALUES_FILE="$INT_TEST_DIR/values.yaml"
+prepare_integration_test_config "$(hostname -I | cut -d " " -f1)" || exit 1
+prepare_microk8s_values_file || exit 1
 DISCOVERY_PATH_DIR="$INT_TEST_DIR/discovery"
 
 sed -i "s/###SPLUNK_TOKEN###/$(cat hec_token)/" "$VALUES_FILE"
@@ -168,7 +169,7 @@ sudo docker run -d -p 1162:161/udp tandrup/snmpsim
 sudo docker run -d -p 1163:161/udp tandrup/snmpsim
 sudo docker run -d -p 1164:161/udp tandrup/snmpsim
 sudo docker run -d -p 1165:161/udp tandrup/snmpsim
-sudo docker run -d -p 1166:161/udp -v $(pwd)/snmpsim/data:/usr/local/snmpsim/data -e EXTRA_FLAGS="--variation-modules-dir=/usr/local/snmpsim/variation --data-dir=/usr/local/snmpsim/data" tandrup/snmpsim
+sudo docker run -d -p 1166:161/udp -v "$SNMPSIM_DATA_DIR:/usr/local/snmpsim/data" -e EXTRA_FLAGS="--variation-modules-dir=/usr/local/snmpsim/variation --data-dir=/usr/local/snmpsim/data" tandrup/snmpsim
 
 green "[STEP] Enabling required MicroK8s add-ons"
 sudo microk8s enable helm3
@@ -231,7 +232,7 @@ else
   HELM_DISCOVERY_ARGS+=(--set discovery.enabled=false)
 fi
 
-sudo microk8s helm3 install snmp -f values.yaml ../charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace "${HELM_DISCOVERY_ARGS[@]}"
+sudo microk8s helm3 install snmp -f "$VALUES_FILE" ../charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace "${HELM_DISCOVERY_ARGS[@]}" "${MIBSERVER_HELM_ARGS[@]}"
 
 wait_for_pod_initialization
 wait_for_sc4snmp_pods_to_be_up

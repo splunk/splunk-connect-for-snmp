@@ -34,6 +34,8 @@ SPLUNK_API="https://${SPLUNK_HOST}:${SPLUNK_PORT}"
 CLEAN_INDEXES=false
 CLEAN=false
 TEST_FILTER="tests/"
+TEST_MARKER="not part9"
+INTEGRATION_TEST_PART="${INTEGRATION_TEST_PART:-}"
 SPLUNK_HOST_PROVIDED=false
 
 REQUIRED_PYTHON_MINOR="13"
@@ -60,16 +62,23 @@ parse_common_args() {
         ;;
       --test)
         if [[ -z "${2:-}" ]]; then
-          error "--test requires argument: traps | poller | discovery | all"
+          error "--test requires argument: traps | poller | discovery | part9 | all"
           exit 1
         fi
+        INTEGRATION_TEST_PART=""
+        TEST_MARKER="not part9"
         case "$2" in
           traps)  TEST_FILTER="tests/test_trap_integration.py" ;;
           poller) TEST_FILTER="tests/test_poller_integration.py" ;;
           discovery) TEST_FILTER="tests/test_autodiscovery_integration.py" ;;
+          part9)
+            INTEGRATION_TEST_PART="9"
+            TEST_FILTER="tests/"
+            TEST_MARKER="part9"
+            ;;
           all)    TEST_FILTER="tests/" ;;
           *)
-            error "Invalid test type: $2 (allowed: traps | poller | discovery | all)"
+            error "Invalid test type: $2 (allowed: traps | poller | discovery | part9 | all)"
             exit 1
             ;;
         esac
@@ -81,6 +90,59 @@ parse_common_args() {
         ;;
     esac
   done
+}
+
+prepare_integration_test_config() {
+  SCHEDULER_CONFIG_FILE="${INT_TEST_DIR}/configs/scheduler-config.yaml"
+  TRAPS_CONFIG_FILE="${INT_TEST_DIR}/configs/traps-config.yaml"
+  INVENTORY_FILE="${INT_TEST_DIR}/configs/inventory-tests.csv"
+  LOCAL_MIBS_DIR="${INT_TEST_DIR}/docker_compose/local_mibs"
+  SNMPSIM_DATA_DIR="${INT_TEST_DIR}/snmpsim/data"
+  MIBSERVER_HELM_ARGS=()
+
+  [[ "$INTEGRATION_TEST_PART" == "9" ]] || return 0
+
+  local config_dir="${INT_TEST_DIR}/configs/mibserver"
+  local fixture_dir="${INT_TEST_DIR}/fixtures/mibserver"
+  local runtime_dir vendor
+  LOCAL_MIBS_DIR="${INT_TEST_DIR}/local_mibs/part9"
+  SNMPSIM_DATA_DIR="${fixture_dir}/snmpsim"
+  if [[ -e "${LOCAL_MIBS_DIR}/HVRVENDOR" ]]; then
+    error "The part9 tests require a fresh local MIB directory without HVRVENDOR"
+    return 1
+  fi
+  mkdir -p "$LOCAL_MIBS_DIR" || return 1
+  for vendor in TESTVENDOR INVALIDVENDOR LEGACYVENDOR; do
+    cp -a "${fixture_dir}/mibs/${vendor}" "$LOCAL_MIBS_DIR/" || return 1
+  done
+
+  runtime_dir="$(mktemp -d "${TMPDIR:-/tmp}/sc4snmp-mibserver-config.XXXXXX")" || return 1
+  SCHEDULER_CONFIG_FILE="${runtime_dir}/scheduler-config.yaml"
+  INVENTORY_FILE="${runtime_dir}/inventory-tests.csv"
+  {
+    printf 'profiles:\n'
+    sed 's/^/  /' "${config_dir}/profiles.yaml" || return 1
+    printf 'groups: {}\n'
+  } > "$SCHEDULER_CONFIG_FILE" || return 1
+  sed "s|###LOAD_BALANCER_ID###|$1|g" \
+    "${config_dir}/inventory-tests.csv" > "$INVENTORY_FILE" || return 1
+
+  MIBSERVER_HELM_ARGS=(
+    -f "${config_dir}/values.yaml"
+    --set "mibserver.localMibs.pathToMibs=${LOCAL_MIBS_DIR}"
+    --set-file "scheduler.profiles=${config_dir}/profiles.yaml"
+    --set-file "poller.inventory=${INVENTORY_FILE}"
+  )
+  AUTODISCOVERY_ENABLED=false
+  TEST_MARKER="part9"
+}
+
+prepare_microk8s_values_file() {
+  VALUES_FILE="${INT_TEST_DIR}/values.yaml"
+  if [[ "$INTEGRATION_TEST_PART" == "9" ]]; then
+    VALUES_FILE="$(mktemp "${TMPDIR:-/tmp}/sc4snmp-integration-values.XXXXXX.yaml")" || return 1
+    cp "${INT_TEST_DIR}/values.yaml" "$VALUES_FILE" || return 1
+  fi
 }
 
 # ===== ENV FILE HELPERS =====

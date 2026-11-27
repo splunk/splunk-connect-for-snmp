@@ -8,6 +8,7 @@ source "${SCRIPT_DIR}/_common.sh"
 
 install_docker
 parse_common_args "$@"
+prepare_integration_test_config "$(hostname -I | awk '{print $1}')"
 
 # ===== CLEAN K8s RESOURCES =====
 clean_k8s() {
@@ -75,7 +76,7 @@ start_snmpsim() {
 
   if ! sudo lsof -i :1166 >/dev/null 2>&1; then
     sudo docker run -d -p 1166:161/udp \
-      -v "$(pwd)/snmpsim/data:/usr/local/snmpsim/data" \
+      -v "$SNMPSIM_DATA_DIR:/usr/local/snmpsim/data" \
       -e "EXTRA_FLAGS=--variation-modules-dir=/usr/local/snmpsim/variation --data-dir=/usr/local/snmpsim/data" \
       tandrup/snmpsim >/dev/null
 
@@ -134,7 +135,8 @@ run_tests() {
     --trap_external_ip="${trap_ip}" \
     --sc4snmp_deployment="microk8s" \
     -v \
-    ${TEST_FILTER}
+    -m "$TEST_MARKER" \
+    "$TEST_FILTER"
 }
 
 # ===== MAIN =====
@@ -178,9 +180,8 @@ sudo microk8s helm3 upgrade --install sck \
   --set="splunkPlatform.index=em_logs" \
   splunk-otel-collector-chart/splunk-otel-collector
 
-VALUES_FILE="${SCRIPT_DIR}/../values.yaml"
+prepare_microk8s_values_file
 DISCOVERY_PATH_DIR="${INT_TEST_DIR}/discovery"
-
 HOST_IP=$(hostname -I | awk '{print $1}')
 
 info "Updating values.yaml"
@@ -198,7 +199,9 @@ if [[ "$LOCAL_RUN" == "true" ]]; then
 fi
 
 start_snmpsim
-"${SCRIPT_DIR}/setup_autodiscovery_simulators.sh" microk8s
+if [[ "${AUTODISCOVERY_ENABLED:-true}" == "true" ]]; then
+  "${SCRIPT_DIR}/setup_autodiscovery_simulators.sh" microk8s
+fi
 
 step "MicroK8s Setup"
 
@@ -262,7 +265,8 @@ stringData:
 EOF
 
 sudo microk8s helm3 upgrade --install snmp \
-  -f values.yaml \
+  -f "$VALUES_FILE" \
+  "${MIBSERVER_HELM_ARGS[@]}" \
   ../charts/splunk-connect-for-snmp \
   --namespace=sc4snmp \
   --create-namespace
@@ -277,8 +281,10 @@ deploy_poetry || true
 sleep 10
 run_tests
 
-info "Restoring values.yaml"
+if [[ "$INTEGRATION_TEST_PART" != "9" ]]; then
+  info "Restoring values.yaml"
 
-sed -i "s|${token}|###SPLUNK_TOKEN###|g" "$VALUES_FILE"
-sed -i "s|${HOST_IP}|###LOAD_BALANCER_ID###|g" "$VALUES_FILE"
-sed -i "s|${DISCOVERY_PATH_DIR}|###DISCOVERY_PATH###|g" "$VALUES_FILE"
+  sed -i "s|${token}|###SPLUNK_TOKEN###|g" "$VALUES_FILE"
+  sed -i "s|${HOST_IP}|###LOAD_BALANCER_ID###|g" "$VALUES_FILE"
+  sed -i "s|${DISCOVERY_PATH_DIR}|###DISCOVERY_PATH###|g" "$VALUES_FILE"
+fi

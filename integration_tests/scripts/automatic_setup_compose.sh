@@ -138,11 +138,10 @@ cp -r "$REPO_ROOT/docker_compose" "$DOCKER_COMPOSE_LOCAL"
 
 SECRET_FOLDER="sample_v3_values"
 
-SCHEDULER_CONFIG_FILE="$CONFIG_DIR/scheduler-config.yaml"
-TRAPS_CONFIG_FILE="$CONFIG_DIR/traps-config.yaml"
-INVENTORY_FILE="$CONFIG_DIR/inventory-tests.csv"
+prepare_integration_test_config "$(hostname -I | cut -d " " -f1)" || exit 1
 DISCOVERY_CONFIG_FILE="$CONFIG_DIR/discovery-config-docker.yaml"
 DISCOVERY_PATH_DIR="$(pwd)/discovery"
+mkdir -p "$LOCAL_MIBS_DIR"
 
 SPLUNK_HEC_HOST=$(hostname -I | cut -d " " -f1)
 SPLUNK_HEC_TOKEN=$(cat hec_token)
@@ -172,6 +171,12 @@ set_var "TRAPS_CONFIG_FILE_ABSOLUTE_PATH"        "$(realpath "$TRAPS_CONFIG_FILE
 set_var "INVENTORY_FILE_ABSOLUTE_PATH"           "$(realpath "$INVENTORY_FILE")"
 set_var "DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH"    "$(realpath "$DISCOVERY_CONFIG_FILE")"
 set_var "DISCOVERY_PATH"                         "$DISCOVERY_PATH_DIR"
+set_var "LOCAL_MIBS_PATH"                        "$LOCAL_MIBS_DIR"
+if [[ "$INTEGRATION_TEST_PART" == "9" ]]; then
+  set_var "WORKER_POLLER_REPLICAS" "1"
+  set_var "WORKER_POLLER_CONCURRENCY" "1"
+  set_var "WORKER_TRAP_REPLICAS" "1"
+fi
 if [[ "$AUTODISCOVERY_ENABLED" == "true" ]]; then
   set_var "COMPOSE_PROFILES" "discovery"
 else
@@ -185,7 +190,7 @@ sudo docker run -d -p 1162:161/udp tandrup/snmpsim
 sudo docker run -d -p 1163:161/udp tandrup/snmpsim
 sudo docker run -d -p 1164:161/udp tandrup/snmpsim
 sudo docker run -d -p 1165:161/udp tandrup/snmpsim
-sudo docker run -d -p 1166:161/udp -v $(pwd)/snmpsim/data:/usr/local/snmpsim/data -e EXTRA_FLAGS="--variation-modules-dir=/usr/local/snmpsim/variation --data-dir=/usr/local/snmpsim/data" tandrup/snmpsim
+sudo docker run -d -p 1166:161/udp -v "$SNMPSIM_DATA_DIR:/usr/local/snmpsim/data" -e EXTRA_FLAGS="--variation-modules-dir=/usr/local/snmpsim/variation --data-dir=/usr/local/snmpsim/data" tandrup/snmpsim
 
 if [[ "$AUTODISCOVERY_ENABLED" == "true" ]]; then
   "$SCRIPT_DIR/setup_autodiscovery_simulators.sh" docker || exit 1

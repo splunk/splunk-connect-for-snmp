@@ -1,0 +1,21 @@
+SC4SNMP-TEST-LEGACY-ATTRIBUTE-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, enterprises
+        FROM SNMPv2-SMI;
+
+sc4snmpLegacyAttribute MODULE-IDENTITY
+    LAST-UPDATED "202611230000Z"
+    ORGANIZATION "SC4SNMP integration tests"
+    CONTACT-INFO "SC4SNMP maintainers"
+    DESCRIPTION "Known invalid enum naming from pysnmp issue 257."
+    ::= { enterprises 99989 }
+
+sc4snmpLegacyAttributeState OBJECT-TYPE
+    SYNTAX INTEGER { normal(0), attribute-Value-Change_Event(1) }
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "An underscore enum label must be rejected by naming rules."
+    ::= { sc4snmpLegacyAttribute 1 }
+
+END

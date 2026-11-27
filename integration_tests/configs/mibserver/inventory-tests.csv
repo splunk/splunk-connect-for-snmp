@@ -1,0 +1,2 @@
+address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+###LOAD_BALANCER_ID###,1166,2c,localmib,,,600,local_mib_scalar;local_mib_symbolic;local_mib_discovered;mib_index_refresh_profile,,
